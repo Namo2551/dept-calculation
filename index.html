@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เครื่องคิดเลขหนี้บัตรเครดิต</title>
+<style>
+  /* ===== ระบบสี/ขนาด (design tokens) ===== */
+  :root {
+    --bg: #f4f6f9; --surface: #ffffff; --surface-2: #eef1f6; --text: #18202e; --muted: #535e72; --border: #d3d9e3;
+    --primary: #1f5fbf; --on-primary: #ffffff; --focus: #f29d00;
+    --a: #1f5fbf; --b: #b34e00; --c3: #5d6675;
+    --good: #1b7339; --good-bg: #e6f4eb; --warn: #8a4b00; --warn-bg: #fff2df; --bad: #ad1f1f; --bad-bg: #fdeaea;
+    --tool: #1b7339; --rec: #6a3fb5; --ind: #00707a;
+    --shadow: 0 1px 2px rgba(16,24,40,.06), 0 6px 16px rgba(16,24,40,.06);
+    --radius: 14px; --radius-s: 9px;
+    --fs-xs: .82rem; --fs-s: .93rem; --fs-m: 1.02rem; --fs-l: 1.3rem; --fs-xl: 2rem;
+  }
+  @media screen and (prefers-color-scheme: dark) {
+    :root {
+      --bg: #11141a; --surface: #1b1f27; --surface-2: #252a34; --text: #e9edf3; --muted: #a9b2c1; --border: #39404c;
+      --primary: #7aa9ff; --on-primary: #0b1220; --focus: #ffc14d;
+      --a: #7aa9ff; --b: #ffa45c; --c3: #b9c1cd;
+      --good: #72d394; --good-bg: #16301f; --warn: #ffd08a; --warn-bg: #3a2a12; --bad: #ff9f9f; --bad-bg: #3d1d1d;
+      --tool: #72d394; --rec: #c4abff; --ind: #63d6df;
+      --shadow: 0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: "Noto Sans Thai", "Sarabun", system-ui, sans-serif; font-size: var(--fs-m); line-height: 1.6; }
+  main { max-width: 1000px; margin: 0 auto; padding: 0 16px 16px; }
+  [id] { scroll-margin-top: 64px; }
+  h1 { font-size: var(--fs-xl); line-height: 1.25; margin: 0 0 8px; }
+  h2 { font-size: var(--fs-l); line-height: 1.35; margin: 0 0 8px; }
+  h3 { font-size: var(--fs-m); margin: 12px 0 4px; }
+  a { color: var(--primary); }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  /* เมนูลัด sticky (มือถือเลื่อนแนวนอน) */
+  nav { position: sticky; top: 0; z-index: 10; background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; }
+  nav .in { max-width: 1000px; margin: 0 auto; padding: 6px 12px; display: flex; gap: 4px; }
+  nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: var(--radius-s); text-decoration: none; color: var(--text); font-weight: 600; font-size: var(--fs-s); }
+  nav a:hover { background: var(--surface-2); }
+
+  .hero { padding: 24px 0 8px; }
+  .hero .line { font-size: var(--fs-l); font-weight: 700; color: var(--primary); margin: 4px 0 12px; }
+  .banner { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-s); padding: 8px 12px; color: var(--muted); font-size: var(--fs-s); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; margin: 16px 0; min-width: 0; }
+  .tag { display: inline-block; font-size: var(--fs-xs); font-weight: 700; border: 2px solid currentColor; border-radius: 999px; padding: 0 10px; margin-bottom: 6px; }
+  .tag.tool { color: var(--tool); } .tag.rec { color: var(--rec); } .tag.ind { color: var(--ind); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 720px) { .grid2, .grid3 { grid-template-columns: 1fr; gap: 0; } h1 { font-size: 1.55rem; } }
+
+  /* ช่องกรอก ปุ่ม */
+  .field { min-width: 0; }
+  label { display: block; font-weight: 600; margin-top: 10px; }
+  .hint { color: var(--muted); font-size: var(--fs-xs); font-weight: 400; }
+  input[type=text] { width: 100%; font: inherit; padding: 10px 12px; min-height: 46px; border: 1px solid var(--border); border-radius: var(--radius-s); background: var(--surface-2); color: var(--text); }
+  input[aria-invalid=true] { border: 2px solid var(--bad); }
+  input[type=range] { width: 100%; min-height: 40px; accent-color: var(--primary); }
+  .err { color: var(--bad); background: var(--bad-bg); border-radius: 6px; padding: 4px 8px; margin-top: 4px; font-size: var(--fs-s); }
+  button, .btn { font: inherit; font-size: var(--fs-s); min-height: 44px; padding: 8px 14px; border-radius: var(--radius-s); border: 1px solid var(--border); background: var(--surface-2); color: var(--text); cursor: pointer; margin: 4px 4px 0 0; text-decoration: none; display: inline-flex; align-items: center; }
+  button:hover, .btn:hover { border-color: var(--primary); }
+  button.on, .btn.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  fieldset { border: 1px solid var(--border); border-radius: var(--radius-s); padding: 4px 12px 12px; margin: 10px 0 0; min-width: 0; }
+  legend { font-weight: 700; padding: 0 6px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; }
+  .msg { color: var(--good); font-weight: 600; margin-left: 6px; }
+
+  /* ผลลัพธ์ */
+  .res.A { border-top: 6px solid var(--a); } .res.B { border-top: 6px dashed var(--b); }
+  .big { font-size: var(--fs-xl); font-weight: 800; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .stat { margin: 6px 0; } .stat > span:not(.big) { color: var(--muted); font-size: var(--fs-s); display: block; } .stat > .big { display: block; } .stat b { font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+  .warn { background: var(--warn-bg); color: var(--warn); border-radius: var(--radius-s); padding: 10px 12px; margin-top: 8px; font-size: var(--fs-s); }
+  .warn.strong { background: var(--bad-bg); color: var(--bad); font-weight: 700; font-size: var(--fs-m); border: 2px solid var(--bad); }
+  .good { background: var(--good-bg); color: var(--good); border-radius: var(--radius-s); padding: 4px 10px; font-size: var(--fs-s); font-weight: 700; display: inline-block; }
+  .bars .lab { display: flex; justify-content: space-between; gap: 8px; font-size: var(--fs-s); margin-top: 8px; }
+  .bars .track { background: var(--surface-2); border-radius: 6px; height: 22px; overflow: hidden; }
+  .bars .fill { height: 100%; border-radius: 6px; }
+  .fill.A { background: var(--a); }
+  .fill.B { background: repeating-linear-gradient(45deg, var(--b) 0 8px, transparent 8px 12px); border: 2px solid var(--b); }
+  .sentence { font-size: var(--fs-m); font-weight: 600; margin-top: 12px; }
+
+  /* กราฟ */
+  svg { width: 100%; height: auto; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: var(--fs-s); margin: 8px 0 4px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .readout { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: var(--fs-s); }
+  .table-wrap { overflow: auto; max-height: 420px; border: 1px solid var(--border); border-radius: var(--radius-s); margin-top: 8px; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: var(--fs-s); }
+  th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { position: sticky; top: 0; background: var(--surface); }
+  details > summary { cursor: pointer; font-weight: 700; font-size: var(--fs-l); min-height: 44px; display: flex; align-items: center; }
+
+  /* หลายบัตร */
+  .cardrow { border: 1px solid var(--border); border-radius: var(--radius-s); padding: 8px 12px 12px; margin-top: 10px; }
+  .cardrow .head { display: flex; justify-content: space-between; align-items: center; }
+  .fields5 { display: grid; grid-template-columns: 1.4fr 1fr .8fr .8fr .9fr; gap: 0 10px; }
+  @media (max-width: 720px) { .fields5 { grid-template-columns: 1fr 1fr; } .fields5 .field:first-child { grid-column: 1 / -1; } }
+  .strat ol { padding-left: 20px; margin: 6px 0; }
+
+  /* Discrete Math */
+  .math { border-left: 6px solid var(--rec); } .math.indb { border-left-color: var(--ind); }
+  .f { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: var(--fs-s); background: var(--surface-2); border-radius: 6px; padding: 8px 10px; display: block; overflow-x: auto; margin: 6px 0; }
+  .check { color: var(--good); font-weight: 600; }
+  .proof { border: 1px solid var(--border); border-radius: var(--radius-s); padding: 8px 12px; margin: 10px 0; }
+  .play { background: var(--surface-2); border-radius: var(--radius-s); padding: 10px 12px; margin-top: 10px; }
+  .walk { max-height: 220px; overflow: auto; font-size: var(--fs-s); font-variant-numeric: tabular-nums; padding-left: 28px; margin: 6px 0; }
+  .boxes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  @media (max-width: 720px) { .boxes { grid-template-columns: 1fr; } }
+  .box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-s); padding: 8px; font-size: var(--fs-s); }
+  .box b { display: block; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+  .stairs { display: flex; align-items: flex-end; gap: 4px; margin-top: 10px; }
+  .step { flex: 1; min-width: 0; max-width: 96px; border: 2px solid var(--border); border-radius: 6px 6px 0 0; text-align: center; font-size: var(--fs-xs); padding: 2px; line-height: 1.3; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+  .step.done { background: var(--good-bg); border-color: var(--good); color: var(--good); }
+  .step.next { background: var(--warn-bg); border: 2px dashed var(--warn); color: var(--warn); }
+  footer { color: var(--muted); font-size: var(--fs-s); padding-bottom: 32px; }
+  .printonly { display: none; }
+
+  /* ===== พิมพ์: เหลือตัวเลขที่กรอก ผลลัพธ์ กราฟ ประโยคเปรียบเทียบ ข้อจำกัด ===== */
+  @media print {
+    @page { margin: 12mm; }
+    nav, .noprint, button, .btn, input[type=range], details:not([open]), .err, .hint, .tag, .banner, .res .warn { display: none !important; }
+    .printonly { display: block; }
+    html { font-size: 12px; } /* ขนาดแบบ rem ย่อตามด้วย */
+    body { background: #fff; font-size: 10pt; line-height: 1.25; }
+    .stat > span:not(.big) { display: inline; margin-right: 6px; } .stat > .big { display: inline; } /* ป้ายกับค่าอยู่บรรทัดเดียว */
+    .bars .track { height: 12px; } .bars .lab { margin-top: 2px; } .legend { margin: 2px 0; }
+    main { max-width: none; padding: 0; }
+    .hero { padding: 0; } h1 { font-size: 15pt; } h2 { font-size: 11pt; }
+    .card { box-shadow: none; padding: 6px 10px; margin: 5px 0; break-inside: avoid; }
+    .grid2 { grid-template-columns: 1fr 1fr; gap: 8px; }
+    input[type=text] { min-height: 0; padding: 2px 6px; border: none; background: none; font-weight: 700; }
+    label { margin-top: 2px; } fieldset { padding: 2px 8px 6px; }
+    .big { font-size: 13pt; } .stat { margin: 0; } .stat b { font-size: 10pt; } .sentence { margin-top: 4px; font-size: 10pt; }
+    fieldset legend { font-size: 9pt; } footer ul { margin: 2px 0; } footer h3 { margin: 0; }
+    #chart svg { max-height: 175px; width: auto; max-width: 100%; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+<nav class="noprint" aria-label="เมนูลัด"><div class="in">
+  <a href="#tool">เครื่องมือ</a><a href="#results-sec">ผลลัพธ์</a><a href="#chart-sec">กราฟ</a><a href="#multi">หลายบัตร</a><a href="#why" class="open-why">ทำไมถึงเป็นแบบนี้?</a>
+</div></nav>
+<main>
+  <header class="hero">
+    <h1>เครื่องคิดเลขหนี้บัตรเครดิต: จ่ายขั้นต่ำแล้วจะหมดหนี้เมื่อไร</h1>
+    <div class="line" id="heroLine"></div>
+    <div class="row noprint">
+      <a class="btn primary" href="#tool">เครื่องมือ</a><a class="btn" href="#multi">หลายบัตร</a><a class="btn open-why" href="#why">ทำไมถึงเป็นแบบนี้?</a>
+    </div>
+    <p class="banner">ด้านบนใช้ได้จริงกับตัวเลขของคุณ ด้านล่างอธิบายคณิตศาสตร์ที่อยู่เบื้องหลัง (Recurrence relations + Mathematical reasoning)</p>
+    <p class="printonly">สรุปจากเครื่องคิดเลขหนี้ (ประมาณการเพื่อการเรียนรู้ ตัวเลขสมมติ)</p>
+  </header>
+
+  <!-- ===== ส่วนที่ 1: เครื่องมือ ===== -->
+  <section class="card" id="tool">
+    <span class="tag tool">เครื่องมือ</span>
+    <h2>ใส่ตัวเลขของคุณ</h2>
+    <div class="grid2">
+      <div class="field"><label for="bal">ยอดหนี้ (บาท)</label><input type="text" id="bal" inputmode="decimal"><div class="err" hidden></div></div>
+      <div class="field"><label for="apr">ดอกเบี้ยต่อปี (%)</label><input type="text" id="apr" inputmode="decimal"><div class="err" hidden></div></div>
+    </div>
+    <div class="grid2">
+      <fieldset>
+        <legend>วิธี A: จ่ายขั้นต่ำ (เส้นทึบ)</legend>
+        <div class="field"><label for="m">ขั้นต่ำ (% ของยอดคงเหลือ)</label><input type="text" id="m" inputmode="decimal"><div class="err" hidden></div></div>
+        <div class="field"><label for="floor">ขั้นต่ำเป็นบาท <span class="hint">บัตรจริงมักมีขั้นต่ำเป็นจำนวนเงินด้วย ลองใส่ 500 ดูผล</span></label><input type="text" id="floor" inputmode="decimal"><div class="err" hidden></div></div>
+      </fieldset>
+      <fieldset>
+        <legend>วิธี B: จ่ายคงที่ (เส้นประ)</legend>
+        <div class="field"><label for="p">จ่ายคงที่ต่อเดือน (บาท)</label><input type="text" id="p" inputmode="decimal"><div class="err" hidden></div></div>
+      </fieldset>
+    </div>
+    <div class="row noprint" style="margin-top:10px">
+      <button id="ex1">ตัวอย่าง: ขั้นต่ำ 5% เทียบกับจ่ายคงที่ 1,500</button>
+      <button id="ex2">ตัวอย่าง: ขั้นต่ำ 5% แต่มีขั้นต่ำ 500 บาท</button>
+      <button id="ex400">ตัวอย่าง: จ่ายคงที่ต่ำกว่าดอกเบี้ย (400)</button>
+      <button id="exMulti">ตัวอย่าง: หลายบัตร</button>
+    </div>
+    <div class="row noprint" style="margin-top:6px">
+      <button id="share">🔗 คัดลอกลิงก์ที่มีตัวเลขของฉัน</button>
+      <button id="print">🖨 พิมพ์/บันทึกเป็น PDF</button>
+      <button id="reset">ล้างและกลับค่าเริ่มต้น</button>
+      <span id="shareMsg" class="msg" role="status"></span>
+    </div>
+    <div id="shareBox" class="noprint" hidden><label for="shareText">ลิงก์ของคุณ (ก๊อปเองได้จากช่องนี้)</label><input type="text" id="shareText" readonly></div>
+  </section>
+
+  <section id="results-sec">
+    <div id="results" class="grid2"></div>
+    <div class="card">
+      <span class="tag tool">เครื่องมือ</span>
+      <h2>เทียบความยาวเวลา</h2>
+      <div id="compareBars" class="bars"></div>
+      <p id="compare" class="sentence"></p>
+    </div>
+  </section>
+
+  <section class="card" id="chart-sec">
+    <span class="tag tool">เครื่องมือ</span>
+    <h2>ยอดหนี้ตามเดือน</h2>
+    <div class="row noprint">
+      <button data-range="60">5 ปี</button><button data-range="120">10 ปี</button><button data-range="all" class="on">จนหมดหนี้ (สูงสุด 40 ปี)</button>
+    </div>
+    <div class="row noprint">
+      <button id="playBtn">▶ เล่นทีละเดือน</button>
+      <button data-speed="1" class="on">1x</button><button data-speed="2">2x</button><button data-speed="4">4x</button>
+    </div>
+    <div class="legend">
+      <span><svg width="34" height="10" aria-hidden="true"><line x1="0" x2="34" y1="5" y2="5" stroke="var(--a)" stroke-width="3"/></svg>A: ขั้นต่ำ (เส้นทึบ)</span>
+      <span><svg width="34" height="10" aria-hidden="true"><line x1="0" x2="34" y1="5" y2="5" stroke="var(--b)" stroke-width="3" stroke-dasharray="9 6"/></svg>B: จ่ายคงที่ (เส้นประ)</span>
+      <span>◆ = เหลือไม่ถึง 1% ของยอดเดิม</span>
+    </div>
+    <div id="chart"></div>
+    <div class="noprint">
+      <label for="k">ดูที่เดือนที่ <span id="kval">0</span></label>
+      <input type="range" id="k" min="0" max="60" value="12">
+      <div id="readout" class="readout"></div>
+    </div>
+  </section>
+
+  <section class="card noprint" id="yearly-sec">
+    <span class="tag tool">เครื่องมือ</span>
+    <h2>เงินที่จ่ายไปแต่ละปี แบ่งเป็นต้นกับดอกเบี้ย</h2>
+    <div class="row"><button data-y="A" class="on">วิธี A: ขั้นต่ำ</button><button data-y="B">วิธี B: จ่ายคงที่</button></div>
+    <div class="legend">
+      <span><svg width="18" height="14" aria-hidden="true"><rect width="18" height="14" fill="var(--primary)"/></svg>เงินต้น (ทึบ)</span>
+      <span><svg width="18" height="14" aria-hidden="true"><rect width="18" height="14" fill="url(#hatchL)" stroke="var(--primary)"/><defs><pattern id="hatchL" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="var(--primary)" stroke-width="2.5"/></pattern></defs></svg>ดอกเบี้ย (ลายขีด)</span>
+    </div>
+    <div id="yearly"></div>
+    <p id="yearlyNote" class="hint"></p>
+  </section>
+
+  <div class="grid2 noprint">
+    <section class="card">
+      <span class="tag tool">เครื่องมือ</span>
+      <h2>อยากหมดหนี้ใน N เดือน ต้องจ่ายเดือนละเท่าไร</h2>
+      <div class="field"><label for="n">N (เดือน)</label><input type="text" id="n" inputmode="numeric"><div class="err" hidden></div></div>
+      <div id="need"></div>
+      <button id="useNeed">ใช้เป็นยอดจ่ายคงที่ (วิธี B)</button>
+    </section>
+    <section class="card">
+      <span class="tag tool">เครื่องมือ</span>
+      <h2>จ่ายเพิ่มแล้วเปลี่ยนอะไร</h2>
+      <label for="extra">จ่ายเพิ่มจากวิธี B เดือนละ <span id="extraVal">0</span> บาท</label>
+      <input type="range" id="extra" min="0" max="2000" step="100" value="0">
+      <div id="extraOut"></div>
+    </section>
+  </div>
+
+  <details class="card noprint" id="tableBox">
+    <summary>ตารางทีละเดือน</summary>
+    <span class="tag tool">เครื่องมือ</span>
+    <div class="row">
+      <button data-tbl="A" class="on">วิธี A: ขั้นต่ำ</button><button data-tbl="B">วิธี B: จ่ายคงที่</button>
+      <button id="csv">ดาวน์โหลดเป็น CSV</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>เดือน</th><th>ยอดต้นเดือน</th><th>ดอกเบี้ย</th><th>เงินที่จ่าย</th><th>ยอดปลายเดือน</th></tr></thead><tbody id="tbody"></tbody></table></div>
+  </details>
+
+  <!-- ===== หลายบัตร (ยังเป็นเครื่องมือ) ===== -->
+  <section class="card noprint" id="multi">
+    <span class="tag tool">เครื่องมือ</span>
+    <h2>หลายบัตร: จ่ายใบไหนก่อนดี</h2>
+    <p class="hint">ใส่ได้ 2–5 ใบ แล้วตั้งงบจ่ายหนี้รวมต่อเดือน โปรแกรมจะลอง 3 วิธีให้ดู</p>
+    <div id="cards"></div>
+    <div class="row"><button id="addCard">+ เพิ่มบัตร</button></div>
+    <div class="field" style="max-width:340px"><label for="budget">งบจ่ายหนี้รวมต่อเดือน (บาท)</label><input type="text" id="budget" inputmode="decimal"><div class="err" hidden></div></div>
+    <div id="multiWarn"></div>
+    <div id="multiRes" class="grid3"></div>
+    <div class="legend">
+      <span><svg width="34" height="10" aria-hidden="true"><line x1="0" x2="34" y1="5" y2="5" stroke="var(--c3)" stroke-width="3" stroke-dasharray="2 5"/></svg>จ่ายแค่ขั้นต่ำ (จุด)</span>
+      <span><svg width="34" height="10" aria-hidden="true"><line x1="0" x2="34" y1="5" y2="5" stroke="var(--a)" stroke-width="3"/></svg>Avalanche (ทึบ)</span>
+      <span><svg width="34" height="10" aria-hidden="true"><line x1="0" x2="34" y1="5" y2="5" stroke="var(--b)" stroke-width="3" stroke-dasharray="9 6"/></svg>Snowball (ประ)</span>
+    </div>
+    <div id="multiChart"></div>
+    <ul class="hint">
+      <li><b>ไล่ดอกเบี้ยแพงก่อน (Avalanche)</b> = จ่ายขั้นต่ำทุกใบ แล้วเอาเงินที่เหลือจ่ายเพิ่มให้ใบที่ดอกเบี้ยแพงที่สุด</li>
+      <li><b>ไล่ยอดเล็กก่อน (Snowball)</b> = จ่ายขั้นต่ำทุกใบ แล้วเอาเงินที่เหลือจ่ายเพิ่มให้ใบที่ยอดน้อยที่สุด เพื่อปิดบัญชีให้ได้เร็ว (ให้กำลังใจ)</li>
+      <li>ผลนี้มาจากการจำลองตัวเลขที่กรอก ไม่ได้พิสูจน์ว่าวิธีใดดีที่สุดเสมอไป</li>
+      <li>ยอดของแต่ละใบในแต่ละเดือนยังเป็นไปตามสูตรลำดับแบบเดียวกัน: ยอดเดือนนี้ = (1+r)·ยอดเดือนก่อน − เงินที่จ่ายให้ใบนั้น</li>
+    </ul>
+  </section>
+
+  <!-- ===== ส่วนที่ 2: ทำไมถึงเป็นแบบนี้? (Discrete Math) ===== -->
+  <details class="card noprint" id="why">
+    <summary>ทำไมถึงเป็นแบบนี้? (Discrete Math)</summary>
+    <p id="m-intro"></p>
+
+    <section class="card math">
+      <span class="tag rec">Recurrence relations</span>
+      <h3>ขั้น 1: เขียนเป็นสูตรลำดับ</h3>
+      <div id="m-step1"></div>
+      <div class="play">
+        <label for="walkK">ลองไล่ไปทีละเดือน (วิธี B): ถึงเดือนที่ <span id="walkKval">3</span></label>
+        <input type="range" id="walkK" min="1" max="24" value="3">
+        <ol class="walk" id="walkList"></ol>
+        <p>นี่คือการใช้สูตรลำดับ (recurrence) ซ้ำ ๆ: เอาผลเดือนก่อนมาคิดเดือนถัดไป</p>
+        <div id="walkCmp"></div>
+      </div>
+    </section>
+
+    <section class="card math indb">
+      <span class="tag ind">Mathematical reasoning</span>
+      <h3>ขั้น 2: ยืนยันว่าสูตรถูกด้วยการพิสูจน์ (induction)</h3>
+      <p>เราจะพิสูจน์แบบ "ขึ้นบันได" (mathematical induction): ขั้นแรกจริง และถ้าขั้นไหนจริง ขั้นถัดไปก็จริง</p>
+      <div class="proof">
+        <div id="m-proof1"></div>
+        <div class="play">
+          <b>ลองขึ้นบันไดอุปนัยด้วยตัวเลขของคุณ</b>
+          <label for="ladK">เลือกขั้น k = <span id="ladKval">0</span></label>
+          <input type="range" id="ladK" min="0" max="60" value="0">
+          <button id="ladPlay">▶ เล่นขึ้นบันไดอัตโนมัติ</button>
+          <div id="ladOut"></div>
+          <div class="stairs" id="stairs" aria-label="ภาพบันได"></div>
+          <p class="hint">ขั้นฐาน (ขั้น 0 จริง) + ถ้าขั้น k ได้ ขั้น k+1 ก็ได้ = ขึ้นได้ทุกขั้น</p>
+        </div>
+      </div>
+      <div class="proof" id="m-proof2"></div>
+      <div class="proof" id="m-proof3"></div>
+    </section>
+
+    <section class="card math">
+      <span class="tag rec">Recurrence relations</span>
+      <h3>ขั้น 3: เอาสูตรไปใช้จริง</h3>
+      <div id="m-step3"></div>
+    </section>
+
+    <section class="card math indb">
+      <span class="tag ind">Mathematical reasoning</span>
+      <h3>สูตรนี้อยู่ในชีวิตจริงตรงไหน</h3>
+      <ul>
+        <li>ตัวอย่าง "ขั้นต่ำ 5%" ที่ใช้เวลาหลายสิบปี คือ <b>ข้อ 2</b>: จ่ายเป็น % ของยอดที่เหลือ ตามสูตรหนี้ไม่เป็นศูนย์จริง <button data-goto="ex1">ลองตัวอย่างนี้</button></li>
+        <li>ตัวอย่าง "จ่ายคงที่ 400" คือ <b>ข้อ 3</b>: จ่ายไม่เกินดอกเบี้ยเดือนแรก หนี้ไม่ลดเลย <button data-goto="ex400">ลองตัวอย่างนี้</button></li>
+        <li>ตัวอย่าง "ขั้นต่ำ 500 บาท" หมดได้จริงเพราะเงินจ่ายไม่ลดตามยอด จึงไม่เข้าเงื่อนไขของข้อ 2 <button data-goto="ex2">ลองตัวอย่างนี้</button></li>
+        <li>ตัวอย่าง "หลายบัตร": แต่ละใบยังเป็นสูตรลำดับ (Recurrence relations) แบบเดียวกัน แค่เงินที่จ่ายให้แต่ละใบเปลี่ยนตามวิธี <button data-goto="exMulti">ลองตัวอย่างนี้</button></li>
+      </ul>
+    </section>
+
+    <section class="card"><h3>สรุป 3 ข้อ</h3><ol>
+      <li>จ่ายเป็นเปอร์เซ็นต์ของยอดคงเหลือ = เงินที่จ่ายลดลงเรื่อย ๆ จึงหมดหนี้ช้ามาก</li>
+      <li>จ่ายเท่ากันทุกเดือนหมดเร็วกว่ามาก ถ้าสูงกว่าดอกเบี้ย</li>
+      <li>ถ้าจ่ายไม่เกินดอกเบี้ย หนี้ไม่ลดเลย</li></ol></section>
+    <section class="card"><h3>ศัพท์วันนี้</h3><ul>
+      <li><b>recurrence relation</b> (ความสัมพันธ์เวียนเกิด) = สูตรที่หาค่าถัดไปจากค่าก่อนหน้า</li>
+      <li><b>induction</b> (การอุปนัยเชิงคณิตศาสตร์) = พิสูจน์ทีละขั้นเหมือนขึ้นบันได (ขั้นแรกขึ้นได้ และถ้าขั้นไหนขึ้นได้ ขั้นถัดไปก็ขึ้นได้)</li></ul></section>
+  </details>
+
+  <footer class="card">
+    <h3>ข้อจำกัดของโมเดล</h3>
+    <ul>
+      <li>คิดดอกเบี้ยเป็นรายเดือน (r = ดอกเบี้ยต่อปี ÷ 12)</li>
+      <li>ไม่มีค่าธรรมเนียมใด ๆ และสมมติว่าไม่ใช้บัตรเพิ่ม</li>
+      <li>ตัวเลขตัวอย่างเป็นตัวเลขสมมติ ไม่ใช่เงื่อนไขของบัตรหรือธนาคารใด</li>
+      <li>บัตรจริงอาจคิดดอกเบี้ยรายวันและมีเงื่อนไขต่างกัน ให้ดูจากใบแจ้งหนี้จริง</li>
+      <li>เป็นการประมาณการเพื่อการเรียนรู้เท่านั้น</li>
+    </ul>
+  </footer>
+</main>
+
+<script src="core.js"></script>
+<script>
+(function () {
+  'use strict';
+  var C = window.DebtCore, fb = C.formatBaht;
+  var $ = function (id) { return document.getElementById(id); };
+  var qa = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; // ลดการเคลื่อนไหว
+  var KEY = 'debtcalc.v1';
+  var SINGLE = ['bal', 'apr', 'm', 'floor', 'p', 'n'];
+  var DEF = {
+    single: { bal: '30,000', apr: '16', m: '5', floor: '0', p: '1,500', n: '24' },
+    multi: { budget: '3,000', cards: [
+      { name: 'บัตร A', balance: '20,000', apr: '24', m: '5', floor: '200' },
+      { name: 'บัตร B', balance: '8,000', apr: '18', m: '5', floor: '200' },
+      { name: 'บัตร C', balance: '3,000', apr: '12', m: '5', floor: '200' }] }
+  };
+  var S = { range: 'all', tbl: 'A', y: 'A', speed: 1, playK: null, timer: null, ladTimer: null };
+  var cur = null, prevVals = {};
+
+  // ---------- ตัวช่วย ----------
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function parse(s) { s = String(s).replace(/[,\s฿]/g, ''); return s === '' || isNaN(s) ? NaN : Number(s); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function noDec(x) { return fb(x).replace(/\.00$/, ''); }
+  function durationText(sim) { return sim.months !== null ? C.monthsToText(sim.months) : sim.neverDecreases ? 'ไม่หมด' : 'เกิน 100 ปี'; }
+  function scrollTo(id) { $(id).scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }); }
+
+  // กฎตรวจค่า + ข้อความภาษาง่าย
+  var RULES = {
+    bal: [function (v) { return v > 0; }, 'ยอดหนี้ต้องเป็นตัวเลขมากกว่า 0'],
+    balance: [function (v) { return v > 0; }, 'ยอดหนี้ต้องเป็นตัวเลขมากกว่า 0'],
+    apr: [function (v) { return v >= 0 && v <= 100; }, 'ดอกเบี้ยต่อปีต้องอยู่ระหว่าง 0 ถึง 100'],
+    m: [function (v) { return v >= 0.1 && v <= 100; }, 'ขั้นต่ำต้องอยู่ระหว่าง 0.1 ถึง 100 (%)'],
+    floor: [function (v) { return v >= 0; }, 'ขั้นต่ำเป็นบาทต้องเป็น 0 หรือมากกว่า'],
+    p: [function (v) { return v >= 0; }, 'เงินจ่ายต้องเป็น 0 หรือมากกว่า'],
+    budget: [function (v) { return v >= 0; }, 'งบต้องเป็น 0 หรือมากกว่า'],
+    n: [function (v) { return v >= 1 && v <= 1200 && Math.floor(v) === v; }, 'N ต้องเป็นจำนวนเต็ม 1 ถึง 1200'],
+    name: [function () { return true; }, '']
+  };
+  // ตรวจช่องเดียว แสดงข้อความใต้ช่อง (มีไอคอน + คำว่า "ตรวจสอบ" ไม่ใช้แค่สี)
+  function check(input, rule) {
+    var v = rule === 'name' ? 0 : parse(input.value), ok = RULES[rule][0](v);
+    var err = (input.closest('.field') || input.parentNode).querySelector('.err');
+    input.setAttribute('aria-invalid', ok ? 'false' : 'true');
+    if (err) { err.hidden = ok; err.innerHTML = ok ? '' : '⚠ <b>ตรวจสอบ:</b> ' + RULES[rule][1]; }
+    return ok ? v : null;
+  }
+
+  // ตัวเลขนับขึ้น (≤ 0.6 วินาที) เคารพ prefers-reduced-motion
+  function animateIn(root) {
+    root.querySelectorAll('[data-to]').forEach(function (el) {
+      var key = el.dataset.key, to = +el.dataset.to, from = key in prevVals ? prevVals[key] : 0;
+      var fmt = el.dataset.kind === 'months' ? function (v) { return C.monthsToText(Math.round(v)); } : function (v) { return fb(v) + ' บาท'; };
+      prevVals[key] = to;
+      if (RM || from === to) { el.textContent = fmt(to); return; }
+      var t0 = performance.now();
+      (function step(t) {
+        var u = Math.max(0, Math.min(1, (t - t0) / 500)), e = 1 - Math.pow(1 - u, 3); // จำกัด 0..1 กันเวลาเฟรมย้อน
+        el.textContent = fmt(from + (to - from) * e);
+        if (u < 1) requestAnimationFrame(step);
+      })(t0);
+      setTimeout(function () { el.textContent = fmt(to); }, 650); // กันกรณีแท็บพื้นหลังหยุด rAF: ค่าสุดท้ายต้องถูกเสมอ
+    });
+  }
+  function num(key, kind, val, cls) {
+    var fmt = kind === 'months' ? C.monthsToText(val) : fb(val) + ' บาท';
+    return '<span class="' + (cls || '') + '" data-key="' + key + '" data-kind="' + kind + '" data-to="' + val + '">' + fmt + '</span>';
+  }
+
+  // ---------- บันทึก / โหลด / แชร์ ----------
+  function getMultiRaw() {
+    return qa('#cards .cardrow').map(function (row) {
+      var o = {};
+      row.querySelectorAll('input').forEach(function (i) { o[i.dataset.f] = i.value; });
+      return o;
+    });
+  }
+  function getState() {
+    var s = { single: {}, multi: { budget: $('budget').value, cards: getMultiRaw() } };
+    SINGLE.forEach(function (id) { s.single[id] = $(id).value; });
+    return s;
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(getState())); } catch (e) { /* ใช้ไม่ได้ก็ข้าม */ } }
+  function valid(s) { return s && s.single && s.multi && Array.isArray(s.multi.cards) && s.multi.cards.length >= 2 && s.multi.cards.length <= 5; }
+  // ลำดับ: hash ก่อน แล้ว localStorage แล้วค่าเริ่มต้น
+  function loadState() {
+    if (location.hash.length > 1) {
+      var h = C.decodeState(location.hash.slice(1));
+      if (valid(h)) { $('shareMsg').textContent = 'ใช้ตัวเลขจากลิงก์แล้ว'; return h; }
+    }
+    try { var t = JSON.parse(localStorage.getItem(KEY)); if (valid(t)) return t; } catch (e) { /* ข้าม */ }
+    return clone(DEF);
+  }
+  // ตั้งค่าช่องกรอก (เรียกเฉพาะตอนโหลด/กดปุ่ม ไม่ใช่ตอนพิมพ์)
+  function applySingle(s) { SINGLE.forEach(function (id) { if (s[id] !== undefined) $(id).value = String(s[id]); }); }
+  function applyMulti(mu) { $('budget').value = String(mu.budget); renderCardsEditor(mu.cards); }
+
+  // ---------- ส่วนเดี่ยว ----------
+  function update() {
+    stopPlay(true);
+    var v = {}, bad = false;
+    SINGLE.forEach(function (id) { v[id] = check($(id), id); if (v[id] === null) bad = true; });
+    save();
+    if (bad) return; // ค่าผิด: คงผลเดิม
+    var pA = { balance: v.bal, apr: v.apr, strategy: 'pct', m: v.m / 100, floor: v.floor };
+    var pB = { balance: v.bal, apr: v.apr, strategy: 'fixed', p: v.p };
+    cur = { v: v, pA: pA, pB: pB, A: C.simulate(pA), B: C.simulate(pB) };
+    renderResults(); renderCompare(); renderChart(); renderYearly(); renderNeed(); renderExtra(); renderTable(); renderMath();
+  }
+
+  function resultCard(key, title, sim, extra) {
+    var big = sim.months !== null ? num('mo' + key, 'months', sim.months, 'big') : '<span class="big">' + durationText(sim) + '</span>';
+    return '<section class="card res ' + key + '"><span class="tag tool">เครื่องมือ</span><h2>' + title + '</h2>' +
+      '<div class="stat"><span>หมดหนี้ใน</span>' + big + '</div>' +
+      '<div class="stat"><span>ดอกเบี้ยรวม</span><b>' + (sim.totalInterest === null ? '—' : num('int' + key, 'baht', sim.totalInterest)) + '</b></div>' +
+      '<div class="stat"><span>เงินจ่ายเดือนแรก</span><b>' + fb(sim.firstPayment) + ' บาท</b></div>' +
+      '<div class="stat"><span>เงินจ่ายเดือนสุดท้าย</span><b>' + (sim.lastPayment === null ? '—' : fb(sim.lastPayment) + ' บาท') + '</b></div>' +
+      extra + '</section>';
+  }
+  function renderResults() {
+    var A = cur.A, B = cur.B, v = cur.v, exA = '', exB = '';
+    if (v.floor === 0) {
+      if (A.monthsTo1pct !== null) exA += '<div class="stat"><span>เหลือไม่ถึง 1% ของยอดเดิมใน</span><b>' + A.monthsTo1pct + ' เดือน (' + C.monthsToText(A.monthsTo1pct) + ')</b></div>';
+      exA += '<div class="warn">ตามสูตร ยอดหนี้จะลดลงเรื่อย ๆ แต่ไม่เป็นศูนย์จริง โปรแกรมถือว่าหมดเมื่อเหลือต่ำกว่า 0.5 สตางค์</div>';
+    }
+    if (B.neverDecreases) exB = '<div class="warn strong">⚠ จ่ายไม่เกินดอกเบี้ยของเดือนแรก (' + fb(B.rows[0].interest) + ' บาท) หนี้จะไม่ลดเลย</div>';
+    $('results').innerHTML = resultCard('A', 'วิธี A: จ่ายขั้นต่ำ ' + v.m + '%' + (v.floor ? ' (อย่างน้อย ' + noDec(v.floor) + ' บาท)' : ''), A, exA) +
+      resultCard('B', 'วิธี B: จ่ายคงที่ ' + noDec(v.p) + ' บาท', B, exB);
+    animateIn($('results'));
+  }
+
+  // แถบเทียบเวลา + ประโยคสรุป
+  function renderCompare() {
+    var A = cur.A, B = cur.B;
+    var max = Math.max(A.months || 0, B.months || 0) || 1;
+    function bar(key, name, sim) {
+      var w = sim.months === null ? 100 : Math.max(1.5, 100 * sim.months / max);
+      return '<div class="lab"><b>' + name + '</b><span>' + durationText(sim) + '</span></div>' +
+        '<div class="track"><div class="fill ' + key + '" style="width:' + w + '%"></div></div>';
+    }
+    $('compareBars').innerHTML = bar('A', 'A: จ่ายขั้นต่ำ (แท่งทึบ)', A) + bar('B', 'B: จ่ายคงที่ (แท่งลายขีด)', B);
+    $('compare').textContent = C.compareSentenceTh(A, B, { m: cur.v.m / 100, p: cur.v.p });
+  }
+
+  // ---------- กราฟเส้น (ใช้ร่วมกันทั้งส่วนเดี่ยวและหลายบัตร) ----------
+  function niceMax(x) {
+    var p = Math.pow(10, Math.floor(Math.log10(x))), f = x / p;
+    return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+  }
+  function shortBaht(x) { return x >= 1e6 ? +(x / 1e6).toFixed(2) + 'M' : x >= 1000 ? +(x / 1000).toFixed(1) + 'k' : String(Math.round(x)); }
+  // opts: { el, len, ymax, series:[{data,color,dash,label,at,dy}], extra(x,y) }
+  function lineChart(o) {
+    var W = Math.max(300, Math.min(940, o.el.clientWidth || 800)), H = W < 480 ? 280 : 330;
+    var L = 52, R = 14, T = 14, Bm = 40, len = o.len, ymax = niceMax(o.ymax || 1);
+    var x = function (k) { return L + (W - L - R) * k / len; };
+    var y = function (b) { return T + (H - T - Bm) * (1 - Math.max(0, b) / ymax); };
+    var g = '';
+    for (var i = 0; i <= 4; i++) {
+      var yv = ymax * i / 4;
+      g += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(yv) + '" y2="' + y(yv) + '" stroke="var(--border)"/>' +
+        '<text x="' + (L - 6) + '" y="' + (y(yv) + 5) + '" text-anchor="end" font-size="13" fill="var(--muted)">' + shortBaht(yv) + '</text>';
+    }
+    var step = len <= 24 ? 6 : len <= 60 ? 12 : len <= 120 ? 24 : len <= 240 ? 60 : 120;
+    for (var k = 0; k <= len; k += step) {
+      g += '<text x="' + x(k) + '" y="' + (H - Bm + 20) + '" text-anchor="middle" font-size="13" fill="var(--muted)">' + (step < 12 ? k + ' ด.' : (k / 12) + ' ปี') + '</text>';
+    }
+    o.series.forEach(function (s) {
+      if (s.data.length < 2) return;
+      var d = s.data.map(function (b, k) { return (k ? 'L' : 'M') + x(k).toFixed(1) + ' ' + y(b).toFixed(1); }).join('');
+      g += '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="3" stroke-linecap="round"' + (s.dash ? ' stroke-dasharray="' + s.dash + '"' : '') + '/>';
+    });
+    o.series.forEach(function (s) { // ป้ายชื่อบนเส้น
+      var k = Math.min(s.data.length - 1, Math.max(1, Math.round(s.at)));
+      if (k < 1) return;
+      g += '<text x="' + (x(k) + 4) + '" y="' + (y(s.data[k]) + s.dy) + '" font-size="14" font-weight="700" fill="' + s.color +
+        '" stroke="var(--surface)" stroke-width="4" paint-order="stroke">' + s.label + '</text>';
+    });
+    if (o.extra) g += o.extra(x, y, W, H, T, Bm);
+    o.el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + o.aria + '">' + g + '</svg>';
+  }
+
+  // ยอดปลายเดือน 0..len (หมดแล้ว = 0)
+  function series(sim, B0, len) {
+    var a = [B0];
+    for (var k = 1; k <= len; k++) {
+      if (k <= sim.rows.length) a.push(sim.rows[k - 1].end);
+      else if (sim.months !== null) a.push(0); else break;
+    }
+    return a;
+  }
+  function chartLen() {
+    if (S.range !== 'all') return +S.range;
+    var mA = cur.A.months || cur.A.rows.length, mB = cur.B.months || cur.B.rows.length;
+    return Math.max(12, Math.min(480, Math.max(mA, mB)));
+  }
+  function renderChart() {
+    var len = chartLen(), B0 = cur.v.bal;
+    var sA = series(cur.A, B0, len), sB = series(cur.B, B0, len);
+    var ymax = Math.max.apply(null, sA.concat(sB));
+    if (S.playK !== null) { sA = sA.slice(0, S.playK + 1); sB = sB.slice(0, S.playK + 1); } // โหมดเล่นทีละเดือน
+    var kk = Math.min(+$('k').value, len);
+    var bEnd = cur.B.months || sB.length - 1;
+    lineChart({
+      el: $('chart'), len: len, ymax: ymax, aria: 'กราฟยอดหนี้ตามเดือน A เส้นทึบ B เส้นประ',
+      series: [
+        { data: sA, color: 'var(--a)', label: 'A', at: Math.max(2, sA.findIndex(function (b) { return b < B0 / 2; })), dy: -10 }, // ป้ายตรงจุดที่เหลือครึ่งหนึ่ง
+        { data: sB, color: 'var(--b)', dash: '9 6', label: 'B', at: bEnd * 0.5, dy: 22 }],
+      extra: function (x, y) {
+        var g = '';
+        // ◆ จุดที่เหลือไม่ถึง 1% ของยอดเดิม
+        [['A', cur.A, sA, -14], ['B', cur.B, sB, -34]].forEach(function (t) {
+          var mo = t[1].monthsTo1pct;
+          if (mo === null || mo >= t[2].length) return;
+          var cx = x(mo), cy = y(t[2][mo]), anchor = cx > x(len) * 0.7 ? 'end' : 'start';
+          g += '<path d="M' + cx + ' ' + (cy - 7) + 'l7 7l-7 7l-7 -7z" fill="var(--' + t[0].toLowerCase() + ')" stroke="var(--surface)" stroke-width="1.5"/>' +
+            '<text x="' + (cx + (anchor === 'end' ? -8 : 8)) + '" y="' + (cy + t[3]) + '" text-anchor="' + anchor + '" font-size="13" font-weight="700" fill="var(--text)" stroke="var(--surface)" stroke-width="4" paint-order="stroke">◆ ' + t[0] + ' เหลือ &lt;1% (เดือน ' + mo + ')</text>';
+        });
+        if (cur.B.neverDecreases && sB.length > 1) { // ป้าย "หนี้ไม่ลด"
+          var last = sB.length - 1;
+          g += '<text x="' + x(last) + '" y="' + (y(sB[last]) - 12) + '" text-anchor="end" font-size="15" font-weight="800" fill="var(--bad)" stroke="var(--surface)" stroke-width="4" paint-order="stroke">⚠ B: หนี้ไม่ลด</text>';
+        }
+        // ตำแหน่งแถบเลื่อน / เดือนที่กำลังเล่น
+        g += '<line x1="' + x(kk) + '" x2="' + x(kk) + '" y1="14" y2="' + y(0) + '" stroke="var(--text)" stroke-dasharray="2 4"/>';
+        if (kk < sA.length) g += '<circle cx="' + x(kk) + '" cy="' + y(sA[kk]) + '" r="5" fill="var(--a)"/>';
+        if (kk < sB.length) g += '<rect x="' + (x(kk) - 5) + '" y="' + (y(sB[kk]) - 5) + '" width="10" height="10" fill="var(--b)"/>';
+        return g;
+      }
+    });
+    $('k').max = len;
+    renderReadout();
+  }
+  function rowText(sim, k, B0) {
+    if (k === 0) return 'ยอดเริ่มต้น ' + fb(B0) + ' บาท';
+    if (k > sim.rows.length) return sim.months !== null ? 'หมดหนี้แล้ว (เดือนที่ ' + sim.months + ')' : 'ไม่ได้จำลองถึงเดือนนี้';
+    var w = sim.rows[k - 1];
+    return 'เหลือ <b>' + fb(w.end) + '</b> บาท<br>จ่าย ' + fb(w.payment) + ' บาท';
+  }
+  function renderReadout() {
+    var k = +$('k').value;
+    $('kval').textContent = k + ' (' + C.monthsToText(k) + ')';
+    $('readout').innerHTML = '<div><b style="color:var(--a)">● A: ขั้นต่ำ</b><br>' + rowText(cur.A, k, cur.v.bal) + '</div>' +
+      '<div><b style="color:var(--b)">■ B: จ่ายคงที่</b><br>' + rowText(cur.B, k, cur.v.bal) + '</div>';
+  }
+
+  // ▶ เล่นทีละเดือน
+  function setPlayBtn() { $('playBtn').textContent = S.timer ? '⏸ หยุด' : S.playK !== null ? '▶ เล่นต่อ' : '▶ เล่นทีละเดือน'; }
+  function stopPlay(reset) {
+    if (S.timer) clearInterval(S.timer);
+    S.timer = null;
+    if (reset) S.playK = null;
+    setPlayBtn();
+  }
+  function togglePlay() {
+    if (!cur) return;
+    if (S.timer) { stopPlay(false); return; }
+    var len = chartLen();
+    if (S.playK === null || S.playK >= len) S.playK = 0;
+    S.timer = setInterval(function () {
+      var len2 = chartLen(), step = Math.max(1, Math.round(len2 / 120)) * S.speed;
+      S.playK = Math.min(len2, S.playK + step);
+      $('k').value = S.playK;
+      renderChart();
+      if (S.playK >= len2) { stopPlay(true); renderChart(); }
+    }, 100);
+    setPlayBtn();
+  }
+
+  // ---------- กราฟแท่งรายปี ----------
+  function renderYearly() {
+    var sim = cur[S.y], years = C.splitByYear(sim.rows), groups = years, by5 = years.length > 15;
+    if (by5) { // เกิน 15 ปี รวมเป็นช่วงละ 5 ปี
+      groups = [];
+      years.forEach(function (y) {
+        var gi = Math.floor((y.year - 1) / 5);
+        if (!groups[gi]) groups[gi] = { label: (gi * 5 + 1) + '–' + (gi * 5 + 5), interest: 0, principal: 0 };
+        groups[gi].interest += y.interest; groups[gi].principal += y.principal;
+        groups[gi].label = (gi * 5 + 1) + '–' + y.year;
+      });
+    } else groups = years.map(function (y) { return { label: String(y.year), interest: y.interest, principal: y.principal }; });
+    var el = $('yearly'), W = Math.max(300, Math.min(940, el.clientWidth || 800)), H = W < 480 ? 250 : 290;
+    var L = 52, R = 10, T = 22, Bm = 40, col = S.y === 'A' ? 'var(--a)' : 'var(--b)';
+    var ymax = niceMax(Math.max.apply(null, groups.map(function (g) { return Math.max(0, g.principal) + g.interest; })) || 1);
+    var y = function (v) { return T + (H - T - Bm) * (1 - v / ymax); };
+    var slot = (W - L - R) / groups.length, bw = Math.min(56, slot * 0.7), g = '';
+    g += '<defs><pattern id="hatchY" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="' + col + '" stroke-width="3"/></pattern></defs>';
+    for (var i = 0; i <= 4; i++) {
+      var yv = ymax * i / 4;
+      g += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(yv) + '" y2="' + y(yv) + '" stroke="var(--border)"/><text x="' + (L - 6) + '" y="' + (y(yv) + 5) + '" text-anchor="end" font-size="13" fill="var(--muted)">' + shortBaht(yv) + '</text>';
+    }
+    groups.forEach(function (gr, i) {
+      var cx = L + slot * (i + 0.5), p = Math.max(0, gr.principal), yP = y(p), yI = y(p + gr.interest);
+      g += '<rect x="' + (cx - bw / 2) + '" y="' + yP + '" width="' + bw + '" height="' + (y(0) - yP) + '" fill="' + col + '"><title>เงินต้น ' + fb(gr.principal) + '</title></rect>' +
+        '<rect x="' + (cx - bw / 2) + '" y="' + yI + '" width="' + bw + '" height="' + (yP - yI) + '" fill="url(#hatchY)" stroke="' + col + '"><title>ดอกเบี้ย ' + fb(gr.interest) + '</title></rect>' +
+        '<text x="' + cx + '" y="' + (H - Bm + 18) + '" text-anchor="middle" font-size="12" fill="var(--muted)">' + gr.label + '</text>';
+      if (bw >= 30) g += '<text x="' + cx + '" y="' + (yI - 5) + '" text-anchor="middle" font-size="12" fill="var(--text)">' + shortBaht(p + gr.interest) + '</text>';
+    });
+    g += '<text x="' + (W - R) + '" y="' + (H - 4) + '" text-anchor="end" font-size="12" fill="var(--muted)">' + (by5 ? 'ปีที่ (แท่งละ 5 ปี)' : 'ปีที่') + '</text>';
+    el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="กราฟแท่งเงินที่จ่ายแต่ละปี เงินต้นทึบ ดอกเบี้ยลายขีด">' + g + '</svg>';
+    var y1 = years[0];
+    $('yearlyNote').textContent = 'ปีแรกจ่ายดอกเบี้ย ' + fb(y1.interest) + ' บาท และลดเงินต้น ' + fb(y1.principal) + ' บาท' +
+      (years.some(function (y) { return y.principal <= 0; }) ? ' (บางปีไม่ได้ลดเงินต้นเลย เพราะจ่ายไม่เกินดอกเบี้ย)' : '');
+  }
+
+  function needCalc() {
+    var rp = C.requiredPayment(cur.v.bal, cur.v.apr, cur.v.n);
+    return { rp: rp, sim: C.simulate({ balance: cur.v.bal, apr: cur.v.apr, strategy: 'fixed', p: rp.roundedUp }) };
+  }
+  function renderNeed() {
+    var x = needCalc();
+    $('need').innerHTML = '<div class="stat"><span>ต้องจ่ายเดือนละ (ปัดขึ้นเป็นบาทเต็ม)</span><div class="big">' + fb(x.rp.roundedUp) + ' บาท</div></div>' +
+      '<div class="stat"><span>หมดหนี้ใน</span><b>' + durationText(x.sim) + '</b></div>' +
+      '<div class="stat"><span>ดอกเบี้ยรวม</span><b>' + (x.sim.totalInterest === null ? '—' : fb(x.sim.totalInterest) + ' บาท') + '</b></div>';
+  }
+  function renderExtra() {
+    var extra = +$('extra').value, B = cur.B;
+    $('extraVal').textContent = noDec(extra);
+    if (extra === 0) { $('extraOut').innerHTML = '<p class="hint">เลื่อนแถบเพื่อดูว่าจ่ายเพิ่มแล้วหมดเร็วขึ้นเท่าไร</p>'; return; }
+    var P = C.simulate({ balance: cur.v.bal, apr: cur.v.apr, strategy: 'fixed', p: cur.v.p + extra });
+    var h = '<div class="stat"><span>จ่ายเดือนละ ' + noDec(cur.v.p + extra) + ' บาท หมดหนี้ใน</span><div class="big">' + durationText(P) + '</div></div>';
+    if (B.months !== null && P.months !== null) {
+      h += '<div class="stat"><span>เร็วขึ้น</span><b>' + C.monthsToText(B.months - P.months) + '</b></div>' +
+        '<div class="stat"><span>ประหยัดดอกเบี้ย</span><b>' + fb(B.totalInterest - P.totalInterest) + ' บาท</b></div>';
+    } else if (P.months !== null) h += '<div class="stat"><span>เทียบกับตอนนี้</span><b>จากหนี้ไม่หมด กลายเป็นหมดได้</b></div>';
+    $('extraOut').innerHTML = h;
+  }
+  function renderTable() {
+    if (!$('tableBox').open) return;
+    $('tbody').innerHTML = cur[S.tbl].rows.map(function (w) {
+      return '<tr><td>' + w.month + '</td><td>' + fb(w.start) + '</td><td>' + fb(w.interest) + '</td><td>' + fb(w.payment) + '</td><td>' + fb(w.end) + '</td></tr>';
+    }).join('');
+  }
+
+  // ---------- หลายบัตร ----------
+  function field(f, label, val, mode) {
+    return '<div class="field"><label>' + label + '<input type="text" data-f="' + f + '" inputmode="' + mode + '" value="' + esc(val) + '"></label><div class="err" hidden></div></div>';
+  }
+  function renderCardsEditor(cards) {
+    $('cards').innerHTML = cards.map(function (c, i) {
+      return '<div class="cardrow"><div class="head"><b>ใบที่ ' + (i + 1) + '</b><button data-del="' + i + '"' + (cards.length <= 2 ? ' disabled' : '') + '>ลบใบนี้</button></div>' +
+        '<div class="fields5">' + field('name', 'ชื่อบัตร', c.name, 'text') + field('balance', 'ยอดหนี้ (บาท)', c.balance, 'decimal') +
+        field('apr', 'ดอกเบี้ย/ปี %', c.apr, 'decimal') + field('m', 'ขั้นต่ำ %', c.m, 'decimal') + field('floor', 'ขั้นต่ำ (บาท)', c.floor, 'decimal') + '</div></div>';
+    }).join('');
+    $('addCard').disabled = cards.length >= 5;
+  }
+  var STRATS = [
+    { key: 'minonly', title: 'จ่ายแค่ขั้นต่ำทุกใบ', color: 'var(--c3)', dash: '2 5', label: 'ขั้นต่ำ' },
+    { key: 'avalanche', title: 'ไล่ดอกเบี้ยแพงก่อน (Avalanche)', color: 'var(--a)', dash: '', label: 'Avalanche' },
+    { key: 'snowball', title: 'ไล่ยอดเล็กก่อน (Snowball)', color: 'var(--b)', dash: '9 6', label: 'Snowball' }];
+  function updateMulti() {
+    save();
+    var bad = false, cards = qa('#cards .cardrow').map(function (row) {
+      var c = {};
+      row.querySelectorAll('input').forEach(function (inp) {
+        var f = inp.dataset.f;
+        if (f === 'name') { c.name = inp.value.trim() || 'ไม่มีชื่อ'; return; }
+        var v = check(inp, f); if (v === null) bad = true; c[f] = v;
+      });
+      c.m = c.m / 100;
+      return c;
+    });
+    var budget = check($('budget'), 'budget');
+    if (bad || budget === null) return;
+    var res = {}, B0 = cards.reduce(function (s, c) { return s + c.balance; }, 0);
+    STRATS.forEach(function (s) { res[s.key] = C.simulateMulti({ cards: cards, budget: budget, strategy: s.key }); });
+    var minSum = res.minonly.totals[0].payment; // ผลรวมขั้นต่ำเดือนแรก
+    $('multiWarn').innerHTML = res.avalanche.budgetTooLow ? '<div class="warn strong">⚠ งบน้อยกว่าขั้นต่ำรวมเดือนแรก (' + fb(minSum) + ' บาท) บางใบจะจ่ายไม่ครบขั้นต่ำ</div>' : '';
+    var best = null;
+    STRATS.forEach(function (s) { var t = res[s.key].totalInterest; if (t !== null && (best === null || t < res[best].totalInterest - 0.005)) best = s.key; });
+    $('multiRes').innerHTML = STRATS.map(function (s) {
+      var r = res[s.key];
+      var list = cards.map(function (c, i) { return { name: c.name, mo: r.paidOffMonth[i] }; })
+        .sort(function (a, b) { return (a.mo === null ? 1e9 : a.mo) - (b.mo === null ? 1e9 : b.mo); })
+        .map(function (x) { return '<li>' + esc(x.name) + (x.mo === null ? ' ยังไม่หมดใน 100 ปี' : ' หมดเดือนที่ ' + x.mo) + '</li>'; }).join('');
+      return '<section class="card strat" style="border-top:6px ' + (s.dash ? (s.dash === '2 5' ? 'dotted' : 'dashed') : 'solid') + ' ' + s.color + '">' +
+        '<h3>' + s.title + '</h3>' + (best === s.key ? '<span class="good">✓ ดอกเบี้ยน้อยที่สุดในการจำลองนี้</span>' : '') +
+        '<div class="stat"><span>หมดทุกใบใน</span>' + (r.months === null ? '<span class="big">เกิน 100 ปี</span>' : num('mm' + s.key, 'months', r.months, 'big')) + '</div>' +
+        '<div class="stat"><span>ดอกเบี้ยรวม</span><b>' + (r.totalInterest === null ? '—' : num('mi' + s.key, 'baht', r.totalInterest)) + '</b></div>' +
+        (s.key === 'minonly' ? '<p class="hint">ไม่ใช้งบ: เดือนแรกจ่ายรวม ' + fb(minSum) + ' บาท</p>' : '') +
+        '<ol>' + list + '</ol></section>';
+    }).join('');
+    animateIn($('multiRes'));
+    var len = Math.min(480, Math.max.apply(null, STRATS.map(function (s) { return res[s.key].months || res[s.key].totals.length; })));
+    var ser = STRATS.map(function (s, i) {
+      var d = [B0].concat(res[s.key].totals.slice(0, len).map(function (t) { return t.balance; }));
+      while (d.length <= len && res[s.key].months !== null) d.push(0);
+      var end = res[s.key].months || len;
+      return { data: d, color: s.color, dash: s.dash, label: s.label, at: [len * 0.45, end * 0.25, end * 0.6][i], dy: [-10, 22, -12][i] };
+    });
+    lineChart({ el: $('multiChart'), len: len, ymax: Math.max.apply(null, ser.map(function (s) { return Math.max.apply(null, s.data); })),
+      series: ser, aria: 'กราฟยอดหนี้รวมของ 3 วิธี' });
+  }
+
+  // ---------- ส่วนที่ 2: Discrete Math (ใช้ตัวเลขของผู้ใช้) ----------
+  function renderMath() {
+    var v = cur.v, B0 = v.bal, r = cur.B.r, p = v.p, m = v.m / 100, rs = r.toFixed(6);
+    $('m-intro').innerHTML = 'ส่วนนี้อธิบายว่าเครื่องมือด้านบนคิดเลขอย่างไร ใช้ตัวเลขของคุณ: ยอดหนี้ B<sub>0</sub> = ' + fb(B0) +
+      ' บาท, ดอกเบี้ยต่อเดือน r = ' + v.apr + '/100/12 = ' + rs + ', จ่ายคงที่ p = ' + fb(p) + ' บาท, ขั้นต่ำ m = ' + v.m + '%';
+
+    // [Recurrence relations] ขั้น 1
+    $('m-step1').innerHTML =
+      '<p>ทุกเดือนเกิดเรื่องเดิมซ้ำ ๆ: <b>ยอดหนี้เดือนนี้ = ยอดเดือนก่อน + ดอกเบี้ย − เงินที่จ่าย</b></p>' +
+      '<p>เขียนเป็นสูตร (ความสัมพันธ์เวียนเกิด หรือ recurrence relation):</p>' +
+      '<code class="f">วิธี B (จ่ายคงที่): B<sub>n</sub> = (1+r)·B<sub>n−1</sub> − p<br>วิธี A (จ่าย m% ของยอด, ขั้นต่ำเป็นบาท = 0): B<sub>n</sub> = (1+r−m)·B<sub>n−1</sub></code>' +
+      '<p>คล้ายตัวอย่างดอกเบี้ยทบต้นในสไลด์ P<sub>n</sub> = 1.11·P<sub>n−1</sub> เพียงแต่เรามีการจ่ายเงินเข้ามาด้วย</p>' +
+      '<p>ลองไล่วิธี B ด้วยตัวเลขของคุณ:</p><ul>' + C.explainFirstMonthsTh(cur.pB, 3).map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul>' +
+      '<p>ไล่ไปเรื่อย ๆ จะเห็นรูปแบบ จึงได้สูตรปิด (closed form) ที่คำนวณเดือนที่ n ได้ทันที ไม่ต้องไล่ทีละเดือน</p>';
+    renderWalk();
+
+    // [Mathematical reasoning] ข้อ 1
+    var nB = cur.B.months === null ? cur.B.rows.length : cur.B.months;
+    var diff1 = C.verifyClosedForm(cur.pB, nB), n1 = Math.max(1, Math.min(12, nB - 1));
+    $('m-proof1').innerHTML = '<h3>ข้อ 1: สูตรปิดของการจ่ายคงที่</h3>' +
+      '<code class="f">B<sub>n</sub> = (1+r)<sup>n</sup>·B<sub>0</sub> − p·((1+r)<sup>n</sup> − 1)/r</code>' +
+      '<p><b>ความหมายง่าย ๆ:</b> ยอดเดิมโตขึ้นด้วยดอกเบี้ยทบต้น แล้วหักเงินทุกงวดที่จ่าย (ซึ่งแต่ละงวดก็ "ช่วยลดดอกเบี้ย" แบบทบต้นด้วย)</p>' +
+      '<p><b>ขั้นฐาน (basis step):</b> n = 0: (1+r)<sup>0</sup>·B<sub>0</sub> − p·(1−1)/r = B<sub>0</sub> ถูกต้อง</p>' +
+      '<p><b>ขั้นอุปนัย (inductive step):</b> สมมติว่าสูตรจริงที่ n = k แล้ว</p>' +
+      '<code class="f">B<sub>k+1</sub> = (1+r)·B<sub>k</sub> − p<br>= (1+r)<sup>k+1</sup>·B<sub>0</sub> − p·(1+r)·((1+r)<sup>k</sup> − 1)/r − p<br>= (1+r)<sup>k+1</sup>·B<sub>0</sub> − p·((1+r)<sup>k+1</sup> − (1+r) + r)/r<br>= (1+r)<sup>k+1</sup>·B<sub>0</sub> − p·((1+r)<sup>k+1</sup> − 1)/r</code>' +
+      '<p>จึงจริงที่ k+1 ด้วย ✔</p>' +
+      '<p class="hint">หมายเหตุ: ที่มาของสูตรคือผลรวมอนุกรมเรขาคณิต p·(1 + (1+r) + … + (1+r)<sup>n−1</sup>) = p·((1+r)<sup>n</sup> − 1)/r (ตัวอย่าง Ex7 ในสไลด์)</p>' +
+      '<p class="check">✓ ตรวจกับตัวเลขของคุณ: เดือนที่ ' + n1 + ' สูตรปิดได้ ' + fb(C.closedFormFixed(B0, r, p, n1)) + ' บาท ตารางทีละเดือนได้ ' + fb(cur.B.rows[n1 - 1].end) + ' บาท<br>' +
+      'ความต่างสูงสุดระหว่างสูตรปิดกับตาราง (ทุกเดือนที่จ่ายเต็ม p) = ' + fb(diff1) + ' บาท</p>';
+    renderLadder();
+
+    // ข้อ 2 (floor = 0 ตามเงื่อนไข)
+    var A0 = C.simulate({ balance: B0, apr: v.apr, strategy: 'pct', m: m, floor: 0 }), n2 = Math.min(12, A0.rows.length);
+    $('m-proof2').innerHTML = '<h3>ข้อ 2: จ่ายเป็น % ของยอดคงเหลือ ยอดหนี้ไม่เป็นศูนย์จริง</h3>' +
+      '<code class="f">B<sub>n</sub> = B<sub>0</sub>·(1+r−m)<sup>n</sup> &gt; 0 ทุก n (เมื่อ m &lt; 100%)</code>' +
+      '<p><b>ความหมายง่าย ๆ:</b> จ่ายเป็นเปอร์เซ็นต์ของยอดที่เหลือ = ยอดลดลงทีละสัดส่วนเดิม เหมือนตัดเค้กครึ่งหนึ่งไปเรื่อย ๆ ไม่มีวันหมดพอดี</p>' +
+      '<p><b>ขั้นฐาน (basis step):</b> B<sub>0</sub> &gt; 0</p>' +
+      '<p><b>ขั้นอุปนัย (inductive step):</b> ถ้า B<sub>k</sub> &gt; 0 แล้ว B<sub>k+1</sub> = (1+r−m)·B<sub>k</sub> &gt; 0 เพราะ (1+r−m) &gt; 0</p>' +
+      '<p class="check">✓ ตรวจกับตัวเลขของคุณ: 1+r−m = ' + (1 + r - m).toFixed(6) + (1 + r - m > 0 ? ' &gt; 0' : '') +
+      '<br>ยอดหลัง ' + n2 + ' เดือน: สูตรปิด ' + fb(C.closedFormPct(B0, r, m, n2)) + ' บาท | ตาราง ' + fb(A0.rows[n2 - 1].end) + ' บาท' +
+      (v.floor ? '<br><span class="hint">(ข้อนี้ใช้ขั้นต่ำเป็นบาท = 0 ตามเงื่อนไขของสูตร ถ้ามีขั้นต่ำเป็นบาท หนี้จะหมดได้จริง)</span>' : '') + '</p>';
+
+    // ข้อ 3
+    var rB0 = r * B0, cond3 = p <= rB0;
+    $('m-proof3').innerHTML = '<h3>ข้อ 3: ถ้าจ่ายไม่เกินดอกเบี้ยเดือนแรก (p ≤ r·B<sub>0</sub>) หนี้ไม่ลดเลย</h3>' +
+      '<code class="f">B<sub>n</sub> ≥ B<sub>0</sub> ทุก n</code>' +
+      '<p><b>ความหมายง่าย ๆ:</b> ถ้าเงินที่จ่ายไม่พอแม้แต่ค่าดอกเบี้ย ก็ไม่เหลือไปลดเงินต้นเลย</p>' +
+      '<p><b>ขั้นฐาน (basis step):</b> B<sub>0</sub> ≥ B<sub>0</sub></p>' +
+      '<p><b>ขั้นอุปนัย (inductive step):</b> ถ้า B<sub>k</sub> ≥ B<sub>0</sub> แล้ว B<sub>k+1</sub> = (1+r)·B<sub>k</sub> − p ≥ (1+r)·B<sub>0</sub> − p = B<sub>0</sub> + (r·B<sub>0</sub> − p) ≥ B<sub>0</sub></p>' +
+      '<p class="check">✓ ตรวจกับตัวเลขของคุณ: r·B<sub>0</sub> = ' + fb(rB0) + ' บาท, p = ' + fb(p) + ' บาท → ' +
+      (cond3 ? '<b>เข้าเงื่อนไข</b> (p ≤ r·B<sub>0</sub>) หนี้ไม่ลด เช่น เดือนที่ 12 ยังเหลือ ' + fb(cur.B.rows[11].end) + ' บาท'
+             : 'ไม่เข้าเงื่อนไข (p &gt; r·B<sub>0</sub>) หนี้จึงลดลงได้') + '</p>';
+
+    // [Recurrence relations] ขั้น 3
+    var need = needCalc();
+    $('m-step3').innerHTML = '<p>อยากให้หนี้หมดในเดือนที่ n ก็ตั้ง B<sub>n</sub> = 0 ในสูตรปิด แล้วแก้หา p:</p>' +
+      '<code class="f">p = r·B<sub>0</sub> / (1 − (1+r)<sup>−n</sup>)</code>' +
+      '<p>นี่คือสูตรที่การ์ด "อยากหมดหนี้ใน N เดือน" ใช้</p>' +
+      '<p class="check">✓ ตัวเลขของคุณ (n = ' + v.n + '): p = ' + rs + ' × ' + fb(B0) + ' / (1 − (1+' + rs + ')<sup>−' + v.n + '</sup>) = ' +
+      need.rp.exact.toFixed(4) + ' บาท → ปัดขึ้นเป็น ' + fb(need.rp.roundedUp) + ' บาท หมดใน ' + durationText(need.sim) + '</p>';
+  }
+
+  // [Recurrence relations] ตัวเลื่อนไล่ทีละเดือน เทียบกับสูตรปิด
+  function renderWalk() {
+    var rows = cur.B.rows, p = cur.v.p, full = 0;
+    while (full < rows.length && full < 24 && rows[full].payment === p) full++; // เดือนที่จ่ายเต็ม p (สูตรปิดใช้ได้)
+    var kMax = Math.max(1, full), k = Math.min(+$('walkK').value, kMax);
+    $('walkK').max = kMax; $('walkK').value = k; $('walkKval').textContent = k;
+    $('walkList').innerHTML = C.explainFirstMonthsTh(cur.pB, k).map(function (t) { return '<li>' + t.replace(/^เดือนที่ \d+: /, '') + '</li>'; }).join('');
+    var byWalk = rows[k - 1].end, byCF = C.closedFormFixed(cur.v.bal, cur.B.r, p, k), same = Math.abs(byWalk - byCF) < 0.005;
+    $('walkCmp').innerHTML = '<div class="boxes"><div class="box">ค่าที่ได้จากการไล่ทีละเดือน (B<sub>' + k + '</sub>)<b>' + fb(byWalk) + ' บาท</b></div>' +
+      '<div class="box">ค่าที่ได้จากสูตรปิด (B<sub>' + k + '</sub>)<b>' + fb(byCF) + ' บาท</b></div>' +
+      '<div class="box">ผลเทียบ<b class="' + (same ? 'check' : '') + '">' + (same ? '✓ เท่ากัน' : '✗ ไม่เท่ากัน') + '</b></div></div>' +
+      (kMax < 24 ? '<p class="hint">ไล่ได้ถึงเดือนที่ ' + kMax + ' เพราะหลังจากนั้นจ่ายไม่เต็ม p (หนี้ใกล้หมด) สูตรปิดจึงไม่ครอบคลุม</p>' : '');
+  }
+
+  // [Mathematical reasoning] บันไดอุปนัย: ② (สูตรลำดับ) = ③ (สูตรปิดที่ k+1)
+  function renderLadder() {
+    var k = +$('ladK').value, d = C.inductionStepDemo({ balance: cur.v.bal, apr: cur.v.apr, p: cur.v.p, k: k });
+    $('ladKval').textContent = k;
+    var ok = d.diff < 1e-6 * Math.max(1, Math.abs(d.nextByClosedForm));
+    $('ladOut').innerHTML = '<div class="boxes" style="margin-top:8px">' +
+      '<div class="box">① ค่าตามสูตรปิดที่ k = ' + k + '<b>B<sub>' + k + '</sub> = ' + fb(d.Bk) + '</b></div>' +
+      '<div class="box">② ใช้สูตรลำดับขั้นถัดไป (1+r)·B<sub>' + k + '</sub> − p<b>' + fb(d.nextByRecurrence) + '</b></div>' +
+      '<div class="box">③ ค่าตามสูตรปิดที่ k+1 = ' + (k + 1) + '<b>B<sub>' + (k + 1) + '</sub> = ' + fb(d.nextByClosedForm) + '</b></div></div>' +
+      '<p class="check">' + (ok ? '✓ ② เท่ากับ ③ จึงขึ้นบันไดขั้น ' + (k + 1) + ' ได้' : '✗ ② ไม่เท่ากับ ③') + '</p>' +
+      (d.nextByClosedForm < 0 ? '<p class="hint">ค่าติดลบ = ในชีวิตจริงหนี้หมดไปแล้ว แต่สูตรยังเป็นจริงทางคณิตศาสตร์</p>' : '');
+    var s0 = Math.max(0, k - 5), h = '';
+    for (var i = s0; i <= k + 1; i++) {
+      var st = i === k + 1 ? 'next' : 'done', txt = i === 0 ? 'ขั้นฐาน ✓' : i === k + 1 ? '↑ ขึ้นได้' : '✓ ผ่าน';
+      h += '<div class="step ' + st + '" style="height:' + (36 + (i - s0) * 12) + 'px"><b>ขั้น ' + i + '</b>' + txt + '</div>';
+    }
+    $('stairs').innerHTML = (s0 > 0 ? '<div class="step done" style="height:30px">0–' + (s0 - 1) + ' ✓</div>' : '') + h;
+  }
+  function toggleLadder() {
+    if (S.ladTimer) { clearInterval(S.ladTimer); S.ladTimer = null; $('ladPlay').textContent = '▶ เล่นขึ้นบันไดอัตโนมัติ'; return; }
+    $('ladK').value = 0; renderLadder();
+    $('ladPlay').textContent = '⏸ หยุด';
+    S.ladTimer = setInterval(function () {
+      var k = +$('ladK').value + 1;
+      $('ladK').value = k; renderLadder();
+      if (k >= 24) toggleLadder();
+    }, RM ? 400 : 700);
+  }
+
+  // ---------- ตัวอย่าง / ปุ่ม ----------
+  var EX = {
+    ex1: { bal: '30,000', apr: '16', m: '5', floor: '0', p: '1,500' },
+    ex2: { bal: '30,000', apr: '16', m: '5', floor: '500', p: '1,500' },
+    ex400: { bal: '30,000', apr: '16', m: '5', floor: '0', p: '400' }
+  };
+  function runExample(id) {
+    if (id === 'exMulti') { applyMulti(clone(DEF.multi)); updateMulti(); scrollTo('multiRes'); return; }
+    applySingle(EX[id]); $('extra').value = 0; update(); scrollTo('results-sec');
+  }
+  ['ex1', 'ex2', 'ex400', 'exMulti'].forEach(function (id) { $(id).onclick = function () { runExample(id); }; });
+  qa('[data-goto]').forEach(function (b) { b.onclick = function () { runExample(b.dataset.goto); }; });
+
+  SINGLE.forEach(function (id) { $(id).addEventListener('input', update); });
+  $('k').addEventListener('input', function () { stopPlay(true); renderChart(); });
+  $('extra').addEventListener('input', renderExtra);
+  $('playBtn').onclick = togglePlay;
+  $('useNeed').onclick = function () { if (!cur) return; $('p').value = noDec(needCalc().rp.roundedUp); $('extra').value = 0; update(); };
+  function group(attr, fn) {
+    qa('[' + attr + ']').forEach(function (b) {
+      b.addEventListener('click', function () {
+        qa('[' + attr + ']').forEach(function (x) { x.classList.toggle('on', x === b); });
+        fn(b.getAttribute(attr));
+      });
+    });
+  }
+  group('data-range', function (v) { S.range = v; stopPlay(true); if (cur) renderChart(); });
+  group('data-speed', function (v) { S.speed = +v; });
+  group('data-tbl', function (v) { S.tbl = v; if (cur) renderTable(); });
+  group('data-y', function (v) { S.y = v; if (cur) renderYearly(); });
+  $('tableBox').addEventListener('toggle', function () { if (cur) renderTable(); });
+  $('csv').onclick = function () {
+    if (!cur) return;
+    var blob = new Blob(['﻿' + C.toCsv(cur[S.tbl].rows)], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'debt-' + S.tbl + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+  };
+  $('walkK').addEventListener('input', function () { if (cur) renderWalk(); });
+  $('ladK').addEventListener('input', function () { if (cur) renderLadder(); });
+  $('ladPlay').onclick = toggleLadder;
+  qa('.open-why').forEach(function (a) { a.addEventListener('click', function () { $('why').open = true; }); });
+
+  // หลายบัตร: พิมพ์ = คำนวณใหม่ (ไม่สร้างช่องใหม่), เพิ่ม/ลบ = สร้างรายการใหม่
+  $('cards').addEventListener('input', updateMulti);
+  $('budget').addEventListener('input', updateMulti);
+  $('cards').addEventListener('click', function (e) {
+    var i = e.target.getAttribute('data-del');
+    if (i === null) return;
+    var cards = getMultiRaw(); cards.splice(+i, 1); renderCardsEditor(cards); updateMulti();
+  });
+  $('addCard').onclick = function () {
+    var cards = getMultiRaw();
+    if (cards.length >= 5) return;
+    cards.push({ name: 'บัตร ' + 'ABCDE'.charAt(cards.length), balance: '5,000', apr: '16', m: '5', floor: '200' });
+    renderCardsEditor(cards); updateMulti();
+  };
+
+  // แชร์ / บันทึก / พิมพ์
+  $('share').onclick = function () {
+    var url = location.href.split('#')[0] + '#' + C.encodeState(getState());
+    function fallback() {
+      $('shareBox').hidden = false; $('shareText').value = url; $('shareText').focus(); $('shareText').select();
+      $('shareMsg').textContent = 'คัดลอกอัตโนมัติไม่ได้ ก๊อปลิงก์จากช่องด้านล่างได้เลย';
+    }
+    var done = false, guard = setTimeout(function () { if (!done) fallback(); }, 1500); // ค้างนานเกินไป = ให้ก๊อปเอง
+    try {
+      navigator.clipboard.writeText(url).then(function () {
+        done = true; clearTimeout(guard); $('shareMsg').textContent = '✓ คัดลอกลิงก์แล้ว'; $('shareBox').hidden = true;
+      }, function () { done = true; clearTimeout(guard); fallback(); });
+    } catch (e) { done = true; clearTimeout(guard); fallback(); }
+  };
+  $('reset').onclick = function () {
+    try { localStorage.removeItem(KEY); } catch (e) { /* ข้าม */ }
+    try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) { /* ข้าม */ }
+    applySingle(DEF.single); applyMulti(clone(DEF.multi)); $('extra').value = 0;
+    $('shareMsg').textContent = 'กลับค่าเริ่มต้นแล้ว'; $('shareBox').hidden = true;
+    update(); updateMulti();
+  };
+  $('print').onclick = function () { window.print(); };
+  var rt;
+  window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { if (cur) { renderChart(); renderYearly(); } updateMulti(); }, 150); });
+
+  // ประโยคหัวเพจ: จำลองจริงจากค่าเริ่มต้น (ไม่พิมพ์ตัวเลขตายตัว)
+  (function () {
+    var d = DEF.single, b0 = parse(d.bal), apr = parse(d.apr);
+    var A = C.simulate({ balance: b0, apr: apr, strategy: 'pct', m: parse(d.m) / 100, floor: parse(d.floor) });
+    var B = C.simulate({ balance: b0, apr: apr, strategy: 'fixed', p: parse(d.p) });
+    var yrs = function (s) { return s.months === null ? 'เกิน 100 ปี' : s.months >= 12 ? Math.floor(s.months / 12) + ' ปี' : C.monthsToText(s.months); };
+    $('heroLine').textContent = 'จ่ายขั้นต่ำ ' + d.m + '% vs จ่ายคงที่ ' + d.p + ' ใช้เวลา ' + yrs(A) + ' กับ ' + yrs(B);
+  })();
+
+  var st = loadState();
+  applySingle(st.single); applyMulti(st.multi);
+  update(); updateMulti();
+})();
+</script>
+</body>
+</html>
