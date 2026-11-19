@@ -3,9 +3,10 @@ import { encodeState } from "@/lib/debt";
 import { useCalc } from "./CalcContext";
 
 // Sticky section links on one line (scrolls sideways on small screens), plus the language switch,
-// which carries the current numbers to the other language in the URL hash.
+// which carries the last valid numbers to the other language in the URL hash (before loading, the other page
+// simply reads the same saved numbers from localStorage).
 export function Nav() {
-  const { t, lang, state } = useCalc();
+  const { t, lang, ready, validState } = useCalc();
   const other = lang === "th" ? "/en" : "/";
   const links: [string, string][] = [
     ["#tool", t.nav.tool],
@@ -19,15 +20,15 @@ export function Nav() {
       <div className="mx-auto max-w-[1040px] px-4 sm:px-6 py-3">
         <div className="raised-sm rounded-full flex items-center gap-1 px-2 py-1.5 overflow-x-auto whitespace-nowrap">
           {links.map(([href, label]) => (
-            <a key={href} href={href} className="inline-flex items-center min-h-10 px-4 rounded-full text-[0.93rem] font-medium hover:text-accent active:pressed-sm transition-colors">
+            <a key={href} href={href} className="inline-flex items-center min-h-11 px-4 rounded-full text-[0.93rem] font-medium hover:text-accent active:pressed-sm transition-colors">
               {label}
             </a>
           ))}
           <a
-            href={other + "#" + encodeState(state)}
+            href={ready ? other + "#" + encodeState(validState) : other}
             hrefLang={t.nav.otherLangCode}
             lang={t.nav.otherLangCode}
-            className="ml-auto inline-flex items-center min-h-10 px-4 rounded-full text-[0.93rem] font-semibold text-accent pressed-sm"
+            className="ml-auto inline-flex items-center min-h-11 px-4 rounded-full text-[0.93rem] font-semibold text-accent pressed-sm"
           >
             {t.nav.otherLang}
           </a>

@@ -16,11 +16,12 @@
   --good: #1b7339;
   --warn: #8a4b00;
   --bad: #ad1f1f;
-  --focus: #f29d00;
+  --focus: #b45f00; /* 3.76:1 against --bg, so the keyboard focus ring is visible */
   --grid: #cdd4de;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
+/* screen only: printing always uses the light palette on white paper */
+@media screen and (prefers-color-scheme: dark) {
   :root {
     --bg: #262a33;
     --shadow-dark: #1a1d23;

@@ -12,7 +12,7 @@ export function SingleCardForm() {
   );
 
   return (
-    <Panel id="tool">
+    <Panel id="tool" testId="tool-panel">
       <PanelTitle>{t.form.heading}</PanelTitle>
       <div className="grid gap-5 sm:grid-cols-2">
         {field("bal", t.form.bal)}
