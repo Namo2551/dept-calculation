@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Original single-file site, kept until the rebuild reaches parity, and its copy used by the parity test.
+    "core.js",
+    "test.js",
+    "index.html",
+    "tests/fixtures/**",
   ]),
 ]);
 

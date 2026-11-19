@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import "../globals.css";
+import { getDict } from "@/i18n";
+import { RootShell } from "../RootShell";
+
+const t = getDict("th");
 
 export const metadata: Metadata = {
-  title: "เครื่องคิดเลขหนี้บัตรเครดิต",
+  title: t.meta.title,
+  description: t.meta.description,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="th">
-      <body>{children}</body>
-    </html>
-  );
+  return <RootShell lang="th">{children}</RootShell>;
 }

@@ -1,1 +1,178 @@
 @import "tailwindcss";
+
+/* ===== Design tokens: neumorphism "Cloud" (light) and "Night" (dark) =====
+   Every surface shares the page color; depth comes only from two tinted shadows
+   (light from the top-left, shade toward the bottom-right). */
+:root {
+  --bg: #e4e9f0;
+  --shadow-dark: #c1c9d4;
+  --shadow-light: #ffffff;
+  --text: #18212d;
+  --muted: #4f5b6c;
+  --accent: #1f5fbf;
+  --on-accent: #ffffff;
+  --series-a: #1f5fbf;
+  --series-b: #a04600;
+  --good: #1b7339;
+  --warn: #8a4b00;
+  --bad: #ad1f1f;
+  --focus: #f29d00;
+  --grid: #cdd4de;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #262a33;
+    --shadow-dark: #1a1d23;
+    --shadow-light: #323743;
+    --text: #eef1f6;
+    --muted: #aab2c0;
+    --accent: #7aa9ff;
+    --on-accent: #0b1220;
+    --series-a: #7aa9ff;
+    --series-b: #ffa45c;
+    --good: #72d394;
+    --warn: #ffd08a;
+    --bad: #ff9f9f;
+    --focus: #ffc14d;
+    --grid: #3a404c;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-series-a: var(--series-a);
+  --color-series-b: var(--series-b);
+  --color-good: var(--good);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-focus: var(--focus);
+  --font-sans: var(--font-plex-thai), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --radius-panel: 22px;
+  --radius-well: 14px;
+}
+
+/* ===== Neumorphic depth ===== */
+@utility raised {
+  background-color: var(--bg);
+  box-shadow: 9px 9px 20px var(--shadow-dark), -9px -9px 20px var(--shadow-light);
+}
+@utility raised-sm {
+  background-color: var(--bg);
+  box-shadow: 5px 5px 11px var(--shadow-dark), -5px -5px 11px var(--shadow-light);
+}
+@utility pressed {
+  background-color: var(--bg);
+  box-shadow: inset 4px 4px 9px var(--shadow-dark), inset -4px -4px 9px var(--shadow-light);
+}
+@utility pressed-sm {
+  background-color: var(--bg);
+  box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--text);
+  }
+  body {
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    font-size: 1.02rem;
+  }
+  [id] {
+    scroll-margin-top: 84px;
+  }
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .num,
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    line-height: 1.3;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  details > summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+/* Range sliders: pressed track, raised accent thumb */
+input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-height: 40px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 3px 3px 7px var(--shadow-dark), -3px -3px 7px var(--shadow-light);
+}
+input[type="range"]::-moz-range-track {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Hatched fill used for method B bars and interest bars */
+.hatch-b {
+  background: repeating-linear-gradient(45deg, var(--series-b) 0 8px, transparent 8px 12px);
+  box-shadow: inset 0 0 0 2px var(--series-b);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.print-only {
+  display: none;
+}

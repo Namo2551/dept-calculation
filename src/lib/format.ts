@@ -78,3 +78,8 @@ export function toCsv(rows: Row[], lang: Lang = "th"): string {
   rows.forEach((w) => lines.push([w.month, w.start.toFixed(2), w.interest.toFixed(2), w.payment.toFixed(2), w.end.toFixed(2)].join(",")));
   return lines.join("\n");
 }
+
+// Baht without a trailing ".00" (1469 -> "1,469"), used for amounts written into input fields and titles.
+export function formatBahtShort(x: number): string {
+  return formatBaht(x).replace(/\.00$/, "");
+}
