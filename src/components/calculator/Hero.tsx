@@ -5,7 +5,8 @@ import { monthsToText } from "@/lib/format";
 import { defaultState, parseNumber } from "@/lib/state";
 
 // Static: rendered at build time, so the page has real content before any script runs.
-export function Hero({ lang }: { lang: Lang }) {
+// "5% minimum vs fixed 1,500: 34 years vs 2 years", simulated from the defaults (never hard-coded).
+export function heroLine(lang: Lang): string {
   const t = getDict(lang);
   const d = defaultState(lang).single;
   const balance = parseNumber(d.bal);
@@ -14,11 +15,16 @@ export function Hero({ lang }: { lang: Lang }) {
   const B = simulate({ balance, apr, strategy: "fixed", p: parseNumber(d.p) });
   const years = (s: SimResult) =>
     s.months === null ? t.hero.over100 : s.months >= 12 ? t.unit.years(Math.floor(s.months / 12)) : monthsToText(s.months, lang);
+  return t.hero.line(d.m, d.p, years(A), years(B));
+}
+
+export function Hero({ lang }: { lang: Lang }) {
+  const t = getDict(lang);
 
   return (
     <header className="pt-10 pb-4 sm:pt-16">
       <h1 className="text-3xl sm:text-5xl font-bold tracking-tight max-w-[22ch] leading-[1.15]">{t.hero.title}</h1>
-      <p className="mt-5 text-xl sm:text-2xl font-semibold text-accent">{t.hero.line(d.m, d.p, years(A), years(B))}</p>
+      <p className="mt-5 text-xl sm:text-2xl font-semibold text-accent">{heroLine(lang)}</p>
       <p className="mt-4 max-w-[65ch] text-muted">{t.hero.banner}</p>
       <p className="print-only">{t.hero.printOnly}</p>
       <div className="mt-7 flex flex-wrap gap-4 no-print">

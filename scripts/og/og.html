@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Template for the 1200x630 share images. Rendered by scripts/og/make-og-images.sh with headless Chrome,
+     which shapes Thai stacked marks correctly (next/og's renderer drops them). Pick the language with #th or #en. -->
+<style>
+  @font-face { font-family: Plex; src: url("../../assets/fonts/IBMPlexSansThai-SemiBold.ttf"); font-weight: 600; }
+  html, body { margin: 0; width: 1200px; height: 630px; background: #e4e9f0; font-family: Plex, sans-serif; font-weight: 600; }
+  body { display: flex; align-items: center; justify-content: center; }
+  .card { width: 1040px; box-sizing: border-box; padding: 64px 72px; border-radius: 40px; background: #e4e9f0;
+          box-shadow: 18px 18px 40px #c1c9d4, -18px -18px 40px #ffffff; }
+  h1 { margin: 0; font-size: 58px; line-height: 1.3; color: #18212d; font-weight: 600; }
+  h1 span { display: block; }
+  p { margin: 36px 0 0; font-size: 36px; line-height: 1.4; color: #1f5fbf; text-wrap: balance; }
+</style>
+</head>
+<body>
+<div class="card"><h1><span id="t1"></span><span id="t2"></span></h1><p id="l"></p></div>
+<script>
+  // Text matches t.hero.title and heroLine() in the app for the default inputs (30,000 baht, 16%, 5% vs 1,500).
+  var copy = {
+    th: ["เครื่องคิดเลขหนี้บัตรเครดิต: จ่ายขั้นต่ำแล้วจะหมดหนี้เมื่อไร", "จ่ายขั้นต่ำ 5% vs จ่ายคงที่ 1,500 ใช้เวลา 34 ปี กับ 2 ปี"],
+    en: ["Credit card debt calculator: when does paying the minimum clear your debt?", "The 5% minimum vs a fixed 1,500: 34 years vs 2 years"]
+  }[location.hash.slice(1) || "th"];
+  // Each half of the title gets its own line, so Thai never breaks inside a word.
+  var cut = copy[0].indexOf(":") + 1;
+  document.getElementById("t1").textContent = copy[0].slice(0, cut);
+  document.getElementById("t2").textContent = copy[0].slice(cut).trim();
+  document.getElementById("l").textContent = copy[1];
+</script>
+</body>
+</html>

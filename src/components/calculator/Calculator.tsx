@@ -3,12 +3,15 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { useCalculator } from "@/hooks/useCalculator";
 import type { Lang } from "@/i18n/types";
 import { BalanceChart } from "./BalanceChart";
+import { MathExplainer } from "@/components/math/MathExplainer";
 import { CalcContext } from "./CalcContext";
 import { CompareBars } from "./CompareBars";
 import { ExtraPayment } from "./ExtraPayment";
+import { Footer } from "./Footer";
 import { Hero } from "./Hero";
 import { MonthlyTable } from "./MonthlyTable";
 import { MultiCard } from "./MultiCard";
+import { Nav } from "./Nav";
 import { RequiredPayment } from "./RequiredPayment";
 import { ResultCards } from "./ResultCards";
 import { SingleCardForm } from "./SingleCardForm";
@@ -18,6 +21,7 @@ export function Calculator({ lang }: { lang: Lang }) {
   const calc = useCalculator(lang);
   return (
     <CalcContext.Provider value={calc}>
+      <Nav />
       <main className="mx-auto max-w-[1040px] px-4 sm:px-6 pb-16">
         <Hero lang={lang} />
         {!calc.ready ? (
@@ -39,8 +43,10 @@ export function Calculator({ lang }: { lang: Lang }) {
             </div>
             <MonthlyTable />
             <MultiCard />
+            <MathExplainer />
           </div>
         )}
+        <Footer lang={lang} />
       </main>
     </CalcContext.Provider>
   );

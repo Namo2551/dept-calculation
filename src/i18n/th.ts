@@ -1,3 +1,5 @@
+import { mathTh } from "./math.th";
+
 // Thai UI strings, copied from the original page (dashes replaced with hyphens).
 // `Dict` is derived from this object, so the English dictionary must provide every key.
 export const th = {
@@ -121,6 +123,27 @@ export const th = {
     methodB: "วิธี B: จ่ายคงที่",
     csv: "ดาวน์โหลดเป็น CSV",
     cols: ["เดือน", "ยอดต้นเดือน", "ดอกเบี้ย", "เงินที่จ่าย", "ยอดปลายเดือน"],
+  },
+  math: mathTh,
+  nav: {
+    label: "เมนูลัด",
+    tool: "เครื่องมือ",
+    results: "ผลลัพธ์",
+    chart: "กราฟ",
+    multi: "หลายบัตร",
+    why: "ทำไมถึงเป็นแบบนี้?",
+    otherLang: "English",
+    otherLangCode: "en",
+  },
+  footer: {
+    title: "ข้อจำกัดของโมเดล",
+    items: [
+      "คิดดอกเบี้ยเป็นรายเดือน (r = ดอกเบี้ยต่อปี ÷ 12)",
+      "ไม่มีค่าธรรมเนียมใด ๆ และสมมติว่าไม่ใช้บัตรเพิ่ม",
+      "ตัวเลขตัวอย่างเป็นตัวเลขสมมติ ไม่ใช่เงื่อนไขของบัตรหรือธนาคารใด",
+      "บัตรจริงอาจคิดดอกเบี้ยรายวันและมีเงื่อนไขต่างกัน ให้ดูจากใบแจ้งหนี้จริง",
+      "เป็นการประมาณการเพื่อการเรียนรู้เท่านั้น",
+    ],
   },
   need: {
     heading: "อยากหมดหนี้ใน N เดือน ต้องจ่ายเดือนละเท่าไร",

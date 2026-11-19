@@ -1,3 +1,4 @@
+import { mathEn } from "./math.en";
 import type { Dict } from "./th";
 
 const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
@@ -123,6 +124,27 @@ export const en: Dict = {
     methodB: "Method B: fixed payment",
     csv: "Download as CSV",
     cols: ["Month", "Start balance", "Interest", "Payment", "End balance"],
+  },
+  math: mathEn,
+  nav: {
+    label: "Sections",
+    tool: "Calculator",
+    results: "Results",
+    chart: "Chart",
+    multi: "Several cards",
+    why: "Why?",
+    otherLang: "ไทย",
+    otherLangCode: "th",
+  },
+  footer: {
+    title: "Model limitations",
+    items: [
+      "Interest is charged monthly (r = yearly interest ÷ 12)",
+      "No fees, and no new spending on the card",
+      "The example numbers are made up, not the terms of any real card or bank",
+      "Real cards may charge interest daily and have other terms. Check your actual statement.",
+      "This is an educational estimate only",
+    ],
   },
   need: {
     heading: "To be debt-free in N months, how much a month?",
