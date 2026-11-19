@@ -8,8 +8,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "test:legacy": "node test.js"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "next": "16.4.6",

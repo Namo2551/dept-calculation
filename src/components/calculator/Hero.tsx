@@ -23,7 +23,7 @@ export function Hero({ lang }: { lang: Lang }) {
 
   return (
     <header className="pt-10 pb-4 sm:pt-16">
-      <h1 className="text-3xl sm:text-5xl font-bold tracking-tight max-w-[22ch] leading-[1.15]">{t.hero.title}</h1>
+      <h1 className="text-3xl sm:text-5xl font-bold tracking-tight max-w-[22ch] leading-[1.3]">{t.hero.title}</h1>
       <p className="mt-5 text-xl sm:text-2xl font-semibold text-accent">{heroLine(lang)}</p>
       <p className="mt-4 max-w-[65ch] text-muted">{t.hero.banner}</p>
       <p className="print-only">{t.hero.printOnly}</p>

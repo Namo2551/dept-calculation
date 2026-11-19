@@ -176,3 +176,52 @@ input[type="range"]::-moz-range-thumb {
 .print-only {
   display: none;
 }
+
+/* ===== Print / save as PDF: keep the inputs, results, chart and comparison; flatten the neumorphism ===== */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+  html {
+    font-size: 12px;
+    background: #fff;
+  }
+  body {
+    background: #fff;
+    color: #000;
+    line-height: 1.3;
+  }
+  .no-print,
+  nav,
+  button,
+  input[type="range"],
+  details:not([open]),
+  [role="status"] {
+    display: none !important;
+  }
+  .print-only {
+    display: block;
+  }
+  .raised,
+  .raised-sm,
+  .pressed,
+  .pressed-sm {
+    background: #fff !important;
+    box-shadow: none !important;
+    border: 1px solid #c1c9d4;
+  }
+  section,
+  .raised {
+    break-inside: avoid;
+  }
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  input[type="text"] {
+    border: none;
+    min-height: 0;
+    padding: 0;
+    font-weight: 700;
+  }
+}
