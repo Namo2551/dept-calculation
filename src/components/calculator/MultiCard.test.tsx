@@ -1,7 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, test } from "vitest";
-import { Calculator } from "./Calculator";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { CalcProvider } from "@/components/CalcProvider";
+import MultiPage from "@/app/multi/page";
+
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => "/" }));
 
 beforeEach(() => {
   localStorage.clear();
@@ -12,7 +15,7 @@ const strat = (key: "minonly" | "avalanche" | "snowball") => screen.getByTestId(
 
 describe("MultiCard", () => {
   test("default cards: results per strategy and the least-interest badge", async () => {
-    render(<Calculator />);
+    render(<CalcProvider><MultiPage /></CalcProvider>);
     const av = await screen.findByTestId("strat-avalanche");
     expect(within(av).getByText("1 year")).toBeInTheDocument();
     expect(within(av).getByText("3,390.91 baht")).toBeInTheDocument();
@@ -26,7 +29,7 @@ describe("MultiCard", () => {
 
   test("a budget below the minimums warns", async () => {
     const user = userEvent.setup();
-    render(<Calculator />);
+    render(<CalcProvider><MultiPage /></CalcProvider>);
     const budget = await screen.findByLabelText("Total monthly budget (baht)");
     await user.clear(budget);
     await user.type(budget, "1,000");
@@ -35,7 +38,7 @@ describe("MultiCard", () => {
 
   test("card count stays between 2 and 5", async () => {
     const user = userEvent.setup();
-    render(<Calculator />);
+    render(<CalcProvider><MultiPage /></CalcProvider>);
     const add = await screen.findByRole("button", { name: "+ Add a card" });
     await user.click(add);
     await user.click(add);
@@ -51,7 +54,7 @@ describe("MultiCard", () => {
 
   test("an empty card name shows as unnamed in the payoff order", async () => {
     const user = userEvent.setup();
-    render(<Calculator />);
+    render(<CalcProvider><MultiPage /></CalcProvider>);
     const name = (await screen.findAllByLabelText("Card name"))[0];
     await user.clear(name);
     expect(within(strat("avalanche")).getByText(/Unnamed/)).toBeInTheDocument();

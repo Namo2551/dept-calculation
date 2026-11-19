@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { NumberField } from "@/components/ui/NumberField";
 import { Panel, PanelTitle } from "@/components/ui/Panel";
@@ -7,6 +8,7 @@ import { useCalc } from "./CalcContext";
 
 export function SingleCardForm() {
   const { t, state, errors, setSingle, runExample, share, reset, message, shareFallback } = useCalc();
+  const router = useRouter();
   const field = (k: keyof SingleRaw, label: string, hint?: string) => (
     <NumberField label={label} hint={hint} value={state.single[k]} onChange={(v) => setSingle(k, v)} error={errors[k] ? t.errors[k] : null} errorPrefix={t.errors.prefix} />
   );
@@ -46,7 +48,12 @@ export function SingleCardForm() {
           <Button onClick={() => runExample("ex1")}>{t.form.ex1}</Button>
           <Button onClick={() => runExample("ex2")}>{t.form.ex2}</Button>
           <Button onClick={() => runExample("ex400")}>{t.form.ex400}</Button>
-          <Button onClick={() => runExample("exMulti")}>{t.form.exMulti}</Button>
+          <Button
+            onClick={() => {
+              runExample("exMulti");
+              router.push("/multi");
+            }}
+          >{t.form.exMulti}</Button>
         </div>
       </div>
       <div className="mt-5 flex flex-wrap items-center gap-3 no-print">

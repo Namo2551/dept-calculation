@@ -4,9 +4,12 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { encodeState } from "@/lib/debt";
 import { defaultState } from "@/lib/state";
-import { Calculator } from "./Calculator";
+import { CalcProvider } from "@/components/CalcProvider";
+import CalculatorPage from "@/app/calculator/page";
 
 const scrolled: string[] = [];
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => "/" }));
+
 beforeEach(() => {
   localStorage.clear();
   history.replaceState(null, "", "/");
@@ -18,16 +21,16 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks());
 
 describe("review fixes", () => {
-  test("a section anchor in the URL scrolls there once the calculator has loaded", async () => {
-    history.replaceState(null, "", "/#multi");
-    render(<Calculator />);
+  test("a section anchor in the URL scrolls there once the page has loaded", async () => {
+    history.replaceState(null, "", "/calculator#results-sec");
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
     await screen.findByTestId("result-B");
-    await waitFor(() => expect(scrolled).toContain("multi"));
+    await waitFor(() => expect(scrolled).toContain("results-sec"));
   });
 
   test("saved numbers are the last valid ones, so a reload shows matching results", async () => {
     const user = userEvent.setup();
-    render(<Calculator />);
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
     const tool = within(await screen.findByTestId("tool-panel"));
     const bal = tool.getByLabelText("Balance (baht)");
     await user.clear(bal);
@@ -44,7 +47,7 @@ describe("review fixes", () => {
     st.single.bal = "45,000";
     st.single.apr = "";
     history.replaceState(null, "", "/#" + encodeState(st));
-    render(<Calculator />);
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
     const tool = within(await screen.findByTestId("tool-panel"));
     expect(tool.getByLabelText("Balance (baht)")).toHaveValue("30,000");
     expect(tool.getByLabelText("Interest per year (%)")).toHaveValue("16");
@@ -54,7 +57,7 @@ describe("review fixes", () => {
     const st = defaultState();
     st.single.bal = "45,000";
     history.replaceState(null, "", "/#" + encodeState(st));
-    render(<Calculator />);
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
     await screen.findByTestId("result-B");
     expect(window.location.hash).toBe("");
     expect(JSON.parse(localStorage.getItem("debtcalc.v1")!).single.bal).toBe("45,000");

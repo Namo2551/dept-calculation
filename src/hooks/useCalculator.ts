@@ -138,7 +138,6 @@ export function useCalculator() {
     (id: ExampleId) => {
       if (id === "exMulti") {
         update((s) => ({ ...s, multi: defaultState().multi }));
-        scrollToId("multiRes");
         return;
       }
       update((s) => ({ ...s, single: { ...s.single, ...EXAMPLES[id] } }));
@@ -173,7 +172,7 @@ export function useCalculator() {
   }, [t.msg.resetDone]);
 
   const share = useCallback(async (): Promise<"copied" | "fallback"> => {
-    const url = shareUrl(window.location.href, validState);
+    const url = shareUrl(window.location.origin + "/calculator", validState);
     const fallback = () => {
       setShareFallback(url);
       setMessage(t.msg.copyFailed);

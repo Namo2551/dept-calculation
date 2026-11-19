@@ -1,7 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { Calculator } from "./Calculator";
+import { CalcProvider } from "@/components/CalcProvider";
+import ChartsPage from "@/app/charts/page";
+
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => "/" }));
 
 beforeEach(() => {
   localStorage.clear();
@@ -11,17 +14,16 @@ afterEach(() => vi.restoreAllMocks());
 
 async function openTable() {
   const user = userEvent.setup();
-  render(<Calculator />);
+  render(<CalcProvider><ChartsPage /></CalcProvider>);
   const box = (await screen.findByText("Month-by-month table")).closest("details")!;
   return { user, box };
 }
 
 describe("MonthlyTable", () => {
-  test("rows render only while open; method B has 24 rows", async () => {
+  test("rows render while open (the default); method B has 24 rows", async () => {
     const { user, box } = await openTable();
     expect(box).toHaveAttribute("id", "tableBox");
-    expect(box.querySelectorAll("tbody tr").length).toBe(0);
-    await user.click(within(box).getByText("Month-by-month table"));
+    expect(box).toHaveAttribute("open"); // open by default on the charts page
     expect(box.querySelectorAll("tbody tr").length).toBe(418);
     await user.click(within(box).getByRole("radio", { name: "Method B: fixed payment" }));
     const rows = box.querySelectorAll("tbody tr");
@@ -41,7 +43,6 @@ describe("MonthlyTable", () => {
       names.push(this.download);
     });
     const { user, box } = await openTable();
-    await user.click(within(box).getByText("Month-by-month table"));
     await user.click(within(box).getByRole("radio", { name: "Method B: fixed payment" }));
     await user.click(within(box).getByRole("button", { name: "Download as CSV" }));
     expect(names).toEqual(["debt-B.csv"]);

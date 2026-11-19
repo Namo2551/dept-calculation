@@ -4,7 +4,7 @@ const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
 
 export const copy = {
   meta: {
-    title: "Credit card debt calculator",
+    title: "Paydown: when does your card debt end?",
     description: "When will paying the minimum clear your credit card debt? Compare minimum and fixed payments, with the math behind it explained (recurrence relations and mathematical induction).",
   },
   unit: {

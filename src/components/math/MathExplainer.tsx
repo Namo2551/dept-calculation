@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useCalc } from "@/components/calculator/CalcContext";
 import { useRequired } from "@/components/calculator/RequiredPayment";
 import { Button } from "@/components/ui/Button";
@@ -25,20 +25,7 @@ export function MathExplainer() {
   const { v, B, pB } = single;
   const B0 = v.bal, r = B.r, p = v.p, m = v.m / 100, rs = r.toFixed(6);
   const need = useRequired();
-  const details = useRef<HTMLDetailsElement>(null);
-
-  // Links to #why (nav, hero) open the collapsed explainer, as does arriving with #why in the URL.
-  useEffect(() => {
-    const open = () => {
-      if (details.current) details.current.open = true;
-    };
-    if (window.location.hash === "#why") open();
-    const onClick = (e: MouseEvent) => {
-      if ((e.target as Element | null)?.closest?.('a[href="#why"]')) open();
-    };
-    document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
-  }, []);
+  const router = useRouter();
 
   // Claim 1 check data
   const nB = B.months === null ? B.rows.length : B.months;
@@ -53,11 +40,7 @@ export function MathExplainer() {
   const cond3 = p <= rB0;
 
   return (
-    <details ref={details} id="why" className="raised rounded-panel p-5 sm:p-7 no-print">
-      <summary className="text-xl sm:text-2xl font-semibold tracking-tight min-h-11 flex items-center justify-between gap-4">
-        {M.summary}
-        <span aria-hidden="true" className="raised-sm rounded-full w-10 h-10 grid place-items-center">▾</span>
-      </summary>
+    <section id="why" className="raised rounded-panel p-5 sm:p-7 min-w-0">
       <p className="mt-4 max-w-[75ch]">{M.intro(formatBaht(B0), String(v.apr), rs, formatBaht(p), String(v.m))}</p>
 
       <div className="grid gap-6 mt-6">
@@ -157,7 +140,12 @@ export function MathExplainer() {
             {M.real.items.map((it) => (
               <li key={it.id} className="flex flex-wrap items-center gap-3">
                 <span className="flex-1 min-w-[16rem]">{it.text}</span>
-                <Button onClick={() => runExample(it.id)}>{M.real.tryIt}</Button>
+                <Button
+                  onClick={() => {
+                    runExample(it.id);
+                    router.push(it.id === "exMulti" ? "/multi" : "/calculator#results-sec");
+                  }}
+                >{M.real.tryIt}</Button>
               </li>
             ))}
           </ul>
@@ -185,6 +173,6 @@ export function MathExplainer() {
           </Card>
         </div>
       </div>
-    </details>
+    </section>
   );
 }
