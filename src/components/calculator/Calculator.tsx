@@ -8,6 +8,7 @@ import { CompareBars } from "./CompareBars";
 import { ExtraPayment } from "./ExtraPayment";
 import { Hero } from "./Hero";
 import { MonthlyTable } from "./MonthlyTable";
+import { MultiCard } from "./MultiCard";
 import { RequiredPayment } from "./RequiredPayment";
 import { ResultCards } from "./ResultCards";
 import { SingleCardForm } from "./SingleCardForm";
@@ -37,6 +38,7 @@ export function Calculator({ lang }: { lang: Lang }) {
               <ExtraPayment />
             </div>
             <MonthlyTable />
+            <MultiCard />
           </div>
         )}
       </main>

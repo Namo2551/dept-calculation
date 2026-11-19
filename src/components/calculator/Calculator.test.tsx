@@ -22,7 +22,8 @@ describe("Calculator (Thai)", () => {
   test("invalid balance shows inline error and keeps last results", async () => {
     const user = userEvent.setup();
     render(<Calculator lang="th" />);
-    const bal = await screen.findByLabelText("ยอดหนี้ (บาท)");
+    await screen.findByTestId("result-B");
+    const bal = within(document.getElementById("tool")!).getByLabelText("ยอดหนี้ (บาท)");
     await user.clear(bal);
     await user.type(bal, "abc");
     expect(bal).toHaveAttribute("aria-invalid", "true");
