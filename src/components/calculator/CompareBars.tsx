@@ -5,7 +5,7 @@ import { compareSentence, durationText } from "@/lib/format";
 import { useCalc } from "./CalcContext";
 
 export function CompareBars() {
-  const { t, lang, single } = useCalc();
+  const { t, single } = useCalc();
   const { A, B, v } = single;
   const max = Math.max(A.months || 0, B.months || 0) || 1;
   const width = (s: SimResult) => (s.months === null ? 100 : Math.max(1.5, (100 * s.months) / max));
@@ -13,7 +13,7 @@ export function CompareBars() {
     <div>
       <div className="flex justify-between gap-3 text-[0.93rem] mb-2">
         <b>{name}</b>
-        <span className="num">{durationText(s, lang)}</span>
+        <span className="num">{durationText(s)}</span>
       </div>
       <div
         className={`h-6 rounded-full transition-[width] duration-300 ${key === "A" ? "bg-series-a" : "hatch-b"}`}
@@ -28,7 +28,7 @@ export function CompareBars() {
         {bar("A", t.compare.barA, A)}
         {bar("B", t.compare.barB, B)}
       </div>
-      <p className="mt-5 font-semibold max-w-[70ch]">{compareSentence(A, B, { m: v.m / 100, p: v.p }, lang)}</p>
+      <p className="mt-5 font-semibold max-w-[70ch]">{compareSentence(A, B, { m: v.m / 100, p: v.p })}</p>
     </Panel>
   );
 }

@@ -9,27 +9,27 @@ beforeEach(() => {
 });
 afterEach(() => vi.restoreAllMocks());
 
-async function openTable(lang: "th" | "en") {
+async function openTable() {
   const user = userEvent.setup();
-  render(<Calculator lang={lang} />);
-  const box = (await screen.findByText(lang === "th" ? "ตารางทีละเดือน" : "Month-by-month table")).closest("details")!;
+  render(<Calculator />);
+  const box = (await screen.findByText("Month-by-month table")).closest("details")!;
   return { user, box };
 }
 
 describe("MonthlyTable", () => {
   test("rows render only while open; method B has 24 rows", async () => {
-    const { user, box } = await openTable("th");
+    const { user, box } = await openTable();
     expect(box).toHaveAttribute("id", "tableBox");
     expect(box.querySelectorAll("tbody tr").length).toBe(0);
-    await user.click(within(box).getByText("ตารางทีละเดือน"));
+    await user.click(within(box).getByText("Month-by-month table"));
     expect(box.querySelectorAll("tbody tr").length).toBe(418);
-    await user.click(within(box).getByRole("radio", { name: "วิธี B: จ่ายคงที่" }));
+    await user.click(within(box).getByRole("radio", { name: "Method B: fixed payment" }));
     const rows = box.querySelectorAll("tbody tr");
     expect(rows.length).toBe(24);
     expect(rows[23].querySelectorAll("td")[3]).toHaveTextContent("626.95");
   });
 
-  test("CSV download has a BOM, the language's header and the method in its name", async () => {
+  test("CSV download has a BOM, the header and the method in its name", async () => {
     let blob: Blob | null = null;
     URL.createObjectURL = vi.fn((b: Blob) => {
       blob = b;
@@ -40,7 +40,7 @@ describe("MonthlyTable", () => {
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
       names.push(this.download);
     });
-    const { user, box } = await openTable("en");
+    const { user, box } = await openTable();
     await user.click(within(box).getByText("Month-by-month table"));
     await user.click(within(box).getByRole("radio", { name: "Method B: fixed payment" }));
     await user.click(within(box).getByRole("button", { name: "Download as CSV" }));

@@ -7,7 +7,7 @@ import { useCalc } from "./CalcContext";
 import { Note, Stat } from "./Stat";
 
 function ResultCard({ id, title, sim, children }: { id: "A" | "B"; title: string; sim: SimResult; children?: React.ReactNode }) {
-  const { t, lang } = useCalc();
+  const { t } = useCalc();
   const baht = (v: number) => t.unit.baht(formatBaht(v));
   return (
     <Panel testId={`result-${id}`}>
@@ -18,7 +18,7 @@ function ResultCard({ id, title, sim, children }: { id: "A" | "B"; title: string
         {title}
       </h2>
       <Stat label={t.results.paidIn} big>
-        {sim.months !== null ? <CountUp value={sim.months} format={(v) => monthsToText(Math.round(v), lang)} /> : durationText(sim, lang)}
+        {sim.months !== null ? <CountUp value={sim.months} format={(v) => monthsToText(Math.round(v))} /> : durationText(sim)}
       </Stat>
       <div className="grid grid-cols-2 gap-x-4">
         <Stat label={t.results.totalInterest}>{sim.totalInterest === null ? t.unit.none : <CountUp value={sim.totalInterest} format={baht} />}</Stat>
@@ -31,14 +31,14 @@ function ResultCard({ id, title, sim, children }: { id: "A" | "B"; title: string
 }
 
 export function ResultCards() {
-  const { t, lang, single } = useCalc();
+  const { t, single } = useCalc();
   const { A, B, v } = single;
   return (
     <div className="grid gap-7 md:grid-cols-2">
       <ResultCard id="A" title={t.results.titleA(String(v.m), v.floor ? formatBahtShort(v.floor) : null)} sim={A}>
         {v.floor === 0 && (
           <>
-            {A.monthsTo1pct !== null && <Stat label={t.results.to1pct}>{t.results.to1pctValue(A.monthsTo1pct, monthsToText(A.monthsTo1pct, lang))}</Stat>}
+            {A.monthsTo1pct !== null && <Stat label={t.results.to1pct}>{t.results.to1pctValue(A.monthsTo1pct, monthsToText(A.monthsTo1pct))}</Stat>}
             <Note>{t.results.neverZero}</Note>
           </>
         )}

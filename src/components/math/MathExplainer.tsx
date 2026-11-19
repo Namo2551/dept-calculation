@@ -19,7 +19,7 @@ function Card({ children, testId }: { children: React.ReactNode; testId?: string
 const H3 = ({ children }: { children: React.ReactNode }) => <h3 className="text-lg font-semibold tracking-tight mb-2">{children}</h3>;
 
 export function MathExplainer() {
-  const { t, lang, single, runExample } = useCalc();
+  const { t, single, runExample } = useCalc();
   const M = t.math;
   const S2 = M.step2;
   const { v, B, pB } = single;
@@ -74,7 +74,7 @@ export function MathExplainer() {
           <p>{M.step1.likeCompound}</p>
           <p className="mt-2">{M.step1.tryB}</p>
           <ul className="num list-disc pl-6 text-sm my-2 grid gap-1">
-            {explainFirstMonths(pB, 3, lang).map((s) => (
+            {explainFirstMonths(pB, 3).map((s) => (
               <li key={s}>{s}</li>
             ))}
           </ul>
@@ -146,7 +146,7 @@ export function MathExplainer() {
           </Formula>
           <p>{M.step3.usedBy}</p>
           <Check>
-            {M.step3.check(String(v.n), rs, formatBaht(B0), need.rp.exact.toFixed(4), formatBaht(need.rp.roundedUp), durationText(need.sim, lang))}
+            {M.step3.check(String(v.n), rs, formatBaht(B0), need.rp.exact.toFixed(4), formatBaht(need.rp.roundedUp), durationText(need.sim))}
           </Check>
         </Card>
 

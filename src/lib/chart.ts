@@ -1,5 +1,4 @@
 // Pure chart geometry shared by the balance, yearly and multi-card charts.
-import type { Lang } from "@/i18n/types";
 import type { SimResult, YearSplit } from "./debt";
 
 // Round an axis maximum up to 1, 2, 2.5, 5 or 10 times a power of ten. Non-positive or non-finite input gives 1.
@@ -38,9 +37,9 @@ export function xTickStep(len: number): number {
   return len <= 24 ? 6 : len <= 60 ? 12 : len <= 120 ? 24 : len <= 240 ? 60 : 120;
 }
 
-export function xTickLabel(k: number, step: number, lang: Lang): string {
-  if (step < 12) return k + (lang === "en" ? " mo" : " ด.");
-  return k / 12 + (lang === "en" ? " yr" : " ปี");
+export function xTickLabel(k: number, step: number): string {
+  if (step < 12) return k + " mo";
+  return k / 12 + " yr";
 }
 
 // More than 15 years: combine into 5-year bars ("1-5", ..., last group ends at the real last year).

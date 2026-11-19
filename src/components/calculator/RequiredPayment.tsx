@@ -19,7 +19,7 @@ export function useRequired() {
 }
 
 export function RequiredPayment() {
-  const { t, lang, state, errors, setSingle, applyRequiredPayment } = useCalc();
+  const { t, state, errors, setSingle, applyRequiredPayment } = useCalc();
   const { rp, sim } = useRequired();
   return (
     <Panel className="no-print">
@@ -30,7 +30,7 @@ export function RequiredPayment() {
           {t.unit.baht(formatBaht(rp.roundedUp))}
         </Stat>
         <div className="grid grid-cols-2 gap-x-4">
-          <Stat label={t.results.paidIn}>{durationText(sim, lang)}</Stat>
+          <Stat label={t.results.paidIn}>{durationText(sim)}</Stat>
           <Stat label={t.results.totalInterest}>{sim.totalInterest === null ? t.unit.none : t.unit.baht(formatBaht(sim.totalInterest))}</Stat>
         </div>
       </div>

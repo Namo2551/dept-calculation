@@ -43,11 +43,9 @@ describe("chartLength and ticks", () => {
   test("xTickStep thresholds", () => {
     expect([24, 25, 60, 61, 120, 121, 240, 241].map(xTickStep)).toEqual([6, 12, 12, 24, 24, 60, 60, 120]);
   });
-  test("xTickLabel per language", () => {
-    expect(xTickLabel(6, 6, "th")).toBe("6 ด.");
-    expect(xTickLabel(6, 6, "en")).toBe("6 mo");
-    expect(xTickLabel(24, 12, "th")).toBe("2 ปี");
-    expect(xTickLabel(24, 12, "en")).toBe("2 yr");
+  test("xTickLabel", () => {
+    expect(xTickLabel(6, 6)).toBe("6 mo");
+    expect(xTickLabel(24, 12)).toBe("2 yr");
   });
 });
 

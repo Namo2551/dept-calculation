@@ -8,7 +8,7 @@ import { useCalc } from "./CalcContext";
 import { Stat } from "./Stat";
 
 export function ExtraPayment() {
-  const { t, lang, single, extra, setExtra } = useCalc();
+  const { t, single, extra, setExtra } = useCalc();
   const { v, B } = single;
   const P = useMemo(
     () => (extra === 0 ? null : simulate({ balance: v.bal, apr: v.apr, strategy: "fixed", p: v.p + extra })),
@@ -23,11 +23,11 @@ export function ExtraPayment() {
       ) : (
         <div className="mt-3">
           <Stat label={t.extra.payIn(formatBahtShort(v.p + extra))} big>
-            {durationText(P, lang)}
+            {durationText(P)}
           </Stat>
           {B.months !== null && P.months !== null ? (
             <div className="grid grid-cols-2 gap-x-4">
-              <Stat label={t.extra.faster}>{monthsToText(B.months - P.months, lang)}</Stat>
+              <Stat label={t.extra.faster}>{monthsToText(B.months - P.months)}</Stat>
               <Stat label={t.extra.saved}>{t.unit.baht(formatBaht(B.totalInterest! - P.totalInterest!))}</Stat>
             </div>
           ) : (

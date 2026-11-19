@@ -31,14 +31,14 @@ const A = (m: number, floor: number): SingleOptions => ({ balance: B0, apr: APR,
 const B = (p: number): SingleOptions => ({ balance: B0, apr: APR, strategy: "fixed", p });
 const endAt = (s: SimResult, k: number) => s.rows[k - 1].end;
 
-describe("r และดอกเบี้ยเดือนแรก", () => {
+describe("r and the first month interest", () => {
   test("monthly rate and first-month interest", () => {
     near(r, 0.0133333, 1e-6);
     near(simulate(B(1500)).rows[0].interest, 400);
   });
 });
 
-describe("วิธี A 5% floor 0", () => {
+describe("method A 5% floor 0", () => {
   const a5 = simulate(A(0.05, 0));
   test("months and interest", () => {
     expect(a5.monthsTo1pct).toBe(124);
@@ -55,7 +55,7 @@ describe("วิธี A 5% floor 0", () => {
   });
 });
 
-describe("วิธี A 10% floor 0", () => {
+describe("method A 10% floor 0", () => {
   const a10 = simulate(A(0.1, 0));
   test("months, interest and balances", () => {
     expect(a10.monthsTo1pct).toBe(51);
@@ -67,7 +67,7 @@ describe("วิธี A 10% floor 0", () => {
   });
 });
 
-describe("วิธี A 5% floor 500", () => {
+describe("method A 5% floor 500", () => {
   test("pays off with a baht floor", () => {
     const a5f = simulate(A(0.05, 500));
     expect(a5f.months).toBe(53);
@@ -76,7 +76,7 @@ describe("วิธี A 5% floor 500", () => {
   });
 });
 
-describe("วิธี B", () => {
+describe("method B", () => {
   test("p = 1500", () => {
     const b1500 = simulate(B(1500));
     expect(b1500.months).toBe(24);
@@ -131,7 +131,7 @@ describe("requiredPayment", () => {
   });
 });
 
-describe("สูตรปิด (Recurrence relations) และการตรวจกับตาราง", () => {
+describe("closed form (recurrence relations) checked against the table", () => {
   test("closed forms match the table", () => {
     near(closedFormFixed(B0, r, 1500, 12), 15787.659144, 1e-6);
     expect(verifyClosedForm(B(1500), 24)).toBeLessThan(1e-6);
@@ -140,13 +140,13 @@ describe("สูตรปิด (Recurrence relations) และการตร�
   });
 });
 
-describe("ข้อ 2 (induction): ยอดหนี้วิธี A ไม่เป็นศูนย์", () => {
+describe("claim 2 (induction): method A balance is never zero", () => {
   test.each([0.01, 0.05, 0.1, 0.5])("m = %f stays positive for n = 0..100", (m) => {
     for (let n = 0; n <= 100; n++) expect(closedFormPct(B0, r, m, n)).toBeGreaterThan(0);
   });
 });
 
-describe("ข้อ 3 (induction): จ่ายไม่เกินดอกเบี้ยเดือนแรก หนี้ไม่ลด", () => {
+describe("claim 3 (induction): payment not above first month interest, debt does not go down", () => {
   test.each([400, 300, 100])("p = %i", (p) => {
     const s = simulate(B(p));
     expect(s.neverDecreases).toBe(true);

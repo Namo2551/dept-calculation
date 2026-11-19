@@ -1,6 +1,5 @@
-// English copy for the "why" (Discrete Math) section. Must match the shape of mathTh.
+// Copy for the "why" (Discrete Math) section.
 import type { ReactNode } from "react";
-import type { mathTh } from "./math.th";
 
 const B = (i: ReactNode) => (
   <>
@@ -8,9 +7,9 @@ const B = (i: ReactNode) => (
   </>
 );
 
-export const mathEn: typeof mathTh = {
+export const mathEn = {
   summary: "Why does this happen? (Discrete Math)",
-  intro: (b0, apr, rs, p, m) => (
+  intro: (b0: string, apr: string, rs: string, p: string, m: string): ReactNode => (
     <>
       This section explains how the calculator above works, using your numbers: balance {B(0)} = {b0} baht, monthly interest r = {apr}/100/12 = {rs}, fixed payment p = {p} baht, minimum m = {m}%
     </>
@@ -34,14 +33,14 @@ export const mathEn: typeof mathTh = {
     ),
     tryB: "Try method B with your numbers:",
     pattern: "Keep going and a pattern appears, which gives a closed form: a formula for month n directly, without stepping through every month.",
-    walkLabel: (k) => `Step through month by month (method B): up to month ${k}`,
+    walkLabel: (k: number) => `Step through month by month (method B): up to month ${k}`,
     walkNote: "This is the recurrence applied again and again: last month's result feeds the next month.",
-    byWalk: (k) => <>Stepping month by month ({B(k)})</>,
-    byClosed: (k) => <>Closed form ({B(k)})</>,
+    byWalk: (k: number): ReactNode => <>Stepping month by month ({B(k)})</>,
+    byClosed: (k: number): ReactNode => <>Closed form ({B(k)})</>,
     result: "Result",
     same: "✓ Equal",
     differ: "✗ Not equal",
-    walkLimit: (k) => `You can step up to month ${k}, because after that the payment is less than p (the debt is nearly gone), which the closed form does not cover.`,
+    walkLimit: (k: number) => `You can step up to month ${k}, because after that the payment is less than p (the debt is nearly gone), which the closed form does not cover.`,
   },
   step2: {
     title: "Step 2: prove the formula is right (induction)",
@@ -60,7 +59,7 @@ export const mathEn: typeof mathTh = {
           Note: the formula comes from the geometric series p·(1 + (1+r) + … + (1+r)<sup>n−1</sup>) = p·((1+r)<sup>n</sup> − 1)/r
         </>
       ),
-      check: (n, cf, table, diff) => (
+      check: (n: number, cf: string, table: string, diff: string): ReactNode => (
         <>
           ✓ Checked with your numbers: at month {n} the closed form gives {cf} baht and the month-by-month table gives {table} baht
           <br />
@@ -70,17 +69,17 @@ export const mathEn: typeof mathTh = {
     },
     ladder: {
       title: "Climb the induction stairs with your numbers",
-      pick: (k) => `Pick step k = ${k}`,
+      pick: (k: number) => `Pick step k = ${k}`,
       play: "▶ Climb automatically",
       stop: "⏸ Stop",
-      box1: (k) => <>① Closed form at k = {k}</>,
-      box2: (k) => <>② One recurrence step (1+r)·{B(k)} − p</>,
-      box3: (k) => <>③ Closed form at k+1 = {k + 1}</>,
-      ok: (k) => `✓ ② equals ③, so step ${k} is reached`,
+      box1: (k: number): ReactNode => <>① Closed form at k = {k}</>,
+      box2: (k: number): ReactNode => <>② One recurrence step (1+r)·{B(k)} − p</>,
+      box3: (k: number): ReactNode => <>③ Closed form at k+1 = {k + 1}</>,
+      ok: (k: number) => `✓ ② equals ③, so step ${k} is reached`,
       notOk: "✗ ② does not equal ③",
       negative: "A negative value means the debt is already paid off in real life, but the formula is still mathematically true.",
       stairs: "Staircase",
-      step: (i) => `Step ${i}`,
+      step: (i: number) => `Step ${i}`,
       base: "Basis ✓",
       up: "↑ Reached",
       passed: "✓ Holds",
@@ -91,7 +90,7 @@ export const mathEn: typeof mathTh = {
       everyN: "for every n (when m < 100%)",
       meaning: "Paying a percentage of what is left shrinks the balance by the same fraction each month, like cutting a cake in half again and again: it never runs out exactly.",
       because: "because (1+r−m) > 0",
-      check: (factor, positive, n, cf, table) => (
+      check: (factor: string, positive: boolean, n: number, cf: string, table: string): ReactNode => (
         <>
           ✓ Checked with your numbers: 1+r−m = {factor}
           {positive ? " > 0" : ""}
@@ -105,7 +104,7 @@ export const mathEn: typeof mathTh = {
       title: <>Claim 3: if the payment is no more than the first month&apos;s interest (p ≤ r·{B(0)}), the debt never goes down</>,
       everyN: "for every n",
       meaning: "If the payment doesn't even cover the interest, nothing is left over to reduce the principal.",
-      check: (rb0, p, met, left12) => (
+      check: (rb0: string, p: string, met: boolean, left12: string): ReactNode => (
         <>
           ✓ Checked with your numbers: r·{B(0)} = {rb0} baht, p = {p} baht →{" "}
           {met ? (
@@ -123,7 +122,7 @@ export const mathEn: typeof mathTh = {
     title: "Step 3: put the formula to work",
     setZero: <>To be debt-free at month n, set {B("n")} = 0 in the closed form and solve for p:</>,
     usedBy: 'This is the formula behind the "debt-free in N months" card.',
-    check: (n, rs, b0, exact, rounded, dur) => (
+    check: (n: string, rs: string, b0: string, exact: string, rounded: string, dur: string): ReactNode => (
       <>
         ✓ Your numbers (n = {n}): p = {rs} × {b0} / (1 − (1+{rs})<sup>−{n}</sup>) = {exact} baht → rounded up to {rounded} baht, paid off in {dur}
       </>
@@ -137,7 +136,7 @@ export const mathEn: typeof mathTh = {
       { id: "ex400", text: <>The &quot;fixed 400&quot; example is <b>claim 3</b>: the payment is no more than the first month&apos;s interest, so the debt never goes down.</> },
       { id: "ex2", text: <>The &quot;500 baht minimum&quot; example does get paid off, because the payment no longer shrinks with the balance, so claim 2 does not apply.</> },
       { id: "exMulti", text: <>The &quot;several cards&quot; example: each card still follows the same recurrence; only the payment to each card changes with the strategy.</> },
-    ],
+    ] as { id: "ex1" | "ex2" | "ex400" | "exMulti"; text: ReactNode }[],
   },
   summaryTitle: "Three takeaways",
   summaryItems: [

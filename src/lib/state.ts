@@ -1,6 +1,5 @@
 // Calculator input state: defaults, parsing, validation, and load/save/share.
 // The stored shape and the URL hash format match the original single-file site, so old links keep working.
-import type { Lang } from "@/i18n/types";
 import { decodeState, encodeState } from "./debt";
 
 export type SingleRaw = { bal: string; apr: string; m: string; floor: string; p: string; n: string };
@@ -9,17 +8,17 @@ export type AppState = { single: SingleRaw; multi: { budget: string; cards: Card
 
 export const STORAGE_KEY = "debtcalc.v1";
 
-const cardName = (lang: Lang, letter: string) => (lang === "en" ? "Card " : "บัตร ") + letter;
+const cardName = (letter: string) => "Card " + letter;
 
-export function defaultState(lang: Lang): AppState {
+export function defaultState(): AppState {
   return {
     single: { bal: "30,000", apr: "16", m: "5", floor: "0", p: "1,500", n: "24" },
     multi: {
       budget: "3,000",
       cards: [
-        { name: cardName(lang, "A"), balance: "20,000", apr: "24", m: "5", floor: "200" },
-        { name: cardName(lang, "B"), balance: "8,000", apr: "18", m: "5", floor: "200" },
-        { name: cardName(lang, "C"), balance: "3,000", apr: "12", m: "5", floor: "200" },
+        { name: cardName("A"), balance: "20,000", apr: "24", m: "5", floor: "200" },
+        { name: cardName("B"), balance: "8,000", apr: "18", m: "5", floor: "200" },
+        { name: cardName("C"), balance: "3,000", apr: "12", m: "5", floor: "200" },
       ],
     },
   };
@@ -31,8 +30,8 @@ export const EXAMPLES: Record<"ex1" | "ex2" | "ex400", Omit<SingleRaw, "n">> = {
   ex400: { bal: "30,000", apr: "16", m: "5", floor: "0", p: "400" },
 };
 
-export function newCard(index: number, lang: Lang): CardRaw {
-  return { name: cardName(lang, "ABCDE".charAt(index)), balance: "5,000", apr: "16", m: "5", floor: "200" };
+export function newCard(index: number): CardRaw {
+  return { name: cardName("ABCDE".charAt(index)), balance: "5,000", apr: "16", m: "5", floor: "200" };
 }
 
 export function parseNumber(s: string): number {
@@ -72,8 +71,8 @@ export function isValidState(s: unknown): s is AppState {
 }
 
 // Old links may hold numbers instead of strings, or miss a field: coerce to the current shape.
-function normalize(s: AppState, lang: Lang): AppState {
-  const def = defaultState(lang).single;
+function normalize(s: AppState): AppState {
+  const def = defaultState().single;
   const single = {} as SingleRaw;
   SINGLE_KEYS.forEach((k) => {
     const v = (s.single as Record<string, unknown>)[k];
@@ -91,22 +90,22 @@ function normalize(s: AppState, lang: Lang): AppState {
 }
 
 // Order: URL hash, then localStorage, then defaults.
-export function loadState(opts: { hash: string; storage: Pick<Storage, "getItem"> | null; lang: Lang }): {
+export function loadState(opts: { hash: string; storage: Pick<Storage, "getItem"> | null }): {
   state: AppState;
   source: "link" | "saved" | "default";
 } {
   if (opts.hash.length > 1) {
     const h = decodeState(opts.hash.slice(1));
-    if (isValidState(h)) return { state: normalize(h, opts.lang), source: "link" };
+    if (isValidState(h)) return { state: normalize(h), source: "link" };
   }
   try {
     const raw = opts.storage?.getItem(STORAGE_KEY);
     const t = raw ? JSON.parse(raw) : null;
-    if (isValidState(t)) return { state: normalize(t, opts.lang), source: "saved" };
+    if (isValidState(t)) return { state: normalize(t), source: "saved" };
   } catch {
     // storage blocked or corrupt: fall back to defaults
   }
-  return { state: defaultState(opts.lang), source: "default" };
+  return { state: defaultState(), source: "default" };
 }
 
 export function saveState(storage: Pick<Storage, "setItem"> | null, state: AppState): void {

@@ -1,7 +1,6 @@
 "use client";
 import { useRef } from "react";
 import { useElementWidth } from "@/hooks/useElementWidth";
-import type { Lang } from "@/i18n/types";
 import { niceMax, shortBaht, xTickLabel, xTickStep } from "@/lib/chart";
 
 export type Series = { data: number[]; color: string; dash?: string; label: string; at: number; dy: number };
@@ -16,14 +15,12 @@ export function LineChart({
   ymax: rawMax,
   series,
   aria,
-  lang,
   extra,
 }: {
   len: number;
   ymax: number;
   series: Series[];
   aria: string;
-  lang: Lang;
   extra?: (s: Scale) => React.ReactNode;
 }) {
   const box = useRef<HTMLDivElement>(null);
@@ -53,7 +50,7 @@ export function LineChart({
         })}
         {xTicks.map((k) => (
           <text key={k} x={x(k)} y={H - Bm + 20} textAnchor="middle" fontSize="13" fill="var(--muted)">
-            {xTickLabel(k, step, lang)}
+            {xTickLabel(k, step)}
           </text>
         ))}
         {series.map((s, i) =>

@@ -1,7 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getDict } from "@/i18n";
-import type { Lang } from "@/i18n/types";
+import { copy } from "@/copy";
 import { computeMulti, computeSingle, multiIsValid, singleIsValid, type MultiCalc, type SingleCalc } from "@/lib/calc";
 import { requiredPayment } from "@/lib/debt";
 import { formatBahtShort } from "@/lib/format";
@@ -39,8 +38,8 @@ function fresh(state: AppState): Store {
 }
 
 // A loaded section that does not validate is replaced by the defaults, so the form and the results always agree.
-function sanitize(state: AppState, lang: Lang): AppState {
-  const def = defaultState(lang);
+function sanitize(state: AppState): AppState {
+  const def = defaultState();
   return { single: singleIsValid(state.single) ? state.single : def.single, multi: multiIsValid(state.multi) ? state.multi : def.multi };
 }
 
@@ -58,9 +57,9 @@ function scrollToId(id: string) {
 
 const SINGLE_RULES: Record<keyof SingleRaw, RuleKey> = { bal: "bal", apr: "apr", m: "m", floor: "floor", p: "p", n: "n" };
 
-export function useCalculator(lang: Lang) {
-  const t = getDict(lang);
-  const [store, setStore] = useState<Store>(() => fresh(defaultState(lang)));
+export function useCalculator() {
+  const t = copy;
+  const [store, setStore] = useState<Store>(() => fresh(defaultState()));
   const [ready, setReady] = useState(false);
   const [message, setMessage] = useState("");
   const [extra, setExtra] = useState(0);
@@ -71,9 +70,9 @@ export function useCalculator(lang: Lang) {
   // Load once on the client: URL hash, then localStorage, then defaults. Until then the UI shows a skeleton.
   useEffect(() => {
     const hash = window.location.hash;
-    const { state, source } = loadState({ hash, storage: storage(), lang });
+    const { state, source } = loadState({ hash, storage: storage() });
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from browser-only sources
-    setStore(fresh(sanitize(state, lang)));
+    setStore(fresh(sanitize(state)));
     if (source === "link") {
       setMessage(t.msg.fromLink);
       // The numbers are saved now; drop them from the URL so a reload doesn't bring them back over later edits.
@@ -86,7 +85,7 @@ export function useCalculator(lang: Lang) {
       setAnchor(hash.slice(1)); // a section link like #multi: scroll there once the sections exist
     }
     setReady(true);
-  }, [lang, t.msg.fromLink]);
+  }, [t.msg.fromLink]);
 
   useEffect(() => {
     if (ready && anchor) scrollToId(anchor);
@@ -127,8 +126,8 @@ export function useCalculator(lang: Lang) {
     [update],
   );
   const addCard = useCallback(
-    () => update((s) => (s.multi.cards.length >= 5 ? s : { ...s, multi: { ...s.multi, cards: [...s.multi.cards, newCard(s.multi.cards.length, lang)] } })),
-    [update, lang],
+    () => update((s) => (s.multi.cards.length >= 5 ? s : { ...s, multi: { ...s.multi, cards: [...s.multi.cards, newCard(s.multi.cards.length)] } })),
+    [update],
   );
   const removeCard = useCallback(
     (i: number) => update((s) => (s.multi.cards.length <= 2 ? s : { ...s, multi: { ...s.multi, cards: s.multi.cards.filter((_, j) => j !== i) } })),
@@ -138,7 +137,7 @@ export function useCalculator(lang: Lang) {
   const runExample = useCallback(
     (id: ExampleId) => {
       if (id === "exMulti") {
-        update((s) => ({ ...s, multi: defaultState(lang).multi }));
+        update((s) => ({ ...s, multi: defaultState().multi }));
         scrollToId("multiRes");
         return;
       }
@@ -146,7 +145,7 @@ export function useCalculator(lang: Lang) {
       setExtra(0);
       scrollToId("results-sec");
     },
-    [update, lang],
+    [update],
   );
 
   // "Use as method B": the rounded-up payment for N months becomes the fixed payment.
@@ -167,11 +166,11 @@ export function useCalculator(lang: Lang) {
     } catch {
       // history API blocked: the hash simply stays
     }
-    setStore(fresh(defaultState(lang)));
+    setStore(fresh(defaultState()));
     setExtra(0);
     setShareFallback(null);
     setMessage(t.msg.resetDone);
-  }, [lang, t.msg.resetDone]);
+  }, [t.msg.resetDone]);
 
   const share = useCallback(async (): Promise<"copied" | "fallback"> => {
     const url = shareUrl(window.location.href, validState);
@@ -193,7 +192,6 @@ export function useCalculator(lang: Lang) {
   }, [validState, t.msg.copied, t.msg.copyFailed]);
 
   return {
-    lang,
     t,
     ready,
     state,

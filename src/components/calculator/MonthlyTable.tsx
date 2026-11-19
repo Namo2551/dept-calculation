@@ -6,13 +6,13 @@ import { formatBaht, toCsv } from "@/lib/format";
 import { useCalc } from "./CalcContext";
 
 export function MonthlyTable() {
-  const { t, lang, single } = useCalc();
+  const { t, single } = useCalc();
   const [open, setOpen] = useState(false);
   const [method, setMethod] = useState<"A" | "B">("A");
   const rows = single[method].rows;
 
   const download = () => {
-    const blob = new Blob(["﻿" + toCsv(rows, lang)], { type: "text/csv;charset=utf-8" }); // BOM so Excel reads Thai
+    const blob = new Blob(["﻿" + toCsv(rows)], { type: "text/csv;charset=utf-8" }); // BOM so Excel reads UTF-8
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

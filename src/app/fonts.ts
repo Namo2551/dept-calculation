@@ -1,8 +1,8 @@
-import { IBM_Plex_Mono, IBM_Plex_Sans_Thai } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 
-export const plexThai = IBM_Plex_Sans_Thai({
+export const plexSans = IBM_Plex_Sans({
   weight: ["400", "500", "600", "700"],
-  subsets: ["thai", "latin"],
+  subsets: ["latin"],
   display: "swap",
   variable: "--font-plex-thai",
 });

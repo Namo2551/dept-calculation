@@ -8,7 +8,7 @@ import { Box } from "./parts";
 
 // [Recurrence relations] Step through method B month by month and compare with the closed form.
 export function RecurrenceWalk() {
-  const { t, lang, single } = useCalc();
+  const { t, single } = useCalc();
   const m = t.math.step1;
   const { B, v, pB } = single;
   const [k, setK] = useState(3);
@@ -19,7 +19,7 @@ export function RecurrenceWalk() {
   const byWalk = B.rows[kk - 1].end;
   const byCF = closedFormFixed(v.bal, B.r, v.p, kk);
   const same = Math.abs(byWalk - byCF) < 0.005;
-  const lines = explainFirstMonths(pB, kk, lang).map((s) => s.replace(/^[^:]+: /, ""));
+  const lines = explainFirstMonths(pB, kk).map((s) => s.replace(/^[^:]+: /, ""));
 
   return (
     <div data-testid="walk" className="pressed rounded-well p-4 sm:p-5 mt-4">

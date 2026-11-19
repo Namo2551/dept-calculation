@@ -14,7 +14,7 @@ type Range = "60" | "120" | "all";
 type Speed = 1 | 2 | 4;
 
 export function BalanceChart() {
-  const { t, lang, single } = useCalc();
+  const { t, single } = useCalc();
   const { A, B, v } = single;
   const [range, setRange] = useState<Range>("all");
   const [speed, setSpeed] = useState<Speed>(1);
@@ -147,7 +147,6 @@ export function BalanceChart() {
         <LineChart
           len={len}
           ymax={ymax}
-          lang={lang}
           aria={t.chart.aria}
           series={[
             { data: sA, color: "var(--series-a)", label: "A", at: Math.max(2, halfway), dy: -10 },
@@ -158,7 +157,7 @@ export function BalanceChart() {
       </div>
       <div className="mt-5 no-print">
         <RangeField
-          label={t.chart.atMonth(kk, monthsToText(kk, lang))}
+          label={t.chart.atMonth(kk, monthsToText(kk))}
           min={0}
           max={len}
           value={kk}

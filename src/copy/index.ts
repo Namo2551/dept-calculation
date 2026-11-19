@@ -1,21 +1,20 @@
-import { mathEn } from "./math.en";
-import type { Dict } from "./th";
+import { mathEn } from "./math";
 
 const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
 
-export const en: Dict = {
+export const copy = {
   meta: {
     title: "Credit card debt calculator",
     description: "When will paying the minimum clear your credit card debt? Compare minimum and fixed payments, with the math behind it explained (recurrence relations and mathematical induction).",
   },
   unit: {
-    baht: (x) => x + " baht",
-    years: (n) => plural(n, "year"),
+    baht: (x: string) => x + " baht",
+    years: (n: number) => plural(n, "year"),
     none: "-",
   },
   hero: {
     title: "Credit card debt calculator: when does paying the minimum clear your debt?",
-    line: (m, p, a, b) => `The ${m}% minimum vs a fixed ${p}: ${a} vs ${b}`,
+    line: (m: string, p: string, a: string, b: string) => `The ${m}% minimum vs a fixed ${p}: ${a} vs ${b}`,
     over100: "over 100 years",
     toTool: "Start calculating",
     toWhy: "Why does this happen?",
@@ -61,16 +60,16 @@ export const en: Dict = {
     n: "N must be a whole number from 1 to 1200",
   },
   results: {
-    titleA: (m, floor) => `Method A: pay the ${m}% minimum` + (floor ? ` (at least ${floor} baht)` : ""),
-    titleB: (p) => `Method B: pay a fixed ${p} baht`,
+    titleA: (m: string, floor: string | null) => `Method A: pay the ${m}% minimum` + (floor ? ` (at least ${floor} baht)` : ""),
+    titleB: (p: string) => `Method B: pay a fixed ${p} baht`,
     paidIn: "Paid off in",
     totalInterest: "Total interest",
     firstPay: "First payment",
     lastPay: "Last payment",
     to1pct: "Below 1% of the starting balance after",
-    to1pctValue: (n, text) => (n === 1 ? "1 month" : `${n} months`) + ` (${text})`,
+    to1pctValue: (n: number, text: string) => (n === 1 ? "1 month" : `${n} months`) + ` (${text})`,
     neverZero: "By the formula the balance keeps shrinking but never truly reaches zero. The calculator treats it as paid off below 0.5 satang.",
-    neverDecreases: (interest) => `⚠ The payment is no more than the first month's interest (${interest} baht), so the debt never goes down`,
+    neverDecreases: (interest: string) => `⚠ The payment is no more than the first month's interest (${interest} baht), so the debt never goes down`,
   },
   compare: {
     heading: "How long each method takes",
@@ -91,16 +90,16 @@ export const en: Dict = {
     legendB: "B: fixed payment (dashed line)",
     legend1pct: "◆ = below 1% of the starting balance",
     aria: "Balance by month, A solid line, B dashed line",
-    below1pct: (key, mo) => `◆ ${key} below 1% (month ${mo})`,
+    below1pct: (key: string, mo: number) => `◆ ${key} below 1% (month ${mo})`,
     neverDown: "⚠ B: debt never goes down",
-    atMonth: (k, text) => `Month ${k} (${text})`,
+    atMonth: (k: number, text: string) => `Month ${k} (${text})`,
     readA: "● A: minimum",
     readB: "■ B: fixed payment",
-    start: (x) => `Starting balance ${x} baht`,
-    paidOff: (n) => `Paid off (month ${n})`,
+    start: (x: string) => `Starting balance ${x} baht`,
+    paidOff: (n: number) => `Paid off (month ${n})`,
     notSimulated: "Not simulated this far",
-    left: (x) => `${x} baht left`,
-    pay: (x) => `paid ${x} baht`,
+    left: (x: string) => `${x} baht left`,
+    pay: (x: string) => `paid ${x} baht`,
   },
   yearly: {
     heading: "What you pay each year, split into principal and interest",
@@ -112,9 +111,9 @@ export const en: Dict = {
     aria: "Bar chart of payments per year, principal solid, interest hatched",
     axis: "Year",
     axis5: "Year (each bar is 5 years)",
-    tipPrincipal: (x) => `Principal ${x}`,
-    tipInterest: (x) => `Interest ${x}`,
-    note: (i, p) => `In year one you pay ${i} baht of interest and reduce the principal by ${p} baht`,
+    tipPrincipal: (x: string) => `Principal ${x}`,
+    tipInterest: (x: string) => `Interest ${x}`,
+    note: (i: string, p: string) => `In year one you pay ${i} baht of interest and reduce the principal by ${p} baht`,
     noPrincipal: " (some years do not reduce the principal at all, because the payment does not exceed the interest)",
   },
   table: {
@@ -133,8 +132,6 @@ export const en: Dict = {
     chart: "Chart",
     multi: "Several cards",
     why: "Why?",
-    otherLang: "ไทย",
-    otherLangCode: "th",
   },
   footer: {
     title: "Model limitations",
@@ -156,7 +153,7 @@ export const en: Dict = {
     unnamed: "Unnamed",
     heading: "Several cards: which one to pay first?",
     hint: "Enter 2-5 cards and a total monthly budget for debt. The calculator tries 3 strategies.",
-    cardN: (i) => `Card ${i}`,
+    cardN: (i: number) => `Card ${i}`,
     remove: "Remove this card",
     add: "+ Add a card",
     name: "Card name",
@@ -165,16 +162,16 @@ export const en: Dict = {
     m: "Minimum %",
     floor: "Minimum (baht)",
     budget: "Total monthly budget (baht)",
-    budgetLow: (x) => `⚠ The budget is below the combined first-month minimums (${x} baht), so some cards won't get their full minimum`,
+    budgetLow: (x: string) => `⚠ The budget is below the combined first-month minimums (${x} baht), so some cards won't get their full minimum`,
     titles: { minonly: "Pay only the minimums", avalanche: "Highest interest first (Avalanche)", snowball: "Smallest balance first (Snowball)" },
     labels: { minonly: "Minimum", avalanche: "Avalanche", snowball: "Snowball" },
     legend: { minonly: "Minimums only (dotted)", avalanche: "Avalanche (solid)", snowball: "Snowball (dashed)" },
     best: "✓ Least interest in this simulation",
     allPaidIn: "All cards paid off in",
     over100: "Over 100 years",
-    noBudget: (x) => `Ignores the budget: first month pays ${x} baht in total`,
+    noBudget: (x: string) => `Ignores the budget: first month pays ${x} baht in total`,
     order: "Payoff order",
-    paidMonth: (name, n) => name + (n === null ? " not paid off within 100 years" : ` paid off in month ${n}`),
+    paidMonth: (name: string, n: number | null) => name + (n === null ? " not paid off within 100 years" : ` paid off in month ${n}`),
     aria: "Combined balance of the 3 strategies",
     notes: [
       ["Highest interest first (Avalanche)", " = pay every minimum, then put the rest toward the card with the highest interest rate"],
@@ -185,12 +182,14 @@ export const en: Dict = {
   },
   extra: {
     heading: "What paying extra changes",
-    label: (x) => `Pay ${x} baht a month more than method B`,
+    label: (x: string) => `Pay ${x} baht a month more than method B`,
     hint: "Move the slider to see how much sooner paying extra clears the debt.",
-    payIn: (x) => `Paying ${x} baht a month, paid off in`,
+    payIn: (x: string) => `Paying ${x} baht a month, paid off in`,
     faster: "Sooner by",
     saved: "Interest saved",
     vsNow: "Compared with now",
     nowPaysOff: "Goes from never paid off to paid off",
   },
 };
+
+export type Copy = typeof copy;

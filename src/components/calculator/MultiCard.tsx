@@ -27,7 +27,7 @@ function LineSample({ s }: { s: MultiStrategy }) {
 }
 
 export function MultiCard() {
-  const { t, lang, state, errors, multi, setCard, setBudget, addCard, removeCard } = useCalc();
+  const { t, state, errors, multi, setCard, setBudget, addCard, removeCard } = useCalc();
   const cards = state.multi.cards;
   const { results, best, minSum, cards: parsed } = multi;
   const baht = (v: number) => t.unit.baht(formatBaht(v));
@@ -104,7 +104,7 @@ export function MultiCard() {
               </h3>
               {best === s && <p className="mt-2 text-sm font-semibold text-good">{t.multi.best}</p>}
               <Stat label={t.multi.allPaidIn} big>
-                {r.months === null ? t.multi.over100 : <CountUp value={r.months} format={(v) => monthsToText(Math.round(v), lang)} />}
+                {r.months === null ? t.multi.over100 : <CountUp value={r.months} format={(v) => monthsToText(Math.round(v))} />}
               </Stat>
               <Stat label={t.results.totalInterest}>{r.totalInterest === null ? t.unit.none : <CountUp value={r.totalInterest} format={baht} />}</Stat>
               {s === "minonly" && <p className="text-sm text-muted">{t.multi.noBudget(formatBaht(minSum))}</p>}
@@ -128,7 +128,7 @@ export function MultiCard() {
         ))}
       </div>
       <div className="pressed rounded-well p-3 sm:p-4">
-        <LineChart len={len} ymax={Math.max(...series.map((s) => Math.max(...s.data)))} series={series} aria={t.multi.aria} lang={lang} />
+        <LineChart len={len} ymax={Math.max(...series.map((s) => Math.max(...s.data)))} series={series} aria={t.multi.aria} />
       </div>
       <ul className="mt-5 grid gap-2 text-sm text-muted list-disc pl-5 max-w-[75ch]">
         {t.multi.notes.map(([b, rest], i) => (
