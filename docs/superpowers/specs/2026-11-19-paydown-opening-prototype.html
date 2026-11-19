@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paydown: opening prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ede3d1; --surface: #e4dac9; --hair: #cec5b3; --ink: #000; --muted: #373737;
+    --accent: #92400e; --btn: #3b2a1a; --on-btn: #fcfcfd; --inv: #141314; --on-inv: #fcfcfd;
+    --display: "Host Grotesk", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body { margin: 0; color: var(--ink); font: 400 16px/1.6 var(--mono); }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  @media (min-width: 1248px) { .wrap { padding: 0; } }
+
+  /* header */
+  header { height: 76px; display: flex; align-items: center; justify-content: space-between; }
+  .mark { display: flex; align-items: center; gap: 10px; font: 600 21px/1 var(--display); letter-spacing: -0.01em; color: var(--ink); text-decoration: none; }
+  .mark i { width: 22px; height: 22px; background: var(--btn); position: relative; }
+  .mark i::after { content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 6px; background: var(--accent); }
+  nav.main { display: flex; gap: 36px; }
+  nav.main a { font: 500 14px/1 var(--mono); color: var(--ink); text-decoration: none; padding: 8px 0; border-bottom: 1px solid transparent; }
+  nav.main a:hover { border-color: var(--ink); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 22px; font: 500 15px/1 var(--mono); text-decoration: none; border: 1px solid var(--btn); }
+  .btn.primary { background: var(--btn); color: var(--on-btn); }
+  .btn.secondary { background: transparent; color: var(--ink); }
+  .btn.sm { height: 40px; padding: 0 16px; font-size: 14px; }
+  .menu { display: none; }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: 548px 1fr; gap: 56px; align-items: start; padding: 72px 0 0; }
+  h1 { font: 500 67px/1.02 var(--display); letter-spacing: -0.025em; margin: 0; text-wrap: balance; }
+  h1 .num { font-variant-numeric: tabular-nums; }
+  .lede { margin: 28px 0 0; max-width: 46ch; color: var(--muted); font-size: 16px; line-height: 1.65; }
+  .actions { display: flex; gap: 14px; margin-top: 36px; }
+  .trust { margin: 18px 0 0; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+  .trust::before { content: ""; width: 8px; height: 8px; background: var(--accent); }
+  .basis { margin: 64px 0 12px; font-size: 12.5px; color: var(--muted); }
+  .stats { margin-top: 0; border-top: 1px solid var(--ink); display: grid; grid-template-columns: repeat(4, 1fr); }
+  .stat { padding: 18px 16px 0 0; }
+  .stat b { display: block; font: 500 28px/1.1 var(--display); letter-spacing: -0.01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stat span { white-space: nowrap; display: block; margin-top: 8px; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+
+  /* browser frame with the live calculator */
+  .frame { background: var(--surface); border: 1px solid var(--hair); }
+  .chrome { height: 40px; display: flex; align-items: center; gap: 14px; padding: 0 14px; border-bottom: 1px solid var(--hair); }
+  .dots { display: flex; gap: 6px; } .dots i { width: 9px; height: 9px; background: var(--hair); }
+  .url { flex: 1; height: 24px; background: var(--bg); display: flex; align-items: center; padding: 0 10px; font-size: 12px; color: var(--muted); }
+  .app { padding: 24px 24px 22px; display: grid; gap: 18px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .in { height: 42px; background: var(--bg); border: 1px solid var(--hair); display: flex; align-items: center; padding: 0 12px; font: 500 16px/1 var(--mono); font-variant-numeric: tabular-nums; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--btn); }
+  .seg span { height: 38px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+  .seg .on { background: var(--btn); color: var(--on-btn); }
+  .results { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--hair); }
+  .res { padding: 14px 0 0; }
+  .res + .res { padding-left: 16px; border-left: 1px solid var(--hair); }
+  .res small { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .res strong, .res em, .stat b { white-space: nowrap; }
+  .res strong { display: block; margin-top: 4px; font: 500 32px/1.1 var(--display); letter-spacing: -0.015em; }
+  .res em { font-style: normal; display: block; margin-top: 4px; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .chart { background: var(--bg); border: 1px solid var(--hair); padding: 12px 12px 6px; }
+  .chart svg { display: block; width: 100%; height: auto; }
+
+  @media (max-width: 900px) {
+    nav.main, header .btn { display: none; }
+    .menu { display: inline-flex; width: 44px; height: 44px; border: 1px solid var(--btn); align-items: center; justify-content: center; }
+    .menu i, .menu i::before, .menu i::after { width: 18px; height: 2px; background: var(--btn); display: block; position: relative; }
+    .menu i::before, .menu i::after { content: ""; position: absolute; } .menu i::before { top: -6px; } .menu i::after { top: 6px; }
+    .hero { grid-template-columns: 1fr; gap: 48px; padding-top: 40px; }
+    h1 { font-size: 50px; line-height: 1.04; } .basis { margin-top: 44px; }
+    .stats { grid-template-columns: 1fr 1fr; row-gap: 22px; }
+    .actions { flex-direction: column; } .actions .btn { width: 100%; }
+    .app { padding: 18px; } .row { grid-template-columns: 1fr; } .results { grid-template-columns: 1fr; } .res + .res { padding-left: 0; border-left: 0; border-top: 1px solid var(--hair); margin-top: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="mark" href="#"><i></i>Paydown</a>
+    <nav class="main" aria-label="Main">
+      <a href="#">Calculator</a><a href="#">Charts</a><a href="#">Several cards</a><a href="#">Why it happens</a>
+    </nav>
+    <a class="btn primary sm" href="#">Open the calculator</a>
+    <button class="menu" aria-label="Open menu"><i></i></button>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>When does your card debt end?</h1>
+      <p class="lede">Compare paying the minimum with a fixed amount each month, watch the balance month by month, and see the math behind it.</p>
+      <div class="actions">
+        <a class="btn primary" href="#">Open the calculator</a>
+        <a class="btn secondary" href="#">Why minimums take decades</a>
+      </div>
+      <p class="trust">Free, no sign-up. Your numbers stay in your browser.</p>
+      <p class="basis">Example: 30,000 ฿ balance at 16% a year</p>
+      <div class="stats">
+        <div class="stat"><b>34y 10m</b><span>5% minimum</span></div>
+        <div class="stat"><b>2 years</b><span>fixed 1,500 ฿</span></div>
+        <div class="stat"><b>5,782 ฿</b><span>interest saved</span></div>
+        <div class="stat"><b>Never</b><span>at 400 ฿ / month</span></div>
+      </div>
+    </div>
+
+    <div class="frame" aria-label="The calculator">
+      <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url">paydown.vercel.app/calculator</div></div>
+      <div class="app">
+        <div class="row">
+          <div><label>Balance (baht)</label><div class="in">30,000</div></div>
+          <div><label>Interest per year (%)</label><div class="in">16</div></div>
+        </div>
+        <div class="row">
+          <div><label>Method A: minimum (% of balance)</label><div class="in">5</div></div>
+          <div><label>Method B: fixed per month (baht)</label><div class="in">1,500</div></div>
+        </div>
+        <div class="results">
+          <div class="res"><small><svg width="22" height="6"><line x1="0" x2="22" y1="3" y2="3" stroke="#3b2a1a" stroke-width="3"/></svg>Method A paid off in</small><strong>34 yrs 10 mo</strong><em>interest 10,909.08 ฿</em></div>
+          <div class="res"><small><svg width="22" height="6"><line x1="0" x2="22" y1="3" y2="3" stroke="#92400e" stroke-width="3" stroke-dasharray="5 4"/></svg>Method B paid off in</small><strong>2 years</strong><em>interest 5,126.95 ฿</em></div>
+        </div>
+        <div class="chart">
+          <svg viewBox="0 0 540 170" role="img" aria-label="Balance by month">
+            <g stroke="#cec5b3"><line x1="40" x2="532" y1="20" y2="20"/><line x1="40" x2="532" y1="70" y2="70"/><line x1="40" x2="532" y1="120" y2="120"/></g>
+            <g font-family="IBM Plex Mono" font-size="11" fill="#373737"><text x="34" y="24" text-anchor="end">30k</text><text x="34" y="74" text-anchor="end">15k</text><text x="34" y="124" text-anchor="end">0</text>
+            <text x="40" y="146">0</text><text x="180" y="146">10 yr</text><text x="320" y="146">20 yr</text><text x="460" y="146">30 yr</text></g>
+            <path d="M40 20 C70 62 100 95 160 110 S320 119 532 120" fill="none" stroke="#3b2a1a" stroke-width="2.5"/>
+            <path d="M40 20 L68 120 L532 120" fill="none" stroke="#92400e" stroke-width="2.5" stroke-dasharray="7 5"/>
+            <g font-family="IBM Plex Mono" font-size="12" font-weight="600"><text x="168" y="100" fill="#3b2a1a">A</text><text x="74" y="70" fill="#92400e">B</text></g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>
