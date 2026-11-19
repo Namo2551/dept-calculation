@@ -2,6 +2,7 @@
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useCalculator } from "@/hooks/useCalculator";
 import type { Lang } from "@/i18n/types";
+import { BalanceChart } from "./BalanceChart";
 import { CalcContext } from "./CalcContext";
 import { CompareBars } from "./CompareBars";
 import { ExtraPayment } from "./ExtraPayment";
@@ -9,6 +10,7 @@ import { Hero } from "./Hero";
 import { RequiredPayment } from "./RequiredPayment";
 import { ResultCards } from "./ResultCards";
 import { SingleCardForm } from "./SingleCardForm";
+import { YearlyChart } from "./YearlyChart";
 
 export function Calculator({ lang }: { lang: Lang }) {
   const calc = useCalculator(lang);
@@ -27,6 +29,8 @@ export function Calculator({ lang }: { lang: Lang }) {
               <ResultCards />
               <CompareBars />
             </section>
+            <BalanceChart />
+            <YearlyChart />
             <div className="grid gap-8 md:grid-cols-2">
               <RequiredPayment />
               <ExtraPayment />
