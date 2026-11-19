@@ -35,7 +35,7 @@ export function NumberField({
         onChange={(e) => onChange(e.target.value)}
         aria-invalid={error ? "true" : "false"}
         aria-describedby={error ? id + "-err" : undefined}
-        className={`num w-full h-12 bg-bg border px-3 text-base font-medium text-ink ${error ? "border-2 border-bad" : "border-hair"}`}
+        className={`num w-full h-12 bg-bg border px-3 text-base font-medium text-ink ${error ? "border-2 border-bad" : "border-field"}`}
       />
       {error && (
         <p id={id + "-err"} className="mt-2 text-sm text-bad">

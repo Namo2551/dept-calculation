@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { keepFigures } from "@/lib/format";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 // Counts from the previous value to the new one in 0.5 s (instant with reduced motion).
@@ -31,5 +32,5 @@ export function CountUp({ value, format }: { value: number; format: (v: number) 
     };
   }, [value, reduced]);
 
-  return <>{format(shown)}</>;
+  return <>{keepFigures(format(shown))}</>;
 }

@@ -6,6 +6,8 @@
   --bg: #ede3d1;
   --surface: #e4dac9;
   --hair: #cec5b3;
+  /* text-input boundary: 3.77:1 on the card (#e4dac9), 4.11:1 on the page (#ede3d1) */
+  --field: #7a6a55;
   --ink: #000000;
   --muted: #373737;
   --accent: #92400e;
@@ -28,6 +30,7 @@
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-hair: var(--hair);
+  --color-field: var(--field);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-accent: var(--accent);

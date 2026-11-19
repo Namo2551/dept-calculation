@@ -12,6 +12,11 @@ export function formatBaht(n: number): string {
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
+// Keeps a figure and its unit together ("34 years", "10,909.08 baht") with a no-break space; spaces between groups stay breakable.
+export function keepFigures(s: string): string {
+  return s.replace(/(\d) (?=[A-Za-z])/g, "$1\u00a0");
+}
+
 // 418 -> "34 years 10 months"
 export function monthsToText(n: number): string {
   const y = Math.floor(n / 12);

@@ -69,7 +69,7 @@ export function SingleCardForm() {
           <label htmlFor="shareText" className="block font-medium mb-2">
             {t.form.shareBox}
           </label>
-          <input id="shareText" readOnly value={shareFallback} onFocus={(e) => e.target.select()} autoFocus className="w-full h-12 bg-bg border border-hair px-3 text-sm" />
+          <input id="shareText" readOnly value={shareFallback} onFocus={(e) => e.target.select()} autoFocus className="w-full h-12 bg-bg border border-field px-3 text-sm" />
         </div>
       )}
     </Panel>

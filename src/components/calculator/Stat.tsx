@@ -1,9 +1,11 @@
+import { keepFigures } from "@/lib/format";
+
 // A label with its value underneath. `big` marks the headline number of a card.
 export function Stat({ label, children, big = false }: { label: string; children: React.ReactNode; big?: boolean }) {
   return (
     <div className="my-2">
       <span className="block text-xs text-muted">{label}</span>
-      <span className={`num block whitespace-nowrap ${big ? "font-display text-[32px] font-medium tracking-[-0.015em] leading-[1.1] mt-1" : "text-base font-medium"}`}>{children}</span>
+      <span className={`num block ${big ? "sm:whitespace-nowrap " : "whitespace-nowrap "}${big ? "font-display text-[32px] font-medium tracking-[-0.015em] leading-[1.1] mt-1" : "text-base font-medium"}`}>{typeof children === "string" ? keepFigures(children) : children}</span>
     </div>
   );
 }
