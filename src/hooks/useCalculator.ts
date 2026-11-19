@@ -147,7 +147,7 @@ export function useCalculator() {
     [update],
   );
 
-  // "Use as method B": the rounded-up payment for N months becomes the fixed payment.
+  // "Use as method B": the rounded up payment for N months becomes the fixed payment.
   const applyRequiredPayment = useCallback(() => {
     const { bal, apr, n } = single.v;
     setSingle("p", formatBahtShort(requiredPayment(bal, apr, n).roundedUp));

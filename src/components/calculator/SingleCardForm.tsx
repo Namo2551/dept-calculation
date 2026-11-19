@@ -21,7 +21,7 @@ export function SingleCardForm() {
         {field("apr", t.form.apr)}
       </div>
       <div className="mt-6 grid gap-6 sm:grid-cols-2">
-        <fieldset className="pressed rounded-well p-5 grid gap-4 min-w-0">
+        <fieldset className="bg-bg border border-hair p-5 grid gap-4 min-w-0">
           <legend className="font-semibold float-left w-full mb-1">
             <svg width="34" height="10" aria-hidden="true" className="inline mr-2 align-middle">
               <line x1="0" x2="34" y1="5" y2="5" stroke="var(--series-a)" strokeWidth="3" />
@@ -31,7 +31,7 @@ export function SingleCardForm() {
           {field("m", t.form.m)}
           {field("floor", t.form.floor, t.form.floorHint)}
         </fieldset>
-        <fieldset className="pressed rounded-well p-5 grid gap-4 content-start min-w-0">
+        <fieldset className="bg-bg border border-hair p-5 grid gap-4 content-start min-w-0">
           <legend className="font-semibold float-left w-full mb-1">
             <svg width="34" height="10" aria-hidden="true" className="inline mr-2 align-middle">
               <line x1="0" x2="34" y1="5" y2="5" stroke="var(--series-b)" strokeWidth="3" strokeDasharray="9 6" />
@@ -69,7 +69,7 @@ export function SingleCardForm() {
           <label htmlFor="shareText" className="block font-medium mb-2">
             {t.form.shareBox}
           </label>
-          <input id="shareText" readOnly value={shareFallback} onFocus={(e) => e.target.select()} autoFocus className="pressed w-full min-h-12 rounded-well px-4 text-sm" />
+          <input id="shareText" readOnly value={shareFallback} onFocus={(e) => e.target.select()} autoFocus className="w-full h-12 bg-bg border border-hair px-3 text-sm" />
         </div>
       )}
     </Panel>

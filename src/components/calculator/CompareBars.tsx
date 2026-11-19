@@ -16,7 +16,7 @@ export function CompareBars() {
         <span className="num">{durationText(s)}</span>
       </div>
       <div
-        className={`h-6 rounded-full transition-[width] duration-300 ${key === "A" ? "bg-series-a" : "hatch-b"}`}
+        className={`h-6 transition-[width] duration-300 ${key === "A" ? "bg-series-a" : "hatch-series-b"}`}
         style={{ width: width(s) + "%" }}
       />
     </div>
@@ -24,7 +24,7 @@ export function CompareBars() {
   return (
     <Panel>
       <PanelTitle>{t.compare.heading}</PanelTitle>
-      <div className="pressed rounded-well p-5 grid gap-5">
+      <div className="bg-bg border border-hair p-5 grid gap-5">
         {bar("A", t.compare.barA, A)}
         {bar("B", t.compare.barB, B)}
       </div>

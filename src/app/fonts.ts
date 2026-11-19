@@ -1,14 +1,16 @@
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Host_Grotesk, IBM_Plex_Mono } from "next/font/google";
 
-export const plexSans = IBM_Plex_Sans({
-  weight: ["400", "500", "600", "700"],
+// Display face for headings and large figures.
+export const hostGrotesk = Host_Grotesk({
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-plex-thai",
+  variable: "--font-host-grotesk",
 });
 
+// Body face: everything else, including numbers.
 export const plexMono = IBM_Plex_Mono({
-  weight: ["500", "600"],
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
   variable: "--font-plex-mono",

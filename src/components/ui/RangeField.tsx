@@ -18,7 +18,7 @@ export function RangeField({
   const id = useId();
   return (
     <div>
-      <label htmlFor={id} className="block font-medium">
+      <label htmlFor={id} className="block text-sm font-medium">
         {label}
       </label>
       <input id={id} type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} />

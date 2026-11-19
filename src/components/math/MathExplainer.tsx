@@ -11,7 +11,7 @@ import { RecurrenceWalk } from "./RecurrenceWalk";
 
 function Card({ children, testId }: { children: React.ReactNode; testId?: string }) {
   return (
-    <section data-testid={testId} className="raised-sm rounded-panel p-5 sm:p-6 min-w-0">
+    <section data-testid={testId} className="inset-card p-5 sm:p-6 min-w-0">
       {children}
     </section>
   );
@@ -40,7 +40,7 @@ export function MathExplainer() {
   const cond3 = p <= rB0;
 
   return (
-    <section id="why" className="raised rounded-panel p-5 sm:p-7 min-w-0">
+    <section id="why" className="min-w-0">
       <p className="mt-4 max-w-[75ch]">{M.intro(formatBaht(B0), String(v.apr), rs, formatBaht(p), String(v.m))}</p>
 
       <div className="grid gap-6 mt-6">

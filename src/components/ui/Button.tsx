@@ -1,21 +1,34 @@
-import type { ButtonHTMLAttributes } from "react";
+import Link from "next/link";
+import type { ButtonHTMLAttributes, MouseEventHandler } from "react";
 
-type Variant = "raised" | "primary";
+type Variant = "primary" | "secondary" | "quiet";
+type Size = "md" | "sm";
 
-// Raised pill that presses in on click. "primary" is the single accent action; `selected` shows a pressed toggle.
-export function Button({
-  variant = "raised",
-  selected = false,
-  className = "",
-  ...rest
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; selected?: boolean }) {
-  const base =
-    "inline-flex items-center justify-center gap-2 min-h-11 px-5 rounded-full text-[0.93rem] font-medium cursor-pointer " +
-    "transition-[box-shadow,transform,color] duration-200 active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0";
-  const look = selected
-    ? "pressed-sm text-accent font-semibold"
-    : variant === "primary"
-      ? "bg-accent text-on-accent shadow-[5px_5px_11px_var(--shadow-dark),-5px_-5px_11px_var(--shadow-light)] active:shadow-[inset_3px_3px_6px_rgb(0_0_0/0.25)]"
-      : "raised-sm hover:text-accent active:pressed-sm";
-  return <button type="button" className={`${base} ${look} ${className}`} {...rest} />;
+const base =
+  "inline-flex items-center justify-center gap-2 font-mono font-medium text-center leading-tight cursor-pointer border transition-colors duration-150 " +
+  "disabled:opacity-50 disabled:cursor-not-allowed";
+const sizes: Record<Size, string> = {
+  md: "min-h-12 px-[22px] py-2 text-[15px]",
+  sm: "h-11 px-4 text-sm",
+};
+const looks: Record<Variant, string> = {
+  primary: "bg-btn text-on-btn border-btn hover:bg-ink hover:border-ink",
+  secondary: "bg-transparent text-ink border-btn hover:bg-surface",
+  quiet: "bg-transparent text-ink border-transparent underline underline-offset-4 hover:decoration-2",
+};
+
+type Props = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; size?: Size; href?: string };
+
+// Square button: primary is filled dark brown, secondary is outlined, quiet is an underlined text action.
+// Height 48px (`md`) or 44px (`sm`, compact). Renders a next/link when `href` is set.
+export function Button({ variant = "secondary", size = "md", className = "", href, ...rest }: Props) {
+  const cls = `${base} ${sizes[size]} ${looks[variant]} ${className}`;
+  if (href !== undefined) {
+    return (
+      <Link href={href} className={cls} onClick={rest.onClick as unknown as MouseEventHandler<HTMLAnchorElement> | undefined}>
+        {rest.children}
+      </Link>
+    );
+  }
+  return <button type="button" className={cls} {...rest} />;
 }

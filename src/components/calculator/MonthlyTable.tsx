@@ -24,10 +24,10 @@ export function MonthlyTable() {
   };
 
   return (
-    <details id="tableBox" className="raised rounded-panel p-5 sm:p-7 no-print" open={open} onToggle={(e) => setOpen(e.currentTarget.open)}>
+    <details id="tableBox" className="inset-card p-5 sm:p-7 min-w-0 no-print" open={open} onToggle={(e) => setOpen(e.currentTarget.open)}>
       <summary className="text-xl sm:text-2xl font-semibold tracking-tight min-h-11 flex items-center justify-between gap-4">
         {t.table.summary}
-        <span aria-hidden="true" className={`raised-sm rounded-full w-10 h-10 grid place-items-center transition-transform ${open ? "rotate-180" : ""}`}>
+        <span aria-hidden="true" className={`border border-btn w-10 h-10 grid place-items-center transition-transform ${open ? "rotate-180" : ""}`}>
           ▾
         </span>
       </summary>
@@ -42,7 +42,7 @@ export function MonthlyTable() {
             />
             <Button onClick={download}>{t.table.csv}</Button>
           </div>
-          <div className="pressed rounded-well mt-5 max-h-[420px] overflow-auto">
+          <div className="bg-bg border border-hair mt-5 max-h-[420px] overflow-auto">
             <table className="w-full border-collapse text-[0.93rem]">
               <thead>
                 <tr>
@@ -55,7 +55,7 @@ export function MonthlyTable() {
               </thead>
               <tbody>
                 {rows.map((w) => (
-                  <tr key={w.month} className="border-t border-[var(--grid)]">
+                  <tr key={w.month} className="border-t border-hair">
                     <td className="text-right px-3 py-1.5">{w.month}</td>
                     <td className="text-right px-3 py-1.5 whitespace-nowrap">{formatBaht(w.start)}</td>
                     <td className="text-right px-3 py-1.5 whitespace-nowrap">{formatBaht(w.interest)}</td>

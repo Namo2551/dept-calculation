@@ -12,15 +12,6 @@ export const copy = {
     years: (n: number) => plural(n, "year"),
     none: "-",
   },
-  hero: {
-    title: "Credit card debt calculator: when does paying the minimum clear your debt?",
-    line: (m: string, p: string, a: string, b: string) => `The ${m}% minimum vs a fixed ${p}: ${a} vs ${b}`,
-    over100: "over 100 years",
-    toTool: "Start calculating",
-    toWhy: "Why does this happen?",
-    banner: "The top half works with your own numbers. The bottom half explains the math behind it (recurrence relations + mathematical reasoning).",
-    printOnly: "Debt calculator summary (an educational estimate with example numbers)",
-  },
   loading: "Loading your numbers",
   form: {
     heading: "Enter your numbers",
@@ -126,22 +117,48 @@ export const copy = {
   },
   math: mathEn,
   nav: {
-    label: "Sections",
-    tool: "Calculator",
-    results: "Results",
-    chart: "Chart",
-    multi: "Several cards",
-    why: "Why?",
+    label: "Main",
+    menu: "Menu",
+    home: "Paydown, home",
+    links: [
+      { href: "/calculator", label: "Calculator" },
+      { href: "/charts", label: "Charts" },
+      { href: "/multi", label: "Several cards" },
+      { href: "/why", label: "Why it happens" },
+    ],
+    cta: "Open the calculator",
   },
   footer: {
-    title: "Model limitations",
-    items: [
-      "Interest is charged monthly (r = yearly interest ÷ 12)",
-      "No fees, and no new spending on the card",
-      "The example numbers are made up, not the terms of any real card or bank",
-      "Real cards may charge interest daily and have other terms. Check your actual statement.",
-      "This is an educational estimate only",
+    blurb: "A free calculator that shows how long card debt really lasts, and why.",
+    columns: [
+      {
+        title: "Tools",
+        links: [
+          { href: "/calculator", label: "Calculator" },
+          { href: "/charts", label: "Charts" },
+          { href: "/multi", label: "Several cards" },
+        ],
+      },
+      {
+        title: "Learn",
+        links: [
+          { href: "/why", label: "Why it happens" },
+          { href: "/#how", label: "How it works" },
+          { href: "/#faq", label: "FAQ" },
+        ],
+      },
+      {
+        title: "Project",
+        links: [
+          { href: "https://github.com/Namo2551/dept-calculation", label: "Source on GitHub" },
+          { href: "https://github.com/Namo2551/dept-calculation#readme", label: "README" },
+        ],
+      },
     ],
+    github: "Paydown on GitHub",
+    limits:
+      "Model limits: interest is charged monthly (yearly rate ÷ 12), with no fees or new spending, and the example numbers are made up, while real cards may charge interest daily and have other terms, so check your actual statement.",
+    legal: "© 2026 Paydown. Educational estimate, not financial advice.",
   },
   need: {
     heading: "To be debt-free in N months, how much a month?",

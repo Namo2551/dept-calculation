@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { siteUrl } from "@/app/site";
 import { CalcProvider } from "@/components/CalcProvider";
-import { Footer } from "@/components/calculator/Footer";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { SiteHeader } from "@/components/site/SiteHeader";
 import { copy } from "@/copy";
-import { plexMono, plexSans } from "./fonts";
+import { hostGrotesk, plexMono } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,12 +16,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${plexSans.variable} ${plexMono.variable} antialiased`}>
-      <body className="min-h-dvh bg-bg text-text"><CalcProvider>
-          <main className="mx-auto max-w-[1040px] px-4 sm:px-6 pb-16">
-            {children}
-            <Footer />
-          </main>
+    <html lang="en" className={`${hostGrotesk.variable} ${plexMono.variable} antialiased`}>
+      <body className="min-h-dvh bg-bg text-ink">
+        <CalcProvider>
+          <SiteHeader />
+          <main className="container-page pb-16">{children}</main>
+          <SiteFooter />
         </CalcProvider>
       </body>
     </html>

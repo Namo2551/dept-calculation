@@ -46,7 +46,7 @@ export function YearlyChart() {
           {t.yearly.interest}
         </span>
       </div>
-      <div ref={box} className="pressed rounded-well p-3 sm:p-4">
+      <div ref={box} className="bg-bg border border-hair p-3 sm:p-4">
         <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t.yearly.aria} className="block w-full h-auto">
           <defs>
             <pattern id={hatch} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -76,7 +76,7 @@ export function YearlyChart() {
                 </rect>
                 <text x={cx} y={H - Bm + 18} textAnchor="middle" fontSize="12" fill="var(--muted)">{g.label}</text>
                 {bw >= 30 && (
-                  <text x={cx} y={yI - 5} textAnchor="middle" fontSize="12" fill="var(--text)">{shortBaht(p + g.interest)}</text>
+                  <text x={cx} y={yI - 5} textAnchor="middle" fontSize="12" fill="var(--ink)">{shortBaht(p + g.interest)}</text>
                 )}
               </g>
             );

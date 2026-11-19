@@ -1,97 +1,100 @@
 @import "tailwindcss";
 
-/* ===== Design tokens: neumorphism "Cloud" (light) and "Night" (dark) =====
-   Every surface shares the page color; depth comes only from two tinted shadows
-   (light from the top-left, shade toward the bottom-right). */
+/* ===== Design tokens: "Paydown", a single light theme =====
+   Warm paper ground, inset cards (surface fill + 1px hairline), square corners, no shadows. */
 :root {
-  --bg: #e4e9f0;
-  --shadow-dark: #c1c9d4;
-  --shadow-light: #ffffff;
-  --text: #18212d;
-  --muted: #4f5b6c;
-  --accent: #1f5fbf;
-  --on-accent: #ffffff;
-  --series-a: #1f5fbf;
-  --series-b: #a04600;
-  --good: #1b7339;
-  --warn: #8a4b00;
-  --bad: #ad1f1f;
-  --focus: #b45f00; /* 3.76:1 against --bg, so the keyboard focus ring is visible */
-  --grid: #cdd4de;
+  --bg: #ede3d1;
+  --surface: #e4dac9;
+  --hair: #cec5b3;
+  --ink: #000000;
+  --muted: #373737;
+  --accent: #92400e;
+  --btn: #3b2a1a;
+  --on-btn: #fcfcfd;
+  --inv: #141314;
+  --on-inv: #fcfcfd;
+  --inv-muted: #bdb6aa;
+  --inv-accent: #e8a873;
+  --good: #2f5d1e;
+  --bad: #9b1c1c;
+  --series-a: #3b2a1a;
+  --series-b: #92400e;
+  --grid: #cec5b3;
+  --focus: #92400e;
   color-scheme: light;
-}
-/* screen only: printing always uses the light palette on white paper */
-@media screen and (prefers-color-scheme: dark) {
-  :root {
-    --bg: #262a33;
-    --shadow-dark: #1a1d23;
-    --shadow-light: #323743;
-    --text: #eef1f6;
-    --muted: #aab2c0;
-    --accent: #7aa9ff;
-    --on-accent: #0b1220;
-    --series-a: #7aa9ff;
-    --series-b: #ffa45c;
-    --good: #72d394;
-    --warn: #ffd08a;
-    --bad: #ff9f9f;
-    --focus: #ffc14d;
-    --grid: #3a404c;
-    color-scheme: dark;
-  }
 }
 
 @theme inline {
   --color-bg: var(--bg);
-  --color-text: var(--text);
+  --color-surface: var(--surface);
+  --color-hair: var(--hair);
+  --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
-  --color-on-accent: var(--on-accent);
+  --color-btn: var(--btn);
+  --color-on-btn: var(--on-btn);
+  --color-inv: var(--inv);
+  --color-on-inv: var(--on-inv);
+  --color-inv-muted: var(--inv-muted);
+  --color-inv-accent: var(--inv-accent);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
   --color-series-a: var(--series-a);
   --color-series-b: var(--series-b);
-  --color-good: var(--good);
-  --color-warn: var(--warn);
-  --color-bad: var(--bad);
-  --color-focus: var(--focus);
-  --font-sans: var(--font-plex-thai), system-ui, sans-serif;
+  /* next/font exposes the families as --font-host-grotesk and --font-plex-mono (see fonts.ts) */
+  --font-display: var(--font-host-grotesk), system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
-  --radius-panel: 22px;
-  --radius-well: 14px;
+  --default-font-family: var(--font-plex-mono), ui-monospace, monospace;
 }
 
-/* ===== Neumorphic depth ===== */
-@utility raised {
-  background-color: var(--bg);
-  box-shadow: 9px 9px 20px var(--shadow-dark), -9px -9px 20px var(--shadow-light);
+/* An inset card: surface fill and a 1px hairline, no shadow. */
+@utility inset-card {
+  background-color: var(--surface);
+  border: 1px solid var(--hair);
 }
-@utility raised-sm {
-  background-color: var(--bg);
-  box-shadow: 5px 5px 11px var(--shadow-dark), -5px -5px 11px var(--shadow-light);
+
+/* Section padding: 64/48px on small screens, 96/64px from 900px. */
+@utility band {
+  padding-top: 64px;
+  padding-bottom: 48px;
+  @media (min-width: 900px) {
+    padding-top: 96px;
+    padding-bottom: 64px;
+  }
 }
-@utility pressed {
-  background-color: var(--bg);
-  box-shadow: inset 4px 4px 9px var(--shadow-dark), inset -4px -4px 9px var(--shadow-light);
+
+/* Page container: 1200px wide with 24px side margins. */
+@utility container-page {
+  width: min(1200px, 100% - 48px);
+  margin-inline: auto;
 }
-@utility pressed-sm {
-  background-color: var(--bg);
-  box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+
+/* Hatched fill for method B bars, in series B. */
+@utility hatch-series-b {
+  background: repeating-linear-gradient(45deg, var(--series-b) 0 8px, transparent 8px 12px);
+  border: 2px solid var(--series-b);
 }
 
 @layer base {
   html {
     background: var(--bg);
-    color: var(--text);
+    color: var(--ink);
   }
   body {
-    font-family: var(--font-sans);
+    font-family: var(--font-mono);
+    font-size: 16px;
     line-height: 1.6;
-    font-size: 1.02rem;
+  }
+  *,
+  ::before,
+  ::after {
+    border-radius: 0;
   }
   [id] {
     scroll-margin-top: 84px;
   }
   :focus-visible {
-    outline: 3px solid var(--focus);
+    outline: 2px solid var(--focus);
     outline-offset: 2px;
   }
   .num,
@@ -101,8 +104,10 @@
   h1,
   h2,
   h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
     text-wrap: balance;
-    line-height: 1.3;
+    line-height: 1.2;
   }
   p {
     text-wrap: pretty;
@@ -116,48 +121,37 @@
   }
 }
 
-/* Range sliders: pressed track, raised accent thumb */
+/* Range sliders: a thin dark track and a square dark thumb, 44px tall touch area */
 input[type="range"] {
   appearance: none;
   -webkit-appearance: none;
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   background: transparent;
   cursor: pointer;
 }
 input[type="range"]::-webkit-slider-runnable-track {
-  height: 12px;
-  border-radius: 999px;
-  background: var(--bg);
-  box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+  height: 4px;
+  background: var(--btn);
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 26px;
-  height: 26px;
-  margin-top: -7px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 3px 3px 7px var(--shadow-dark), -3px -3px 7px var(--shadow-light);
+  width: 22px;
+  height: 22px;
+  margin-top: -9px;
+  border: 2px solid var(--bg);
+  background: var(--btn);
 }
 input[type="range"]::-moz-range-track {
-  height: 12px;
-  border-radius: 999px;
-  background: var(--bg);
-  box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+  height: 4px;
+  background: var(--btn);
 }
 input[type="range"]::-moz-range-thumb {
-  width: 26px;
-  height: 26px;
-  border: none;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-/* Hatched fill used for method B bars and interest bars */
-.hatch-b {
-  background: repeating-linear-gradient(45deg, var(--series-b) 0 8px, transparent 8px 12px);
-  box-shadow: inset 0 0 0 2px var(--series-b);
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--bg);
+  border-radius: 0;
+  background: var(--btn);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -178,18 +172,16 @@ input[type="range"]::-moz-range-thumb {
   display: none;
 }
 
-/* ===== Print / save as PDF: keep the inputs, results, chart and comparison; flatten the neumorphism ===== */
+/* ===== Print / save as PDF: white paper, black text, no site chrome or controls ===== */
 @media print {
   @page {
     margin: 12mm;
   }
-  html {
-    font-size: 12px;
-    background: #fff;
-  }
+  html,
   body {
-    background: #fff;
-    color: #000;
+    font-size: 12px;
+    background: #fff !important;
+    color: #000 !important;
     line-height: 1.3;
   }
   .no-print,
@@ -203,16 +195,14 @@ input[type="range"]::-moz-range-thumb {
   .print-only {
     display: block;
   }
-  .raised,
-  .raised-sm,
-  .pressed,
-  .pressed-sm {
+  .inset-card,
+  .bg-bg,
+  .bg-surface {
     background: #fff !important;
-    box-shadow: none !important;
-    border: 1px solid #c1c9d4;
+    border-color: #999 !important;
   }
   section,
-  .raised {
+  .inset-card {
     break-inside: avoid;
   }
   main {
@@ -223,6 +213,6 @@ input[type="range"]::-moz-range-thumb {
     border: none;
     min-height: 0;
     padding: 0;
-    font-weight: 700;
+    font-weight: 600;
   }
 }

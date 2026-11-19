@@ -59,7 +59,7 @@ export function MultiCard() {
       <p className="text-muted -mt-2 mb-5">{t.multi.hint}</p>
       <div className="grid gap-5">
         {cards.map((_, i) => (
-          <div key={i} className="pressed rounded-well p-5">
+          <div key={i} className="bg-bg border border-hair p-5">
             <div className="flex items-center justify-between gap-3 mb-3">
               <b>{t.multi.cardN(i + 1)}</b>
               <Button disabled={cards.length <= 2} onClick={() => removeCard(i)}>
@@ -97,7 +97,7 @@ export function MultiCard() {
             .map((c, i) => ({ name: c.name!, mo: r.paidOffMonth[i] }))
             .sort((a, b) => (a.mo === null ? 1e9 : a.mo) - (b.mo === null ? 1e9 : b.mo));
           return (
-            <section key={s} data-testid={`strat-${s}`} className={`rounded-well p-5 ${best === s ? "pressed ring-2 ring-good" : "pressed"}`}>
+            <section key={s} data-testid={`strat-${s}`} className={`p-5 bg-bg border ${best === s ? "border-2 border-good" : "border-hair"}`}>
               <h3 className="flex items-center gap-2 font-semibold leading-snug">
                 <LineSample s={s} />
                 {t.multi.titles[s]}
@@ -127,13 +127,13 @@ export function MultiCard() {
           </span>
         ))}
       </div>
-      <div className="pressed rounded-well p-3 sm:p-4">
+      <div className="bg-bg border border-hair p-3 sm:p-4">
         <LineChart len={len} ymax={Math.max(...series.map((s) => Math.max(...s.data)))} series={series} aria={t.multi.aria} />
       </div>
       <ul className="mt-5 grid gap-2 text-sm text-muted list-disc pl-5 max-w-[75ch]">
         {t.multi.notes.map(([b, rest], i) => (
           <li key={i}>
-            {b && <b className="text-text">{b}</b>}
+            {b && <b className="text-ink">{b}</b>}
             {rest}
           </li>
         ))}

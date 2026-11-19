@@ -34,7 +34,7 @@ export function InductionLadder() {
   for (let i = s0; i <= k + 1; i++) steps.push({ i, kind: i === k + 1 ? "next" : "done" });
 
   return (
-    <div data-testid="ladder" className="pressed rounded-well p-4 sm:p-5 mt-4">
+    <div data-testid="ladder" className="bg-bg border border-hair p-4 sm:p-5 mt-4">
       <b>{l.title}</b>
       <div className="mt-2">
         <RangeField label={l.pick(k)} min={0} max={60} value={k} onChange={(n) => { setPlaying(false); setK(n); }} />
@@ -62,15 +62,15 @@ export function InductionLadder() {
       {d.nextByClosedForm < 0 && <p className="text-sm text-muted">{l.negative}</p>}
       <div className="flex items-end gap-1.5 mt-4" role="img" aria-label={l.stairs}>
         {s0 > 0 && (
-          <div className="pressed-sm rounded-t-lg text-center text-xs px-1 text-accent flex flex-col justify-end flex-1 max-w-24" style={{ height: 30 }}>
+          <div className="bg-bg border border-hair text-center text-xs px-1 text-accent flex flex-col justify-end flex-1 max-w-24" style={{ height: 30 }}>
             0-{s0 - 1} ✓
           </div>
         )}
         {steps.map(({ i, kind }) => (
           <div
             key={i}
-            className={`rounded-t-lg text-center text-xs px-1 leading-tight flex flex-col justify-end flex-1 max-w-24 min-w-0 overflow-hidden ${
-              kind === "next" ? "border-2 border-dashed border-accent text-accent" : "pressed-sm text-accent"
+            className={`text-center text-xs px-1 leading-tight flex flex-col justify-end flex-1 max-w-24 min-w-0 overflow-hidden ${
+              kind === "next" ? "border-2 border-dashed border-accent text-accent" : "bg-bg border border-hair text-accent"
             }`}
             style={{ height: 36 + (i - s0) * 12 }}
           >

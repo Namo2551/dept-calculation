@@ -72,7 +72,7 @@ export function BalanceChart() {
       out.push(
         <g key={"m" + key}>
           <path d={`M${cx} ${cy - 7}l7 7l-7 7l-7 -7z`} fill={color} stroke="var(--bg)" strokeWidth="1.5" />
-          <text x={cx + (anchor === "end" ? -8 : 8)} y={cy + dy} textAnchor={anchor} fontSize="13" fontWeight="700" fill="var(--text)" {...halo}>
+          <text x={cx + (anchor === "end" ? -8 : 8)} y={cy + dy} textAnchor={anchor} fontSize="13" fontWeight="700" fill="var(--ink)" {...halo}>
             {t.chart.below1pct(key, mo)}
           </text>
         </g>,
@@ -87,7 +87,7 @@ export function BalanceChart() {
       );
     }
     // slider position
-    out.push(<line key="pos" x1={x(kk)} x2={x(kk)} y1={14} y2={y(0)} stroke="var(--text)" strokeDasharray="2 4" />);
+    out.push(<line key="pos" x1={x(kk)} x2={x(kk)} y1={14} y2={y(0)} stroke="var(--ink)" strokeDasharray="2 4" />);
     if (kk < sA.length) out.push(<circle key="pa" cx={x(kk)} cy={y(sA[kk])} r={5} fill="var(--series-a)" />);
     if (kk < sB.length) out.push(<rect key="pb" x={x(kk) - 5} y={y(sB[kk]) - 5} width={10} height={10} fill="var(--series-b)" />);
     return out;
@@ -143,7 +143,7 @@ export function BalanceChart() {
         </span>
         <span>{t.chart.legend1pct}</span>
       </div>
-      <div className="pressed rounded-well p-3 sm:p-4">
+      <div className="bg-bg border border-hair p-3 sm:p-4">
         <LineChart
           len={len}
           ymax={ymax}

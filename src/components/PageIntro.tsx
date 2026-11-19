@@ -1,8 +1,8 @@
 export function PageIntro({ title, intro }: { title: string; intro: string }) {
   return (
-    <header className="pt-8">
-      <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-balance">{title}</h1>
-      <p className="mt-3 max-w-[65ch] text-muted">{intro}</p>
+    <header className="pt-12 min-[900px]:pt-16">
+      <h1 className="font-display font-medium text-[50px] leading-[1.04] min-[900px]:text-[67px] min-[900px]:leading-[1.02] tracking-[-0.025em] text-balance">{title}</h1>
+      <p className="mt-6 max-w-[60ch] text-muted">{intro}</p>
     </header>
   );
 }

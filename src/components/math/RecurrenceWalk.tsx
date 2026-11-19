@@ -22,7 +22,7 @@ export function RecurrenceWalk() {
   const lines = explainFirstMonths(pB, kk).map((s) => s.replace(/^[^:]+: /, ""));
 
   return (
-    <div data-testid="walk" className="pressed rounded-well p-4 sm:p-5 mt-4">
+    <div data-testid="walk" className="bg-bg border border-hair p-4 sm:p-5 mt-4">
       <RangeField label={m.walkLabel(kk)} min={1} max={kMax} value={kk} onChange={setK} />
       <ol className="num list-decimal pl-7 my-3 max-h-56 overflow-auto text-sm grid gap-1">
         {lines.map((l, i) => (
