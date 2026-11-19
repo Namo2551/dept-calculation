@@ -7,6 +7,7 @@ import { CalcContext } from "./CalcContext";
 import { CompareBars } from "./CompareBars";
 import { ExtraPayment } from "./ExtraPayment";
 import { Hero } from "./Hero";
+import { MonthlyTable } from "./MonthlyTable";
 import { RequiredPayment } from "./RequiredPayment";
 import { ResultCards } from "./ResultCards";
 import { SingleCardForm } from "./SingleCardForm";
@@ -35,6 +36,7 @@ export function Calculator({ lang }: { lang: Lang }) {
               <RequiredPayment />
               <ExtraPayment />
             </div>
+            <MonthlyTable />
           </div>
         )}
       </main>

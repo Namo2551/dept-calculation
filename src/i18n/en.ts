@@ -116,6 +116,14 @@ export const en: Dict = {
     note: (i, p) => `In year one you pay ${i} baht of interest and reduce the principal by ${p} baht`,
     noPrincipal: " (some years do not reduce the principal at all, because the payment does not exceed the interest)",
   },
+  table: {
+    summary: "Month-by-month table",
+    methodLabel: "Method shown",
+    methodA: "Method A: minimum",
+    methodB: "Method B: fixed payment",
+    csv: "Download as CSV",
+    cols: ["Month", "Start balance", "Interest", "Payment", "End balance"],
+  },
   need: {
     heading: "To be debt-free in N months, how much a month?",
     n: "N (months)",
