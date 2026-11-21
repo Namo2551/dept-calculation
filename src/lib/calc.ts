@@ -3,7 +3,7 @@ import { simulate, simulateMulti, type Card, type MultiResult, type MultiStrateg
 import { validate, type AppState, type RuleKey, type SingleRaw } from "./state";
 
 export type SingleCalc = {
-  v: { bal: number; apr: number; m: number; floor: number; p: number; n: number }; // m in percent
+  v: { bal: number; apr: number; m: number; floor: number; p: number; n: number; q: number; fee: number }; // m and q in percent
   pA: SingleOptions; // m as a fraction
   pB: SingleOptions;
   A: SimResult;
@@ -19,7 +19,7 @@ export type MultiCalc = {
 };
 
 export const STRATEGIES: MultiStrategy[] = ["minonly", "avalanche", "snowball"];
-const SINGLE_KEYS: (keyof SingleRaw)[] = ["bal", "apr", "m", "floor", "p", "n"];
+const SINGLE_KEYS: (keyof SingleRaw)[] = ["bal", "apr", "m", "floor", "p", "n", "q", "fee"];
 const CARD_RULES: ("balance" | "apr" | "m" | "floor")[] = ["balance", "apr", "m", "floor"];
 
 const num = (key: RuleKey, raw: string) => validate(key, raw) as number;
@@ -33,7 +33,7 @@ export function multiIsValid(m: AppState["multi"]): boolean {
 }
 
 export function computeSingle(s: SingleRaw): SingleCalc {
-  const v = { bal: num("bal", s.bal), apr: num("apr", s.apr), m: num("m", s.m), floor: num("floor", s.floor), p: num("p", s.p), n: num("n", s.n) };
+  const v = { bal: num("bal", s.bal), apr: num("apr", s.apr), m: num("m", s.m), floor: num("floor", s.floor), p: num("p", s.p), n: num("n", s.n), q: num("q", s.q), fee: num("fee", s.fee) };
   const pA: SingleOptions = { balance: v.bal, apr: v.apr, strategy: "pct", m: v.m / 100, floor: v.floor };
   const pB: SingleOptions = { balance: v.bal, apr: v.apr, strategy: "fixed", p: v.p };
   return { v, pA, pB, A: simulate(pA), B: simulate(pB) };

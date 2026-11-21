@@ -58,6 +58,8 @@ export const copy = {
     p: "The payment must be 0 or more",
     budget: "The budget must be 0 or more",
     n: "N must be a whole number from 1 to 1200",
+    q: "The chance must be between 0 and 50 (%)",
+    fee: "The late fee must be between 0 and 2,000 baht",
   },
   results: {
     titleA: (m: string, floor: string | null) => `Method A: pay the ${m}% minimum` + (floor ? ` (at least ${floor} baht)` : ""),

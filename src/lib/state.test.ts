@@ -17,7 +17,7 @@ import {
 describe("defaults and examples", () => {
   test("defaults match the current site", () => {
     const d = defaultState();
-    expect(d.single).toEqual({ bal: "30,000", apr: "16", m: "5", floor: "0", p: "1,500", n: "24" });
+    expect(d.single).toEqual({ bal: "30,000", apr: "16", m: "5", floor: "0", p: "1,500", n: "24", q: "5", fee: "300" });
     expect(d.multi.budget).toBe("3,000");
     expect(d.multi.cards.map((c) => c.name)).toEqual(["Card A", "Card B", "Card C"]);
     expect(d.multi.cards[0]).toEqual({ name: "Card A", balance: "20,000", apr: "24", m: "5", floor: "200" });
@@ -58,6 +58,18 @@ describe("isValidState", () => {
   });
 });
 
+describe("missed-payment inputs", () => {
+  test("chance of missing is 0 to 50 percent, late fee 0 to 2,000 baht", () => {
+    expect(validate("q", "50")).toBe(50);
+    expect(validate("q", "0")).toBe(0);
+    expect(validate("q", "60")).toBeNull();
+    expect(validate("q", "")).toBeNull();
+    expect(validate("fee", "2,000")).toBe(2000);
+    expect(validate("fee", "-1")).toBeNull();
+    expect(validate("fee", "abc")).toBeNull();
+  });
+});
+
 describe("loadState", () => {
   test("old share link from the current site loads", () => {
     const old = {
@@ -69,7 +81,8 @@ describe("loadState", () => {
     };
     const r = loadState({ hash: "#" + encodeURIComponent(JSON.stringify(old)), storage: null });
     expect(r.source).toBe("link");
-    expect(r.state).toEqual(old);
+    // links made before the missed-payment section get its defaults and keep everything else
+    expect(r.state).toEqual({ ...old, single: { ...old.single, q: "5", fee: "300" } });
   });
   test("anchor hash falls through to saved state", () => {
     const saved = defaultState();

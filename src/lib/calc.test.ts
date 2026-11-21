@@ -22,11 +22,22 @@ describe("singleIsValid / multiIsValid", () => {
 describe("computeSingle", () => {
   test("defaults", () => {
     const c = computeSingle(defaultState().single);
-    expect(c.v).toEqual({ bal: 30000, apr: 16, m: 5, floor: 0, p: 1500, n: 24 });
+    expect(c.v).toEqual({ bal: 30000, apr: 16, m: 5, floor: 0, p: 1500, n: 24, q: 5, fee: 300 });
     expect(c.pA).toEqual({ balance: 30000, apr: 16, strategy: "pct", m: 0.05, floor: 0 });
     expect(c.pB).toEqual({ balance: 30000, apr: 16, strategy: "fixed", p: 1500 });
     expect(c.A.months).toBe(418);
     expect(c.B.months).toBe(24);
+  });
+});
+
+describe("computeSingle missed-payment inputs", () => {
+  test("q (percent) and the late fee are parsed", () => {
+    const c = computeSingle(defaultState().single);
+    expect(c.v.q).toBe(5);
+    expect(c.v.fee).toBe(300);
+  });
+  test("an out-of-range chance makes the single inputs invalid", () => {
+    expect(singleIsValid({ ...defaultState().single, q: "60" })).toBe(false);
   });
 });
 
