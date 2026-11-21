@@ -66,7 +66,7 @@ The owner picked layout **B, "report with a chapter menu"**, from three mockups 
 
 - **Menu (left, about 220 px, sticky).** Top: a live one-line summary of the inputs, with an **Edit** button that jumps to section 1 and focuses Balance. This is the old phone summary bar, moved here and always shown, so changing a number is one click from anywhere. Below it, the numbered section links, each with its chapter number chip. The section in view is highlighted (`aria-current="true"`), and a link click scrolls there. At the bottom, "Chapters used" lists the chapters on the page. The menu never scrolls inside itself; it is short enough by design (9 links).
 - **Main column.** Numbered sections, each with a header row: `number · title · chapter tag · Why?` (the Why? button sits in the header, not floating between boxes). Sections are separated by space and a hairline, and only the content that needs a card gets one. That breaks up the wall of identical boxes.
-- **Section 1, Your numbers.** All inputs in a compact grid (balance, interest, A min %, A min ฿, B fixed, and N for the plan section), then the examples and the share, print and reset actions in one toolbar row.
+- **Section 1, Your numbers.** The five card inputs in a compact grid (balance, interest, A min %, A min ฿, B fixed), then the examples and the share, print and reset actions in one toolbar row. N stays in section 5 and the Ch 7 inputs stay in section 6, next to the answers they drive (changed while planning).
 - **Section 2, Results.** A and B side by side at every width ≥ 640 px, with the compare bars under them.
 
 ### Narrow screens (< 1024 px)
