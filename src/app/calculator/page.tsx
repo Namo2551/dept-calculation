@@ -15,6 +15,7 @@ import { PageIntro } from "@/components/PageIntro";
 import { Ready } from "@/components/Ready";
 import { ReportMenu } from "@/components/report/ReportMenu";
 import { ReportSection } from "@/components/report/ReportSection";
+import { RiskSection } from "@/components/report/RiskSection";
 import { copy } from "@/copy";
 
 export const metadata: Metadata = { title: "Calculator" };
@@ -54,7 +55,7 @@ export default function CalculatorPage() {
               </div>
             </ReportSection>
             <ReportSection k="risk">
-              <p className="text-muted">{copy.soon}</p>
+              <RiskSection />
             </ReportSection>
             <ReportSection k="status">
               <p className="text-muted">{copy.soon}</p>
