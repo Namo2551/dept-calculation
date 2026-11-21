@@ -6,11 +6,13 @@ import CalculatorPage from "@/app/calculator/page";
 
 const resultCard = (key: "A" | "B") => screen.getByTestId(`result-${key}`);
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => "/" }));
+const push = vi.fn();
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }), usePathname: () => "/" }));
 
 beforeEach(() => {
   localStorage.clear();
   history.replaceState(null, "", "/");
+  push.mockClear();
 });
 
 describe("Calculator page", () => {
@@ -64,17 +66,58 @@ describe("Calculator page", () => {
     expect(screen.getByLabelText("Fixed payment per month (baht)")).toHaveValue("1,469");
   });
 
-  test("heading, intro, nowrap figures and the closing chart link", async () => {
+  test("heading, intro and nowrap figures", async () => {
     render(<CalcProvider><CalculatorPage /></CalcProvider>);
     await screen.findByTestId("result-B");
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Calculator");
-    expect(screen.getByText("Compare paying the minimum with a fixed amount each month.")).toBeInTheDocument();
-    expect(within(resultCard("A")).getByText("34 years 10 months").closest(".whitespace-nowrap")).not.toBeNull();
+    expect(screen.getByText("One card, two ways to pay, every result on one page.")).toBeInTheDocument();
+    expect(within(resultCard("A")).getByText("34 years 10 months").textContent).toContain("34 years 10 months");
     expect(within(resultCard("B")).getByText("5,126.95 baht").closest(".whitespace-nowrap")).not.toBeNull();
-    const link = screen.getByRole("link", { name: "See it on a chart" });
-    expect(link).toHaveAttribute("href", "/charts");
-    const links = screen.getAllByRole("link");
-    expect(links[links.length - 1]).toBe(link);
+  });
+
+  test("results, balance chart and monthly table are on the same page", async () => {
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    expect(await within(await screen.findByTestId("result-B")).findByText("2 years")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Balance by month" })).toBeInTheDocument();
+    expect(screen.getByText("Month-by-month table")).toBeInTheDocument();
+  });
+
+  test("the math is hidden until a Why? button opens it", async () => {
+    const user = userEvent.setup();
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await screen.findByTestId("result-B");
+    expect(screen.queryByTestId("proof1")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Why? the balance chart" }));
+    expect(screen.getByTestId("proof1")).toBeVisible();
+  });
+
+  test("the full math is a closed details element at the end", async () => {
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await screen.findByTestId("result-B");
+    const math = document.getElementById("math") as HTMLDetailsElement;
+    expect(math.tagName).toBe("DETAILS");
+    expect(math.open).toBe(false);
+    expect(within(math).getByText("The full math, step by step")).toBeInTheDocument();
+  });
+
+  test("an example in the full math updates the results without leaving the page", async () => {
+    const user = userEvent.setup();
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await screen.findByTestId("result-B");
+    const math = document.getElementById("math") as HTMLDetailsElement;
+    await user.click(within(math).getByText("The full math, step by step"));
+    const buttons = within(math).getAllByRole("button", { name: "Try this example" });
+    await user.click(buttons[1]); // the fixed-400 example
+    expect(within(resultCard("B")).getByText("Never")).toBeInTheDocument();
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  test("the inputs column scrolls on its own when taller than the window", async () => {
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await screen.findByTestId("result-B");
+    const aside = document.getElementById("tool")!.closest("aside")!;
+    expect(aside.className).toContain("lg:sticky");
+    expect(aside.className).toContain("lg:overflow-y-auto");
   });
 });

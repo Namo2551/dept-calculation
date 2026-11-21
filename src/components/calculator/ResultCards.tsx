@@ -34,7 +34,7 @@ export function ResultCards() {
   const { t, single } = useCalc();
   const { A, B, v } = single;
   return (
-    <div className="grid gap-7 md:grid-cols-2">
+    <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
       <ResultCard id="A" title={t.results.titleA(String(v.m), v.floor ? formatBahtShort(v.floor) : null)} sim={A}>
         {v.floor === 0 && (
           <>

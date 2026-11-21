@@ -13,7 +13,9 @@ export const copy = {
     none: "-",
   },
   loading: "Loading your numbers",
-  why: { show: "Why?", hide: "Hide the math" },
+  why: { show: "Why?", hide: "Hide the math", results: "the results", chart: "the balance chart", plan: "debt-free in N months" },
+  fullMath: "The full math, step by step",
+  calcPage: { title: "Calculator", intro: "One card, two ways to pay, every result on one page." },
   form: {
     heading: "Enter your numbers",
     bal: "Balance (baht)",

@@ -16,11 +16,11 @@ export function SingleCardForm() {
   return (
     <Panel id="tool" testId="tool-panel">
       <PanelTitle>{t.form.heading}</PanelTitle>
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
         {field("bal", t.form.bal)}
         {field("apr", t.form.apr)}
       </div>
-      <div className="mt-6 grid gap-6 sm:grid-cols-2">
+      <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
         <fieldset className="bg-bg border border-hair p-5 grid gap-4 min-w-0">
           <legend className="font-semibold float-left w-full mb-1">
             <svg width="34" height="10" aria-hidden="true" className="inline mr-2 align-middle">
