@@ -52,7 +52,7 @@ export type RiskSummary = {
   medianMonths: number | null; // null when that path never pays off within 100 years
   p90Months: number | null;
   baselineMonths: number;
-  avgExtraCost: number; // interest + fees beyond the no-miss plan, averaged over paths
+  avgExtraCost: number | null; // interest + fees beyond the no-miss plan, averaged over runs that pay off (null: none do)
   defaultShare: number; // share of paths whose account status ever reaches Default
   unpaidShare: number; // share of paths not paid off within 100 years
 };
@@ -100,13 +100,17 @@ export function simulateMisses(o: { balance: number; apr: number; p: number; q: 
         doneAt = k;
         break;
       }
+      // Once the payment no longer beats the interest, the balance can only grow: this run never pays off.
+      if (p <= r * bal) break;
     }
-    if (doneAt === Infinity) unpaid++;
     if (reachedDefault) defaults++;
     months.push(doneAt);
-    // everything paid plus what is still owed, minus the starting balance = interest + fees
-    const cost = paid + (doneAt === Infinity ? bal : 0) - B0;
-    extraSum += cost - baselineInterest;
+    if (doneAt === Infinity) {
+      unpaid++;
+      continue;
+    }
+    // everything paid minus the starting balance = interest + fees
+    extraSum += paid - B0 - baselineInterest;
   }
   months.sort((a, b) => a - b);
   return {
@@ -114,7 +118,7 @@ export function simulateMisses(o: { balance: number; apr: number; p: number; q: 
     medianMonths: percentile(months, 0.5),
     p90Months: percentile(months, 0.9),
     baselineMonths,
-    avgExtraCost: extraSum / paths,
+    avgExtraCost: paths - unpaid > 0 ? extraSum / (paths - unpaid) : null,
     defaultShare: defaults / paths,
     unpaidShare: unpaid / paths,
   };

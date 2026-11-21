@@ -53,6 +53,21 @@ describe("simulateMisses", () => {
     expect(r.defaultShare).toBeLessThanOrEqual(1);
   });
 
+  test("runs that can never pay off are counted, not averaged into the extra cost", () => {
+    const r = simulateMisses({ ...base, p: 450, q: 0.05 })!;
+    expect(r.unpaidShare).toBeGreaterThan(0);
+    expect(r.avgExtraCost).not.toBeNull();
+    expect(r.avgExtraCost!).toBeLessThan(1e6); // bounded: only runs that pay off are averaged (was ~1e9)
+    const all = simulateMisses({ ...base, p: 1500, q: 0.5, fee: 2000 })!;
+    expect(all.avgExtraCost === null || all.avgExtraCost < 1e6).toBe(true);
+  });
+
+  test("when no run pays off there is no average extra cost", () => {
+    const r = simulateMisses({ ...base, p: 401, q: 0.5 })!;
+    expect(r.unpaidShare).toBe(1);
+    expect(r.avgExtraCost).toBeNull();
+  });
+
   test("a payment that never reduces the debt has nothing to simulate", () => {
     expect(simulateMisses({ ...base, p: 400, q: 0.05 })).toBeNull();
   });
@@ -60,7 +75,7 @@ describe("simulateMisses", () => {
   test("a heavy case stays bounded and never returns NaN", { timeout: 2000 }, () => {
     const r = simulateMisses({ balance: 30000, apr: 16, p: 420, q: 0.5, fee: 300 })!;
     for (const v of [r.medianMonths, r.p90Months]) expect(v === null || Number.isFinite(v)).toBe(true);
-    expect(Number.isFinite(r.avgExtraCost)).toBe(true);
+    expect(r.avgExtraCost === null || Number.isFinite(r.avgExtraCost)).toBe(true);
     expect(r.unpaidShare).toBeGreaterThanOrEqual(0);
   });
 });

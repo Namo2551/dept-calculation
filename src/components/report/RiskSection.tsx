@@ -56,10 +56,11 @@ export function RiskSection() {
             <>
               <Stat label={R.median} big>{months(sim.medianMonths)}</Stat>
               {sim.medianMonths !== null && <p className="text-sm text-muted -mt-1">{R.later(sim.medianMonths - sim.baselineMonths)}</p>}
-              <div className="grid grid-cols-2 gap-x-4 mt-2">
+              <div className="grid sm:grid-cols-2 gap-x-4 mt-2">
                 <Stat label={R.p90}>{months(sim.p90Months)}</Stat>
-                <Stat label={R.extra}>{baht(sim.avgExtraCost)}</Stat>
+                <Stat label={R.extra}>{sim.avgExtraCost === null ? t.unit.none : baht(sim.avgExtraCost)}</Stat>
                 <Stat label={R.defaultShare}>{pct1(sim.defaultShare)}</Stat>
+                <Stat label={R.unpaid}>{pct1(sim.unpaidShare)}</Stat>
               </div>
             </>
           )}

@@ -47,7 +47,7 @@ describe("Missed payments section (Ch 7)", () => {
     await user.clear(q);
     await user.type(q, "0");
     expect(within(risk.getByText("Chance of missing at least once in a year").parentElement!).getByText("0.0%")).toBeInTheDocument();
-    expect(within(risk.getByText("Average extra cost").parentElement!).getByText("0.00 baht")).toBeInTheDocument();
+    expect(within(risk.getByText("Average extra cost (runs that pay off)").parentElement!).getByText("0.00 baht")).toBeInTheDocument();
   });
 
   test("an out-of-range chance shows an error and keeps the last odds", async () => {
@@ -59,6 +59,26 @@ describe("Missed payments section (Ch 7)", () => {
     await user.paste("60"); // in one go: typing would pass through the valid "6"
     expect(risk.getByText("The chance must be between 0 and 50 (%)")).toBeInTheDocument();
     expect(risk.getByText("46.0%")).toBeInTheDocument();
+  });
+
+  test("a slow plan shows how many runs never pay off, and a sane extra cost", async () => {
+    const user = userEvent.setup();
+    const risk = await riskSection();
+    const p = screen.getByLabelText("Fixed payment per month (baht)");
+    await user.clear(p);
+    await user.click(p);
+    await user.paste("450");
+    const never = risk.getByText("Never pay off within 100 years").parentElement!;
+    expect(never.textContent).toMatch(/\d+\.\d%/);
+    const extra = risk.getByText("Average extra cost (runs that pay off)").parentElement!;
+    expect(extra.textContent!.replace(/\D/g, "").length).toBeLessThan(9); // not a billion-baht figure
+  });
+
+  test("simulation stats stack on phones instead of overflowing", async () => {
+    const risk = await riskSection();
+    const grid = risk.getByText("1 in 10 take longer than").parentElement!.parentElement!;
+    expect(grid.className).toContain("sm:grid-cols-2");
+    expect(grid.className.split(" ")).not.toContain("grid-cols-2");
   });
 
   test("when method B never pays off there is nothing to simulate, but the odds stay", async () => {
