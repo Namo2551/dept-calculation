@@ -2,6 +2,12 @@ import { mathEn } from "./math";
 
 const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
 
+// CPE111 chapters used on the site, keyed by chapter number ("1-5" is the joint Ch 1 & 5 lecture).
+export type ChapterKey = "1-5" | "2" | "3" | "6" | "7" | "8" | "13";
+// Numbered sections of the calculator report, in page order.
+export type SectionKey = "inputs" | "results" | "chart" | "yearly" | "plan" | "risk" | "status" | "table" | "math";
+
+
 export const copy = {
   meta: {
     title: "Paydown: when does your card debt end?",
@@ -15,6 +21,26 @@ export const copy = {
   loading: "Loading your numbers",
   why: { show: "Why?", hide: "Hide the math", results: "the results", chart: "the balance chart", plan: "debt-free in N months" },
   fullMath: "The full math, step by step",
+  chapters: {
+    "1-5": { label: "Ch 1 & 5", name: "Mathematical reasoning" },
+    "2": { label: "Ch 2", name: "Sums" },
+    "3": { label: "Ch 3", name: "Algorithms" },
+    "6": { label: "Ch 6", name: "Counting" },
+    "7": { label: "Ch 7", name: "Discrete probability" },
+    "8": { label: "Ch 8", name: "Recurrence relations" },
+    "13": { label: "Ch 13", name: "Finite-state machines" },
+  } as Record<ChapterKey, { label: string; name: string }>,
+  sections: [
+    { key: "inputs", title: "Your numbers", chapters: [] },
+    { key: "results", title: "Results", chapters: ["8"] },
+    { key: "chart", title: "Balance by month", chapters: ["8"] },
+    { key: "yearly", title: "Year by year", chapters: ["2"] },
+    { key: "plan", title: "Your plan", chapters: ["8", "2"] },
+    { key: "risk", title: "Missed payments", chapters: ["7", "6"] },
+    { key: "status", title: "Account status", chapters: ["13"] },
+    { key: "table", title: "Month by month", chapters: ["8"] },
+    { key: "math", title: "The math", chapters: ["1-5"] },
+  ] as { key: SectionKey; title: string; chapters: ChapterKey[] }[],
   summary: {
     label: "Your numbers",
     edit: "Edit",
