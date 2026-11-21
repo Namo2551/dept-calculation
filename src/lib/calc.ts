@@ -19,13 +19,25 @@ export type MultiCalc = {
 };
 
 export const STRATEGIES: MultiStrategy[] = ["minonly", "avalanche", "snowball"];
-const SINGLE_KEYS: (keyof SingleRaw)[] = ["bal", "apr", "m", "floor", "p", "n", "q", "fee"];
+const CORE_KEYS: (keyof SingleRaw)[] = ["bal", "apr", "m", "floor", "p", "n"];
+// The missed-payment inputs (section 6) are checked on their own, so a half-typed chance never freezes the card results.
+const RISK_KEYS: ("q" | "fee")[] = ["q", "fee"];
 const CARD_RULES: ("balance" | "apr" | "m" | "floor")[] = ["balance", "apr", "m", "floor"];
 
 const num = (key: RuleKey, raw: string) => validate(key, raw) as number;
 
 export function singleIsValid(s: SingleRaw): boolean {
-  return SINGLE_KEYS.every((k) => validate(k, s[k]) !== null);
+  return CORE_KEYS.every((k) => validate(k, s[k]) !== null);
+}
+
+// The card fields from `raw` when they are all valid (else from `prev`), and each missed-payment field
+// from `raw` when it is valid on its own (else from `prev`).
+export function keepValid(prev: SingleRaw, raw: SingleRaw): SingleRaw {
+  const out: SingleRaw = singleIsValid(raw) ? { ...raw } : { ...prev };
+  RISK_KEYS.forEach((k) => {
+    out[k] = validate(k, raw[k]) !== null ? raw[k] : prev[k];
+  });
+  return out;
 }
 
 export function multiIsValid(m: AppState["multi"]): boolean {

@@ -61,6 +61,27 @@ describe("Missed payments section (Ch 7)", () => {
     expect(risk.getByText("46.0%")).toBeInTheDocument();
   });
 
+  test("an empty chance does not freeze the other results", async () => {
+    const user = userEvent.setup();
+    const risk = await riskSection();
+    await user.clear(risk.getByLabelText("Chance of missing a month (%)"));
+    const bal = screen.getByLabelText("Balance (baht)");
+    await user.clear(bal);
+    await user.click(bal);
+    await user.paste("50,000");
+    expect(within(screen.getByTestId("result-B")).queryByText("2 years")).toBeNull();
+    expect(JSON.parse(localStorage.getItem("debtcalc.v1")!).single.bal).toBe("50,000");
+  });
+
+  test("a share link with a bad chance keeps its other numbers", async () => {
+    const st = { single: { bal: "30,000", apr: "16", m: "5", floor: "0", p: "2,000", n: "24", q: "abc", fee: "300" },
+      multi: { budget: "3,000", cards: [{ name: "A", balance: "20,000", apr: "24", m: "5", floor: "200" }, { name: "B", balance: "8,000", apr: "18", m: "5", floor: "200" }] } };
+    history.replaceState(null, "", "/calculator#" + encodeURIComponent(JSON.stringify(st)));
+    const risk = await riskSection();
+    expect(within(screen.getByTestId("result-B")).getByText("1 year 5 months")).toBeInTheDocument();
+    expect(risk.getByText("46.0%")).toBeInTheDocument(); // the bad chance falls back to the default 5%
+  });
+
   test("a slow plan shows how many runs never pay off, and a sane extra cost", async () => {
     const user = userEvent.setup();
     const risk = await riskSection();

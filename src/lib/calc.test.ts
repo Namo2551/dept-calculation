@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { computeMulti, computeSingle, multiIsValid, singleIsValid } from "./calc";
+import { computeMulti, computeSingle, keepValid, multiIsValid, singleIsValid } from "./calc";
 import { formatBahtShort } from "./format";
 import { defaultState } from "./state";
 
@@ -36,8 +36,19 @@ describe("computeSingle missed-payment inputs", () => {
     expect(c.v.q).toBe(5);
     expect(c.v.fee).toBe(300);
   });
-  test("an out-of-range chance makes the single inputs invalid", () => {
-    expect(singleIsValid({ ...defaultState().single, q: "60" })).toBe(false);
+  test("the missed-payment fields do not decide whether the card inputs are valid", () => {
+    expect(singleIsValid({ ...defaultState().single, q: "60" })).toBe(true);
+    expect(singleIsValid({ ...defaultState().single, fee: "" })).toBe(true);
+  });
+  test("keepValid takes each valid part of the new inputs and keeps the last valid rest", () => {
+    const def = defaultState().single;
+    const a = keepValid(def, { ...def, bal: "50,000", q: "" });
+    expect(a.bal).toBe("50,000");
+    expect(a.q).toBe("5");
+    const b = keepValid(def, { ...def, bal: "abc", q: "10", fee: "-1" });
+    expect(b.bal).toBe("30,000");
+    expect(b.q).toBe("10");
+    expect(b.fee).toBe("300");
   });
 });
 

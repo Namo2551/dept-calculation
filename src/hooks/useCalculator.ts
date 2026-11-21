@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { copy } from "@/copy";
-import { computeMulti, computeSingle, multiIsValid, singleIsValid, type MultiCalc, type SingleCalc } from "@/lib/calc";
+import { computeMulti, computeSingle, keepValid, multiIsValid, type MultiCalc, type SingleCalc } from "@/lib/calc";
 import { requiredPayment } from "@/lib/debt";
 import { formatBahtShort } from "@/lib/format";
 import {
@@ -28,7 +28,7 @@ type Store = { raw: AppState; okSingle: SingleRaw; okMulti: AppState["multi"] };
 function settle(prev: Store, raw: AppState): Store {
   return {
     raw,
-    okSingle: singleIsValid(raw.single) ? raw.single : prev.okSingle,
+    okSingle: keepValid(prev.okSingle, raw.single),
     okMulti: multiIsValid(raw.multi) ? raw.multi : prev.okMulti,
   };
 }
@@ -40,7 +40,7 @@ function fresh(state: AppState): Store {
 // A loaded section that does not validate is replaced by the defaults, so the form and the results always agree.
 function sanitize(state: AppState): AppState {
   const def = defaultState();
-  return { single: singleIsValid(state.single) ? state.single : def.single, multi: multiIsValid(state.multi) ? state.multi : def.multi };
+  return { single: keepValid(def.single, state.single), multi: multiIsValid(state.multi) ? state.multi : def.multi };
 }
 
 function storage(): Storage | null {
