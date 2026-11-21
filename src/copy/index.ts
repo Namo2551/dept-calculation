@@ -131,9 +131,7 @@ export const copy = {
     home: "Paydown, home",
     links: [
       { href: "/calculator", label: "Calculator" },
-      { href: "/charts", label: "Charts" },
       { href: "/multi", label: "Several cards" },
-      { href: "/why", label: "Why it happens" },
     ],
     cta: "Open the calculator",
   },
@@ -144,14 +142,13 @@ export const copy = {
         title: "Tools",
         links: [
           { href: "/calculator", label: "Calculator" },
-          { href: "/charts", label: "Charts" },
           { href: "/multi", label: "Several cards" },
         ],
       },
       {
         title: "Learn",
         links: [
-          { href: "/why", label: "Why it happens" },
+          { href: "/calculator?show=math", label: "The math" },
           { href: "/#how", label: "How it works" },
           { href: "/#faq", label: "FAQ" },
         ],

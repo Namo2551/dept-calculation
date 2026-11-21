@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import { MathExplainer } from "@/components/math/MathExplainer";
-import { PageIntro } from "@/components/PageIntro";
-import { Ready } from "@/components/Ready";
+import { RedirectTo } from "@/components/calculator/ShowTarget";
 
 export const metadata: Metadata = { title: "Why it happens" };
 
+// The math now lives on the calculator page (closed until opened); this address forwards there with it open.
 export default function WhyPage() {
-  return (
-    <>
-      <PageIntro title="Why it happens" intro="The recurrence relation and the induction proofs behind every number on this site." />
-      <Ready>
-        <div className="mt-8">
-          <MathExplainer />
-        </div>
-      </Ready>
-    </>
-  );
+  return <RedirectTo to="/calculator?show=math" />;
 }

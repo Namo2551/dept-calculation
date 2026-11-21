@@ -2,7 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { CalcProvider } from "@/components/CalcProvider";
-import ChartsPage from "@/app/charts/page";
+import CalculatorPage from "@/app/calculator/page";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => "/" }));
 
@@ -14,7 +14,7 @@ afterEach(() => vi.restoreAllMocks());
 
 async function openTable() {
   const user = userEvent.setup();
-  render(<CalcProvider><ChartsPage /></CalcProvider>);
+  render(<CalcProvider><CalculatorPage /></CalcProvider>);
   const box = (await screen.findByText("Month-by-month table")).closest("details")!;
   return { user, box };
 }

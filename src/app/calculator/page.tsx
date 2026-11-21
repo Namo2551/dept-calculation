@@ -5,6 +5,7 @@ import { ExtraPayment } from "@/components/calculator/ExtraPayment";
 import { MonthlyTable } from "@/components/calculator/MonthlyTable";
 import { RequiredPayment } from "@/components/calculator/RequiredPayment";
 import { ResultCards } from "@/components/calculator/ResultCards";
+import { ShowTarget } from "@/components/calculator/ShowTarget";
 import { SingleCardForm } from "@/components/calculator/SingleCardForm";
 import { SummaryBar } from "@/components/calculator/SummaryBar";
 import { YearlyChart } from "@/components/calculator/YearlyChart";
@@ -48,6 +49,7 @@ export default function CalculatorPage() {
             <FullMath />
           </div>
         </div>
+        <ShowTarget />
       </Ready>
     </>
   );

@@ -4,10 +4,10 @@ import { describe, expect, test, vi } from "vitest";
 import { SiteHeader } from "./SiteHeader";
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/charts",
+  usePathname: () => "/multi",
 }));
 
-const labels = ["Calculator", "Charts", "Several cards", "Why it happens"];
+const labels = ["Calculator", "Several cards"];
 
 function menuPanel() {
   const button = screen.getByRole("button", { name: "Menu" });
@@ -17,15 +17,21 @@ function menuPanel() {
 }
 
 describe("SiteHeader", () => {
+  test("the main nav has exactly two page links", () => {
+    render(<SiteHeader />);
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    expect(within(nav).getAllByRole("link").map((a) => a.textContent)).toEqual(["Calculator", "Several cards"]);
+  });
+
   test("marks the current page link with aria-current", () => {
     render(<SiteHeader />);
-    const charts = screen.getAllByRole("link", { name: "Charts" });
+    const charts = screen.getAllByRole("link", { name: "Several cards" });
     expect(charts.length).toBeGreaterThan(0);
     for (const a of charts) expect(a).toHaveAttribute("aria-current", "page");
     for (const a of screen.getAllByRole("link", { name: "Calculator" })) expect(a).not.toHaveAttribute("aria-current");
   });
 
-  test("the menu button opens a panel with all four links", async () => {
+  test("the menu button opens a panel with both page links", async () => {
     const user = userEvent.setup();
     render(<SiteHeader />);
     const { button } = menuPanel();
@@ -36,6 +42,8 @@ describe("SiteHeader", () => {
     const { panel } = menuPanel();
     expect(panel).not.toBeNull();
     for (const name of labels) expect(within(panel!).getByRole("link", { name })).toBeInTheDocument();
+    expect(within(panel!).queryByRole("link", { name: "Charts" })).toBeNull();
+    expect(within(panel!).queryByRole("link", { name: "Why it happens" })).toBeNull();
     expect(within(panel!).getByRole("link", { name: "Open the calculator" })).toHaveAttribute("href", "/calculator");
   });
 
@@ -44,7 +52,7 @@ describe("SiteHeader", () => {
     render(<SiteHeader />);
     const { button } = menuPanel();
     await user.click(button);
-    within(menuPanel().panel!).getByRole("link", { name: "Charts" }).focus();
+    within(menuPanel().panel!).getByRole("link", { name: "Several cards" }).focus();
     await user.keyboard("{Escape}");
     expect(button).toHaveAttribute("aria-expanded", "false");
     expect(menuPanel().panel).toBeNull();
@@ -59,7 +67,7 @@ describe("SiteHeader", () => {
     const panel = menuPanel().panel!;
     // jsdom cannot load another document; stop the browser navigation, Link still runs its onClick.
     panel.addEventListener("click", (e) => e.preventDefault());
-    await user.click(within(panel).getByRole("link", { name: "Why it happens" }));
+    await user.click(within(panel).getByRole("link", { name: "Several cards" }));
     expect(button).toHaveAttribute("aria-expanded", "false");
     expect(button).toHaveFocus();
   });
@@ -70,7 +78,7 @@ describe("SiteHeader", () => {
     await user.click(screen.getByRole("button", { name: "Menu" }));
     const header = screen.getByRole("banner");
     const targets = [...within(header).getAllByRole("link"), ...within(header).getAllByRole("button")];
-    expect(targets.length).toBeGreaterThan(10);
+    expect(targets.length).toBe(8); // wordmark, 2 links x2, 2 calls to action, menu button
     for (const el of targets) expect(el.className).toMatch(/(^|\s)(min-h-11|h-11|h-12)(\s|$)/);
   });
 });
