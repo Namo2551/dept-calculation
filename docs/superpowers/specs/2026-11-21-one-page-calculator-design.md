@@ -74,8 +74,8 @@ Each "Why?" is a disclosure button (`aria-expanded`). It opens a panel under its
 | Section | Opens |
 |---|---|
 | Results A/B | Step 1: the recurrence, with the month-by-month walk (`RecurrenceWalk`). Proof 2 too, when A uses a pure percentage ("never exactly zero"). |
-| Balance chart | Step 3: the closed form, and Proof 1 with the induction staircase (`InductionLadder`) |
-| Debt-free in N months / Pay extra | Proof 3: when the payment only covers interest, the debt never shrinks |
+| Balance chart | Proof 1: the closed form, with the induction staircase (`InductionLadder`) |
+| Debt-free in N months / Pay extra | Step 3: setting B<sub>n</sub> = 0 gives the required payment, and Proof 3: if the payment only covers interest, the debt never shrinks |
 
 At the end of the page, **"The full math, step by step"** is a closed section holding the whole explainer as it is today: summary, vocabulary and "try this example" buttons. Those buttons now fill the numbers in and scroll to the results, with no page change.
 
