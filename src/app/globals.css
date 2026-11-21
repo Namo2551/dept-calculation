@@ -212,6 +212,18 @@ input[type="range"]::-moz-range-thumb {
     max-width: none !important;
     padding: 0 !important;
   }
+  /* The one-page calculator prints as one column, with the inputs first and nothing sticky. */
+  .calc-grid {
+    display: block !important;
+  }
+  .calc-grid > * + * {
+    margin-top: 16px;
+  }
+  .calc-aside {
+    position: static !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
   input[type="text"] {
     border: none;
     min-height: 0;

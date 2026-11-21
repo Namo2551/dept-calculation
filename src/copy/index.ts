@@ -174,8 +174,8 @@ export const copy = {
   },
   multi: {
     unnamed: "Unnamed",
-    heading: "Several cards: which one to pay first?",
-    hint: "Enter 2-5 cards and a total monthly budget for debt. The calculator tries 3 strategies.",
+    intro: "Split one monthly budget across 2 to 5 cards. The calculator tries 3 payoff strategies.",
+    detailLink: "See one card in detail",
     cardN: (i: number) => `Card ${i}`,
     remove: "Remove this card",
     add: "+ Add a card",

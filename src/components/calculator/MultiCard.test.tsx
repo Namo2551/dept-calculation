@@ -14,6 +14,21 @@ beforeEach(() => {
 const strat = (key: "minonly" | "avalanche" | "snowball") => screen.getByTestId(`strat-${key}`);
 
 describe("MultiCard", () => {
+  test("the page says Several cards once and links to the one-card calculator", async () => {
+    render(<CalcProvider><MultiPage /></CalcProvider>);
+    await screen.findByTestId("strat-avalanche");
+    expect(screen.getAllByRole("heading", { name: /Several cards/ })).toHaveLength(1);
+    expect(screen.getByText("Split one monthly budget across 2 to 5 cards. The calculator tries 3 payoff strategies.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "See one card in detail" })).toHaveAttribute("href", "/calculator");
+  });
+
+  test("cards are rows, not panels inside a panel", async () => {
+    render(<CalcProvider><MultiPage /></CalcProvider>);
+    await screen.findByTestId("strat-avalanche");
+    const multi = document.getElementById("multi")!;
+    expect(multi.classList.contains("inset-card")).toBe(false);
+  });
+
   test("default cards: results per strategy and the least-interest badge", async () => {
     render(<CalcProvider><MultiPage /></CalcProvider>);
     const av = await screen.findByTestId("strat-avalanche");
