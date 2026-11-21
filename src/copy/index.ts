@@ -13,6 +13,7 @@ export const copy = {
     none: "-",
   },
   loading: "Loading your numbers",
+  why: { show: "Why?", hide: "Hide the math" },
   form: {
     heading: "Enter your numbers",
     bal: "Balance (baht)",
