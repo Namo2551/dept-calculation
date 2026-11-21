@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { simulate, type SingleOptions } from "./debt";
-import { compareSentence, durationText, explainFirstMonths, formatBaht, monthsToText, toCsv } from "./format";
+import { compareSentence, durationText, explainFirstMonths, formatBaht, keepFigures, monthsToText, toCsv } from "./format";
 
 const A = (m: number, floor: number): SingleOptions => ({ balance: 30000, apr: 16, strategy: "pct", m, floor });
 const B = (p: number): SingleOptions => ({ balance: 30000, apr: 16, strategy: "fixed", p });
@@ -60,5 +60,18 @@ describe("durationText", () => {
     const slow = simulate(A(0.001, 0)); // shrinks too slowly to finish within 100 years
     expect(slow.months).toBeNull();
     expect(durationText(slow)).toBe("Over 100 years");
+  });
+});
+
+describe("keepFigures", () => {
+  test("joins each number to its unit and leaves group spaces breakable", () => {
+    expect(keepFigures("34 years 10 months")).toBe("34\u00a0years 10\u00a0months");
+  });
+  test("joins an amount to baht", () => {
+    expect(keepFigures("10,909.08 baht")).toBe("10,909.08\u00a0baht");
+  });
+  test("leaves text with no number and unit unchanged", () => {
+    expect(keepFigures("Never")).toBe("Never");
+    expect(keepFigures("Over 100 years")).toBe("Over 100\u00a0years");
   });
 });

@@ -63,4 +63,18 @@ describe("Calculator page", () => {
     await user.click(screen.getByRole("button", { name: "Use as the fixed payment (method B)" }));
     expect(screen.getByLabelText("Fixed payment per month (baht)")).toHaveValue("1,469");
   });
+
+  test("heading, intro, nowrap figures and the closing chart link", async () => {
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await screen.findByTestId("result-B");
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Calculator");
+    expect(screen.getByText("Compare paying the minimum with a fixed amount each month.")).toBeInTheDocument();
+    expect(within(resultCard("A")).getByText("34 years 10 months").closest(".whitespace-nowrap")).not.toBeNull();
+    expect(within(resultCard("B")).getByText("5,126.95 baht").closest(".whitespace-nowrap")).not.toBeNull();
+    const link = screen.getByRole("link", { name: "See it on a chart" });
+    expect(link).toHaveAttribute("href", "/charts");
+    const links = screen.getAllByRole("link");
+    expect(links[links.length - 1]).toBe(link);
+  });
 });
