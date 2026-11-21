@@ -51,7 +51,7 @@ function storage(): Storage | null {
   }
 }
 
-function scrollToId(id: string) {
+export function scrollToId(id: string) {
   requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView?.({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" }));
 }
 

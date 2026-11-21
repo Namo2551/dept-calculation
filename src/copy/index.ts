@@ -15,6 +15,12 @@ export const copy = {
   loading: "Loading your numbers",
   why: { show: "Why?", hide: "Hide the math", results: "the results", chart: "the balance chart", plan: "debt-free in N months" },
   fullMath: "The full math, step by step",
+  summary: {
+    label: "Your numbers",
+    edit: "Edit",
+    line: (bal: string, apr: string, m: string, floor: string | null, p: string) =>
+      `${bal} ฿ · ${apr}% · A ${m}%${floor ? ` min ${floor} ฿` : ""} · B ${p} ฿`,
+  },
   calcPage: { title: "Calculator", intro: "One card, two ways to pay, every result on one page." },
   form: {
     heading: "Enter your numbers",

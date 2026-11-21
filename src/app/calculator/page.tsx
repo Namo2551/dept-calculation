@@ -6,6 +6,7 @@ import { MonthlyTable } from "@/components/calculator/MonthlyTable";
 import { RequiredPayment } from "@/components/calculator/RequiredPayment";
 import { ResultCards } from "@/components/calculator/ResultCards";
 import { SingleCardForm } from "@/components/calculator/SingleCardForm";
+import { SummaryBar } from "@/components/calculator/SummaryBar";
 import { YearlyChart } from "@/components/calculator/YearlyChart";
 import { FullMath } from "@/components/math/FullMath";
 import { ChartWhy, PlanWhy, ResultsWhy } from "@/components/math/pieces";
@@ -24,6 +25,7 @@ export default function CalculatorPage() {
     <>
       <PageIntro title={copy.calcPage.title} intro={copy.calcPage.intro} />
       <Ready>
+        <SummaryBar />
         <div className="calc-grid mt-8 grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)] lg:gap-10 lg:items-start">
           <aside className="calc-aside min-w-0 lg:sticky lg:top-6 lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto">
             <SingleCardForm />
