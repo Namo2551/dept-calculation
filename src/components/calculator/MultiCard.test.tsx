@@ -22,6 +22,18 @@ describe("MultiCard", () => {
     expect(screen.getByRole("link", { name: "See one card in detail" })).toHaveAttribute("href", "/calculator");
   });
 
+  test("strategy results are h2 sections under a tagged heading", async () => {
+    render(<CalcProvider><MultiPage /></CalcProvider>);
+    await screen.findByTestId("strat-avalanche");
+    const res = document.getElementById("multiRes")!;
+    expect(within(res).queryAllByRole("heading", { level: 3 })).toHaveLength(0);
+    expect(within(res).getAllByRole("heading", { level: 2 }).length).toBe(3);
+    const wins = screen.getByRole("heading", { level: 2, name: "Which strategy wins" });
+    const row = wins.parentElement!;
+    expect(within(row).getByLabelText("CPE111 Chapter 3, Algorithms")).toBeInTheDocument();
+    expect(within(row).getByLabelText("CPE111 Chapter 8, Recurrence relations")).toBeInTheDocument();
+  });
+
   test("cards are rows, not panels inside a panel", async () => {
     render(<CalcProvider><MultiPage /></CalcProvider>);
     await screen.findByTestId("strat-avalanche");

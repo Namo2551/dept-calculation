@@ -1,5 +1,6 @@
 "use client";
 import { LineChart } from "@/components/charts/LineChart";
+import { ChapterTag } from "@/components/report/ChapterTag";
 import { Button } from "@/components/ui/Button";
 import { CountUp } from "@/components/ui/CountUp";
 import { NumberField } from "@/components/ui/NumberField";
@@ -87,7 +88,12 @@ export function MultiCard() {
         </Note>
       )}
 
-      <div id="multiRes" className="mt-7 grid gap-6 md:grid-cols-3">
+      <div className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <h2 className="font-display font-medium text-[28px] sm:text-[32px] leading-tight tracking-[-0.015em]">{t.multi.winsTitle}</h2>
+        <ChapterTag ch="3" />
+        <ChapterTag ch="8" />
+      </div>
+      <div id="multiRes" className="mt-6 grid gap-6 md:grid-cols-3">
         {STRATEGIES.map((s) => {
           const r = results[s];
           const order = parsed
@@ -95,10 +101,10 @@ export function MultiCard() {
             .sort((a, b) => (a.mo === null ? 1e9 : a.mo) - (b.mo === null ? 1e9 : b.mo));
           return (
             <section key={s} data-testid={`strat-${s}`} className={`p-5 bg-surface border ${best === s ? "border-2 border-good" : "border-hair"}`}>
-              <h3 className="flex items-center gap-2 font-semibold leading-snug">
+              <h2 className="flex items-center gap-2 font-semibold leading-snug">
                 <LineSample s={s} />
                 {t.multi.titles[s]}
-              </h3>
+              </h2>
               {best === s && <p className="mt-2 text-sm font-semibold text-good">{t.multi.best}</p>}
               <Stat label={t.multi.allPaidIn} big>
                 {r.months === null ? t.multi.over100 : <CountUp value={r.months} format={(v) => monthsToText(Math.round(v))} />}

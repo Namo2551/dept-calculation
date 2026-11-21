@@ -1,13 +1,18 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import { SiteHeader } from "./SiteHeader";
 
+let pathname = "/multi";
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/multi",
+  usePathname: () => pathname,
 }));
 
-const labels = ["Calculator", "Several cards"];
+beforeEach(() => {
+  pathname = "/multi";
+});
+
+const labels = ["Calculator", "Several cards", "The math"];
 
 function menuPanel() {
   const button = screen.getByRole("button", { name: "Menu" });
@@ -17,10 +22,21 @@ function menuPanel() {
 }
 
 describe("SiteHeader", () => {
-  test("the main nav has exactly two page links", () => {
+  test("the main nav has the two tools and the math", () => {
     render(<SiteHeader />);
     const nav = screen.getByRole("navigation", { name: "Main" });
-    expect(within(nav).getAllByRole("link").map((a) => a.textContent)).toEqual(["Calculator", "Several cards"]);
+    expect(within(nav).getAllByRole("link").map((a) => a.textContent)).toEqual(["Calculator", "Several cards", "The math"]);
+    expect(within(nav).getByRole("link", { name: "The math" })).toHaveAttribute("href", "/calculator?show=math");
+    expect(screen.getByRole("link", { name: "Open the calculator" })).toBeInTheDocument();
+  });
+
+  test("on the calculator itself there is no Open the calculator button", async () => {
+    pathname = "/calculator";
+    const user = userEvent.setup();
+    render(<SiteHeader />);
+    expect(screen.queryByRole("link", { name: "Open the calculator" })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Menu" }));
+    expect(screen.queryByRole("link", { name: "Open the calculator" })).toBeNull();
   });
 
   test("marks the current page link with aria-current", () => {
@@ -78,7 +94,7 @@ describe("SiteHeader", () => {
     await user.click(screen.getByRole("button", { name: "Menu" }));
     const header = screen.getByRole("banner");
     const targets = [...within(header).getAllByRole("link"), ...within(header).getAllByRole("button")];
-    expect(targets.length).toBe(8); // wordmark, 2 links x2, 2 calls to action, menu button
+    expect(targets.length).toBe(10); // wordmark, 3 links x2, 2 calls to action, menu button
     for (const el of targets) expect(el.className).toMatch(/(^|\s)(min-h-11|h-11|h-12)(\s|$)/);
   });
 });

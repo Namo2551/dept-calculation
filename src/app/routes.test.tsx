@@ -90,6 +90,17 @@ describe("pages share one provider", () => {
     expect((document.getElementById("math") as HTMLDetailsElement).open).toBe(false);
   });
 
+  test("the home page lists the chapters with links to their sections", () => {
+    render(<CalcProvider><HomePage /></CalcProvider>);
+    const table = screen.getByRole("table", { name: "Chapters in this project" });
+    const rows = within(table).getAllByRole("row").slice(1);
+    expect(rows).toHaveLength(7);
+    expect(within(rows[4]).getByRole("link")).toHaveAttribute("href", "/calculator?show=risk");
+    expect(within(rows[6]).getByRole("link")).toHaveAttribute("href", "/calculator?show=status");
+    expect(within(rows[2]).getByRole("link")).toHaveAttribute("href", "/multi");
+    expect(screen.getByRole("link", { name: "Open the calculator" })).toHaveAttribute("href", "/calculator");
+  });
+
   test("a link loaded on the home page is available on the calculator page", async () => {
     const st = defaultState();
     st.single.p = "2,000";

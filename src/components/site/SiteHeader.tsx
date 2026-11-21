@@ -32,6 +32,7 @@ function NavLinks({ pathname, onClick, className = "" }: { pathname: string; onC
 // button move into a full-width panel opened by a 44px menu button.
 export function SiteHeader() {
   const pathname = usePathname();
+  const onCalculator = pathname === "/calculator";
   const [open, setOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
 
@@ -58,10 +59,13 @@ export function SiteHeader() {
         <nav aria-label={t.nav.label} className="hidden min-[900px]:flex items-center gap-9">
           <NavLinks pathname={pathname} />
         </nav>
-        <div className="hidden min-[900px]:block">
-          <Button href="/calculator" variant="primary" size="sm">
-            {t.nav.cta}
-          </Button>
+        {/* no "Open the calculator" on the calculator itself; an empty box keeps the nav centred */}
+        <div className="hidden min-[900px]:block min-w-[180px] text-right">
+          {!onCalculator && (
+            <Button href="/calculator" variant="primary" size="sm">
+              {t.nav.cta}
+            </Button>
+          )}
         </div>
         <button
           ref={menuButton}
@@ -85,9 +89,11 @@ export function SiteHeader() {
         <nav id={MENU_ID} aria-label={t.nav.menu} className="min-[900px]:hidden absolute inset-x-0 top-full z-20 bg-bg border-y border-hair">
           <div className="container-page flex flex-col py-4">
             <NavLinks pathname={pathname} onClick={close} className="w-full text-base" />
-            <Button href="/calculator" variant="primary" size="sm" className="mt-4 w-full" onClick={close}>
-              {t.nav.cta}
-            </Button>
+            {!onCalculator && (
+              <Button href="/calculator" variant="primary" size="sm" className="mt-4 w-full" onClick={close}>
+                {t.nav.cta}
+              </Button>
+            )}
           </div>
         </nav>
       )}
