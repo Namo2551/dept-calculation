@@ -176,6 +176,13 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ===== Print / save as PDF: white paper, black text, no site chrome or controls ===== */
+/* The report menu (about 620px tall) only sticks when the window can show all of it. */
+@media (min-width: 1024px) and (max-height: 679px) {
+  .report-aside {
+    position: static;
+  }
+}
+
 @media print {
   @page {
     margin: 12mm;
