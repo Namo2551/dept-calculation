@@ -53,12 +53,12 @@ describe("five routes share one provider", () => {
     expect(await screen.findAllByText("Basis step", { exact: false })).not.toHaveLength(0);
   });
 
-  test("an example on the why page updates the numbers and goes to the calculator", async () => {
+  test("an example in the math stays on the page (no navigation)", async () => {
     const user = userEvent.setup();
     render(<CalcProvider><WhyPage /></CalcProvider>);
     const buttons = await screen.findAllByRole("button", { name: /Try this example/ });
     await user.click(buttons[0]);
-    expect(push).toHaveBeenCalledWith("/calculator#results-sec");
+    expect(push).not.toHaveBeenCalled();
   });
 
   test("copy link writes a /calculator URL with the encoded state", async () => {
