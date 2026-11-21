@@ -16,7 +16,7 @@ export function ExtraPayment() {
   );
   return (
     <Panel className="no-print">
-      <PanelTitle>{t.extra.heading}</PanelTitle>
+      <PanelTitle as="h3">{t.extra.heading}</PanelTitle>
       <RangeField label={t.extra.label(formatBahtShort(extra))} min={0} max={2000} step={100} value={extra} onChange={setExtra} />
       {P === null ? (
         <p className="mt-3 text-sm text-muted">{t.extra.hint}</p>

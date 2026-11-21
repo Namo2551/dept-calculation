@@ -8,46 +8,63 @@ import { RequiredPayment } from "@/components/calculator/RequiredPayment";
 import { ResultCards } from "@/components/calculator/ResultCards";
 import { ShowTarget } from "@/components/calculator/ShowTarget";
 import { SingleCardForm } from "@/components/calculator/SingleCardForm";
-import { SummaryBar } from "@/components/calculator/SummaryBar";
 import { YearlyChart } from "@/components/calculator/YearlyChart";
 import { FullMath } from "@/components/math/FullMath";
 import { ChartWhy, PlanWhy, ResultsWhy } from "@/components/math/pieces";
 import { PageIntro } from "@/components/PageIntro";
 import { Ready } from "@/components/Ready";
-import { Why } from "@/components/ui/Why";
+import { ReportMenu } from "@/components/report/ReportMenu";
+import { ReportSection } from "@/components/report/ReportSection";
 import { copy } from "@/copy";
 
 export const metadata: Metadata = { title: "Calculator" };
 
-// One page for one card: inputs stay in a sticky column on wide screens, every result scrolls beside them,
-// and the math opens only on request.
+// The calculator as a numbered report: a sticky chapter menu beside nine sections, each tagged with the
+// CPE111 chapter it uses. The math behind a section opens from the "Why?" button in its header.
 export default function CalculatorPage() {
   const W = copy.why;
   return (
     <>
       <PageIntro title={copy.calcPage.title} intro={copy.calcPage.intro} />
       <Ready>
-        <SummaryBar />
-        <div className="calc-grid mt-8 grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)] lg:gap-10 lg:items-start">
-          <aside className="calc-aside min-w-0 lg:sticky lg:top-6 lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto">
-            <SingleCardForm />
+        <div className="report-grid mt-10 grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12 lg:items-start">
+          <aside className="report-aside min-w-0 sticky top-0 z-10 lg:top-6">
+            <ReportMenu />
           </aside>
-          <div className="grid gap-8 min-w-0">
-            <section id="results-sec" className="grid gap-8">
-              <ResultCards />
-              <CompareBars />
-              <Why id="why-results" topic={W.results}><ResultsWhy /></Why>
-            </section>
-            <BalanceChart />
-            <Why id="why-chart" topic={W.chart}><ChartWhy /></Why>
-            <YearlyChart />
-            <div className="grid gap-8 xl:grid-cols-2">
-              <RequiredPayment />
-              <ExtraPayment />
-            </div>
-            <Why id="why-plan" topic={W.plan}><PlanWhy /></Why>
-            <MonthlyTable />
-            <FullMath />
+          <div className="report-main min-w-0">
+            <ReportSection k="inputs">
+              <SingleCardForm />
+            </ReportSection>
+            <ReportSection k="results" why={<ResultsWhy />} whyTopic={W.results}>
+              <div className="grid gap-6">
+                <ResultCards />
+                <CompareBars />
+              </div>
+            </ReportSection>
+            <ReportSection k="chart" why={<ChartWhy />} whyTopic={W.chart}>
+              <BalanceChart />
+            </ReportSection>
+            <ReportSection k="yearly">
+              <YearlyChart />
+            </ReportSection>
+            <ReportSection k="plan" why={<PlanWhy />} whyTopic={W.plan}>
+              <div className="grid gap-6 xl:grid-cols-2">
+                <RequiredPayment />
+                <ExtraPayment />
+              </div>
+            </ReportSection>
+            <ReportSection k="risk">
+              <p className="text-muted">{copy.soon}</p>
+            </ReportSection>
+            <ReportSection k="status">
+              <p className="text-muted">{copy.soon}</p>
+            </ReportSection>
+            <ReportSection k="table">
+              <MonthlyTable />
+            </ReportSection>
+            <ReportSection k="math">
+              <FullMath />
+            </ReportSection>
           </div>
         </div>
         <Suspense fallback={null}>

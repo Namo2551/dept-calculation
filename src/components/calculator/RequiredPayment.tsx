@@ -23,7 +23,7 @@ export function RequiredPayment() {
   const { rp, sim } = useRequired();
   return (
     <Panel className="no-print">
-      <PanelTitle>{t.need.heading}</PanelTitle>
+      <PanelTitle as="h3">{t.need.heading}</PanelTitle>
       <NumberField label={t.need.n} inputMode="numeric" value={state.single.n} onChange={(v) => setSingle("n", v)} error={errors.n ? t.errors.n : null} errorPrefix={t.errors.prefix} />
       <div className="mt-3">
         <Stat label={t.need.pay} big>

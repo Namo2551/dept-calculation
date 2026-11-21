@@ -212,17 +212,12 @@ input[type="range"]::-moz-range-thumb {
     max-width: none !important;
     padding: 0 !important;
   }
-  /* The one-page calculator prints as one column, with the inputs first and nothing sticky. */
-  .calc-grid {
+  /* The calculator report prints as one column: the menu is left out and sections follow in order. */
+  .report-aside {
+    display: none !important;
+  }
+  .report-grid {
     display: block !important;
-  }
-  .calc-grid > * + * {
-    margin-top: 16px;
-  }
-  .calc-aside {
-    position: static !important;
-    max-height: none !important;
-    overflow: visible !important;
   }
   input[type="text"] {
     border: none;

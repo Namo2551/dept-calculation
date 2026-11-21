@@ -70,6 +70,18 @@ describe("pages share one provider", () => {
     expect(JSON.parse(localStorage.getItem("debtcalc.v1")!).single.p).toBe("2,000");
   });
 
+  test("?show=<section> scrolls to that section and clears the query", async () => {
+    const scrolled: string[] = [];
+    Element.prototype.scrollIntoView = vi.fn(function (this: Element) {
+      scrolled.push(this.id);
+    });
+    history.replaceState(null, "", "/calculator?show=yearly");
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await screen.findByTestId("result-B");
+    await waitFor(() => expect(scrolled).toContain("sec-yearly"));
+    expect(window.location.search).toBe("");
+  });
+
   test("?show=nonsense opens nothing and removes the query", async () => {
     history.replaceState(null, "", "/calculator?show=nonsense");
     render(<CalcProvider><CalculatorPage /></CalcProvider>);

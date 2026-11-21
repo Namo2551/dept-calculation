@@ -29,7 +29,7 @@ export function YearlyChart() {
 
   return (
     <Panel id="yearly-sec" className="no-print">
-      <PanelTitle>{t.yearly.heading}</PanelTitle>
+      <PanelTitle as="h3">{t.yearly.heading}</PanelTitle>
       <ToggleGroup<"A" | "B">
         label={t.yearly.methodLabel}
         value={method}

@@ -11,12 +11,12 @@ function ResultCard({ id, title, sim, children }: { id: "A" | "B"; title: string
   const baht = (v: number) => t.unit.baht(formatBaht(v));
   return (
     <Panel testId={`result-${id}`}>
-      <h2 className="flex items-center gap-3 text-lg sm:text-xl font-semibold tracking-tight mb-2">
+      <h3 className="flex items-center gap-3 text-lg sm:text-xl font-semibold tracking-tight mb-2">
         <svg width="34" height="10" aria-hidden="true" className="shrink-0">
           <line x1="0" x2="34" y1="5" y2="5" stroke={id === "A" ? "var(--series-a)" : "var(--series-b)"} strokeWidth="3" strokeDasharray={id === "B" ? "9 6" : undefined} />
         </svg>
         {title}
-      </h2>
+      </h3>
       <Stat label={t.results.paidIn} big>
         {sim.months !== null ? <CountUp value={sim.months} format={(v) => monthsToText(Math.round(v))} /> : durationText(sim)}
       </Stat>
@@ -34,7 +34,7 @@ export function ResultCards() {
   const { t, single } = useCalc();
   const { A, B, v } = single;
   return (
-    <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+    <div className="grid gap-6 sm:grid-cols-2">
       <ResultCard id="A" title={t.results.titleA(String(v.m), v.floor ? formatBahtShort(v.floor) : null)} sim={A}>
         {v.floor === 0 && (
           <>

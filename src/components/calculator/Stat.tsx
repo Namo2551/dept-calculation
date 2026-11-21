@@ -5,7 +5,7 @@ export function Stat({ label, children, big = false }: { label: string; children
   return (
     <div className="my-2">
       <span className="block text-xs text-muted">{label}</span>
-      <span className={`num block ${big ? "sm:whitespace-nowrap " : "whitespace-nowrap "}${big ? "font-display text-[32px] font-medium tracking-[-0.015em] leading-[1.1] mt-1" : "text-base font-medium"}`}>{typeof children === "string" ? keepFigures(children) : children}</span>
+      <span className={`num block ${big ? "" : "whitespace-nowrap "}${big ? "font-display text-[32px] font-medium tracking-[-0.015em] leading-[1.1] mt-1" : "text-base font-medium"}`}>{typeof children === "string" ? keepFigures(children) : children}</span>
     </div>
   );
 }

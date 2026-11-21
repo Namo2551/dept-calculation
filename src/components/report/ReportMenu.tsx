@@ -39,7 +39,7 @@ export function ReportMenu() {
   const M = copy.menu;
   return (
     <div className="no-print">
-      <nav aria-label={M.title} className="hidden lg:block sticky top-6">
+      <nav aria-label={M.title} className="hidden lg:block">
         <p className="text-xs uppercase tracking-[0.08em] text-muted mb-3">{M.title}</p>
         <InputSummary />
         <ol className="mt-5 border-t border-hair pt-3 grid gap-0.5">
@@ -67,7 +67,7 @@ export function ReportMenu() {
         <p className="mt-4 border-t border-hair pt-3 text-xs text-muted">{M.used}</p>
       </nav>
 
-      <nav aria-label={M.narrow} className="lg:hidden sticky top-0 z-10 -mx-6 px-6 py-2 bg-bg border-b border-hair">
+      <nav aria-label={M.narrow} className="lg:hidden -mx-6 px-6 py-2 bg-bg border-b border-hair">
         <InputSummary />
         <ol className="mt-2 flex gap-2 overflow-x-auto pb-1">
           {copy.sections.map((s, i) => {

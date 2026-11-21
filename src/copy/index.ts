@@ -48,7 +48,8 @@ export const copy = {
       `${bal} ฿ · ${apr}% · A ${m}%${floor ? ` min ${floor} ฿` : ""} · B ${p} ฿`,
   },
   menu: { title: "On this page", narrow: "Sections", used: "Chapters used: 1·2·3·5·6·7·8·13" },
-  calcPage: { title: "Calculator", intro: "One card, two ways to pay, every result on one page." },
+  calcPage: { title: "Calculator", intro: "One card, two ways to pay. Each section shows the CPE111 chapter it uses." },
+  soon: "This section is being built.",
   form: {
     heading: "Enter your numbers",
     bal: "Balance (baht)",

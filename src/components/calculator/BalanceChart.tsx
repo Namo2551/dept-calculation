@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { halo, LineChart, type Scale } from "@/components/charts/LineChart";
 import { Button } from "@/components/ui/Button";
-import { Panel, PanelTitle } from "@/components/ui/Panel";
+import { Panel } from "@/components/ui/Panel";
 import { RangeField } from "@/components/ui/RangeField";
 import { ToggleGroup } from "@/components/ui/ToggleGroup";
 import { balanceSeries, chartLength, playStep } from "@/lib/chart";
@@ -107,8 +107,7 @@ export function BalanceChart() {
   };
 
   return (
-    <Panel id="chart-sec">
-      <PanelTitle>{t.chart.heading}</PanelTitle>
+    <Panel>
       <div className="grid gap-4 no-print">
         <ToggleGroup<Range>
           label={t.chart.rangeLabel}

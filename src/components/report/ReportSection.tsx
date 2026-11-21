@@ -14,7 +14,7 @@ export function ReportSection({ k, why, whyTopic = "", children }: { k: SectionK
   const { title, chapters } = copy.sections[index];
   const id = sectionId(k);
   return (
-    <section id={id} aria-labelledby={`${id}-h`} className="report-section scroll-mt-24 min-w-0 [&+&]:border-t [&+&]:border-hair [&+&]:mt-12 [&+&]:pt-12">
+    <section id={id} aria-labelledby={`${id}-h`} className="report-section scroll-mt-40 lg:scroll-mt-8 min-w-0 [&+&]:border-t [&+&]:border-hair [&+&]:mt-12 [&+&]:pt-12">
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-6">
         <span aria-hidden="true" className="font-mono text-sm text-muted w-6">{index + 1}</span>
         <h2 id={`${id}-h`} className="font-display font-medium text-[28px] sm:text-[32px] leading-tight tracking-[-0.015em]">

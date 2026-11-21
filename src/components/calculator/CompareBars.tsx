@@ -23,7 +23,7 @@ export function CompareBars() {
   );
   return (
     <Panel>
-      <PanelTitle>{t.compare.heading}</PanelTitle>
+      <PanelTitle as="h3">{t.compare.heading}</PanelTitle>
       <div className="bg-bg border border-hair p-5 grid gap-5">
         {bar("A", t.compare.barA, A)}
         {bar("B", t.compare.barB, B)}

@@ -3,7 +3,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCalc } from "@/components/calculator/CalcContext";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { copy } from "@/copy";
+import { copy, type SectionKey } from "@/copy";
 import { scrollToId } from "@/hooks/useCalculator";
 
 // Old /charts and /why addresses: forward to the calculator section. Waits until the numbers are loaded,
@@ -21,13 +21,15 @@ export function RedirectTo({ to }: { to: string }) {
   );
 }
 
-// Reads ?show=chart or ?show=math whenever it appears (on arrival or from a link on this page),
+const SECTIONS = new Set<string>(copy.sections.map((s) => s.key));
+
+// Reads ?show=<section> (results, chart, ..., math) whenever it appears (on arrival or from a link on this page),
 // jumps there, then drops the query. The hash is reserved for share state, so section jumps use the query.
 export function ShowTarget() {
   const show = useSearchParams().get("show");
   useEffect(() => {
     if (show === null) return;
-    if (show === "chart") scrollToId("chart-sec");
+    if (SECTIONS.has(show) && show !== "math") scrollToId(`sec-${show as SectionKey}`);
     if (show === "math") {
       const math = document.getElementById("math") as HTMLDetailsElement | null;
       // A smooth scroll started before the math renders gets cut short by the layout change,

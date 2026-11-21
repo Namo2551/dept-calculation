@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { NumberField } from "@/components/ui/NumberField";
-import { Panel, PanelTitle } from "@/components/ui/Panel";
 import type { SingleRaw } from "@/lib/state";
 import { useCalc } from "./CalcContext";
 
@@ -14,14 +13,13 @@ export function SingleCardForm() {
   );
 
   return (
-    <Panel id="tool" testId="tool-panel">
-      <PanelTitle>{t.form.heading}</PanelTitle>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
+    <div id="tool" data-testid="tool-panel" className="min-w-0">
+      <div className="grid gap-5 sm:grid-cols-2 max-w-[720px]">
         {field("bal", t.form.bal)}
         {field("apr", t.form.apr)}
       </div>
-      <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
-        <fieldset className="bg-bg border border-hair p-5 grid gap-4 min-w-0">
+      <div className="mt-6 grid gap-6 sm:grid-cols-2">
+        <fieldset className="inset-card p-5 grid gap-4 min-w-0">
           <legend className="font-semibold float-left w-full mb-1">
             <svg width="34" height="10" aria-hidden="true" className="inline mr-2 align-middle">
               <line x1="0" x2="34" y1="5" y2="5" stroke="var(--series-a)" strokeWidth="3" />
@@ -31,7 +29,7 @@ export function SingleCardForm() {
           {field("m", t.form.m)}
           {field("floor", t.form.floor, t.form.floorHint)}
         </fieldset>
-        <fieldset className="bg-bg border border-hair p-5 grid gap-4 content-start min-w-0">
+        <fieldset className="inset-card p-5 grid gap-4 content-start min-w-0">
           <legend className="font-semibold float-left w-full mb-1">
             <svg width="34" height="10" aria-hidden="true" className="inline mr-2 align-middle">
               <line x1="0" x2="34" y1="5" y2="5" stroke="var(--series-b)" strokeWidth="3" strokeDasharray="9 6" />
@@ -42,24 +40,25 @@ export function SingleCardForm() {
         </fieldset>
       </div>
 
-      <div className="mt-7 no-print">
-        <p className="text-sm text-muted mb-3">{t.form.examples}</p>
-        <div className="flex flex-wrap gap-3">
-          <Button onClick={() => runExample("ex1")}>{t.form.ex1}</Button>
-          <Button onClick={() => runExample("ex2")}>{t.form.ex2}</Button>
-          <Button onClick={() => runExample("ex400")}>{t.form.ex400}</Button>
+      <div className="mt-7 no-print flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-hair pt-5">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm text-muted mr-1">{t.form.examples}</span>
+          <Button size="sm" onClick={() => runExample("ex1")}>{t.form.ex1}</Button>
+          <Button size="sm" onClick={() => runExample("ex2")}>{t.form.ex2}</Button>
+          <Button size="sm" onClick={() => runExample("ex400")}>{t.form.ex400}</Button>
           <Button
+            size="sm"
             onClick={() => {
               runExample("exMulti");
               router.push("/multi");
             }}
           >{t.form.exMulti}</Button>
         </div>
-      </div>
-      <div className="mt-5 flex flex-wrap items-center gap-3 no-print">
-        <Button onClick={() => void share()}>{t.form.share}</Button>
-        <Button onClick={() => window.print()}>{t.form.print}</Button>
-        <Button onClick={reset}>{t.form.reset}</Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" onClick={() => void share()}>{t.form.share}</Button>
+          <Button size="sm" onClick={() => window.print()}>{t.form.print}</Button>
+          <Button size="sm" variant="quiet" onClick={reset}>{t.form.reset}</Button>
+        </div>
         <span role="status" className="text-good font-semibold ml-1">
           {message}
         </span>
@@ -72,6 +71,6 @@ export function SingleCardForm() {
           <input id="shareText" readOnly value={shareFallback} onFocus={(e) => e.target.select()} autoFocus className="w-full h-12 bg-bg border border-field px-3 text-sm" />
         </div>
       )}
-    </Panel>
+    </div>
   );
 }

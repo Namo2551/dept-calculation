@@ -142,7 +142,7 @@ export function useCalculator() {
       }
       update((s) => ({ ...s, single: { ...s.single, ...EXAMPLES[id] } }));
       setExtra(0);
-      scrollToId("results-sec");
+      scrollToId("sec-results");
     },
     [update],
   );

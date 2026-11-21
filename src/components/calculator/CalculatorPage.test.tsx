@@ -71,7 +71,7 @@ describe("Calculator page", () => {
     await screen.findByTestId("result-B");
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Calculator");
-    expect(screen.getByText("One card, two ways to pay, every result on one page.")).toBeInTheDocument();
+    expect(screen.getByText("One card, two ways to pay. Each section shows the CPE111 chapter it uses.")).toBeInTheDocument();
     expect(within(resultCard("A")).getByText("34 years 10 months").textContent).toContain("34 years 10 months");
     expect(within(resultCard("B")).getByText("5,126.95 baht").closest(".whitespace-nowrap")).not.toBeNull();
   });
@@ -113,11 +113,30 @@ describe("Calculator page", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
-  test("the inputs column scrolls on its own when taller than the window", async () => {
+  test("the page is nine numbered sections in report order", async () => {
     render(<CalcProvider><CalculatorPage /></CalcProvider>);
     await screen.findByTestId("result-B");
-    const aside = document.getElementById("tool")!.closest("aside")!;
-    expect(aside.className).toContain("lg:sticky");
-    expect(aside.className).toContain("lg:overflow-y-auto");
+    expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
+      "Your numbers", "Results", "Balance by month", "Year by year", "Your plan", "Missed payments", "Account status", "Month by month", "The math",
+    ]);
+    expect(document.getElementById("sec-results")).toContainElement(resultCard("A"));
+  });
+
+  test("method A and B sit side by side, and the inputs never scroll inside a box", async () => {
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await screen.findByTestId("result-B");
+    expect(resultCard("A").parentElement!.className).toContain("sm:grid-cols-2");
+    expect(resultCard("A").parentElement).toBe(resultCard("B").parentElement);
+    expect(document.getElementById("tool")!.closest("aside")).toBeNull();
+    expect(document.querySelector("[class*='overflow-y-auto']")).toBeNull();
+  });
+
+  test("every Why? button sits in a section header", async () => {
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await screen.findByTestId("result-B");
+    const whys = screen.getAllByRole("button", { name: /^Why\?/ });
+    expect(whys.length).toBe(3);
+    for (const b of whys) expect(b.closest("section > header")).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Why? the balance chart" }).closest("section")).toHaveAttribute("id", "sec-chart");
   });
 });

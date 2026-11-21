@@ -22,10 +22,10 @@ afterEach(() => vi.restoreAllMocks());
 
 describe("review fixes", () => {
   test("a section anchor in the URL scrolls there once the page has loaded", async () => {
-    history.replaceState(null, "", "/calculator#results-sec");
+    history.replaceState(null, "", "/calculator#sec-results");
     render(<CalcProvider><CalculatorPage /></CalcProvider>);
     await screen.findByTestId("result-B");
-    await waitFor(() => expect(scrolled).toContain("results-sec"));
+    await waitFor(() => expect(scrolled).toContain("sec-results"));
   });
 
   test("saved numbers are the last valid ones, so a reload shows matching results", async () => {
