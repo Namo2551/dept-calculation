@@ -8,13 +8,14 @@ export const sectionId = (k: SectionKey) => `sec-${k}`;
 
 // One numbered section of the calculator report: number, title, chapter tags and an optional
 // "Why?" button in the header; the math it opens appears under the section's content.
-export function ReportSection({ k, why, whyTopic = "", children }: { k: SectionKey; why?: React.ReactNode; whyTopic?: string; children: React.ReactNode }) {
+// print={false}: the content is screen-only, so the whole section is left out of print (unless its math is open).
+export function ReportSection({ k, why, whyTopic = "", print = true, children }: { k: SectionKey; why?: React.ReactNode; whyTopic?: string; print?: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const index = copy.sections.findIndex((s) => s.key === k);
   const { title, chapters } = copy.sections[index];
   const id = sectionId(k);
   return (
-    <section id={id} aria-labelledby={`${id}-h`} className="report-section scroll-mt-40 lg:scroll-mt-8 min-w-0 [&+&]:border-t [&+&]:border-hair [&+&]:mt-12 [&+&]:pt-12">
+    <section id={id} aria-labelledby={`${id}-h`} className={`${!print && !open ? "no-print " : ""}report-section scroll-mt-40 lg:scroll-mt-8 min-w-0 [&+&]:border-t [&+&]:border-hair [&+&]:mt-12 [&+&]:pt-12`}>
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-6">
         <span aria-hidden="true" className="font-mono text-sm text-muted w-6">{index + 1}</span>
         <h2 id={`${id}-h`} className="font-display font-medium text-[28px] sm:text-[32px] leading-tight tracking-[-0.015em]">

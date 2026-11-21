@@ -46,10 +46,10 @@ export default function CalculatorPage() {
             <ReportSection k="chart" why={<ChartWhy />} whyTopic={W.chart}>
               <BalanceChart />
             </ReportSection>
-            <ReportSection k="yearly">
+            <ReportSection k="yearly" print={false}>
               <YearlyChart />
             </ReportSection>
-            <ReportSection k="plan" why={<PlanWhy />} whyTopic={W.plan}>
+            <ReportSection k="plan" print={false} why={<PlanWhy />} whyTopic={W.plan}>
               <div className="grid gap-6 xl:grid-cols-2">
                 <RequiredPayment />
                 <ExtraPayment />
@@ -61,7 +61,7 @@ export default function CalculatorPage() {
             <ReportSection k="status">
               <StatusMachine />
             </ReportSection>
-            <ReportSection k="table">
+            <ReportSection k="table" print={false}>
               <MonthlyTable />
             </ReportSection>
             <ReportSection k="math">

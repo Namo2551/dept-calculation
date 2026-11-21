@@ -40,6 +40,22 @@ describe("ReportSection", () => {
   });
 });
 
+describe("ReportSection print", () => {
+  test("a section whose content does not print is left out of print, unless its math is open", async () => {
+    const user = userEvent.setup();
+    render(<ReportSection k="plan" print={false} why={<p>proof</p>} whyTopic="debt-free in N months"><p>plan</p></ReportSection>);
+    const sec = document.getElementById("sec-plan")!;
+    expect(sec.classList.contains("no-print")).toBe(true);
+    await user.click(screen.getByRole("button", { name: "Why? debt-free in N months" }));
+    expect(sec.classList.contains("no-print")).toBe(false);
+  });
+
+  test("sections print by default", () => {
+    render(<ReportSection k="chart"><p>chart</p></ReportSection>);
+    expect(document.getElementById("sec-chart")!.classList.contains("no-print")).toBe(false);
+  });
+});
+
 describe("ChapterTag", () => {
   test("full and compact forms", () => {
     render(<><ChapterTag ch="8" /><ChapterTag ch="1-5" compact /></>);

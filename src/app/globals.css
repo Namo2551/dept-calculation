@@ -219,6 +219,10 @@ input[type="range"]::-moz-range-thumb {
   .report-grid {
     display: block !important;
   }
+  /* section 9 with the full math closed would print as a bare heading */
+  .report-section:has(> details#math:not([open])) {
+    display: none !important;
+  }
   input[type="text"] {
     border: none;
     min-height: 0;
