@@ -14,7 +14,7 @@ const push = vi.fn();
 const replace = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push, replace }),
-  usePathname: () => "/",
+  usePathname: () => "/", useSearchParams: () => new URLSearchParams(window.location.search),
 }));
 
 beforeEach(() => {
@@ -30,14 +30,16 @@ describe("pages share one provider", () => {
     expect(await within(await screen.findByTestId("result-B")).findByText("2 years")).toBeInTheDocument();
   });
 
-  test("/charts replaces itself with the calculator's chart section", () => {
+  test("/charts replaces itself with the calculator's chart section", async () => {
     render(<CalcProvider><ChartsPage /></CalcProvider>);
+    await waitFor(() => expect(replace).toHaveBeenCalled());
     expect(replace).toHaveBeenCalledWith("/calculator?show=chart", { scroll: false });
   });
 
-  test("/why keeps a share hash when it forwards to the math", () => {
+  test("/why keeps a section anchor when it forwards to the math", async () => {
     history.replaceState(null, "", "/why#abc");
     render(<CalcProvider><WhyPage /></CalcProvider>);
+    await waitFor(() => expect(replace).toHaveBeenCalled());
     expect(replace).toHaveBeenCalledWith("/calculator?show=math#abc", { scroll: false });
   });
 
@@ -47,6 +49,25 @@ describe("pages share one provider", () => {
     await screen.findByTestId("result-B");
     await waitFor(() => expect((document.getElementById("math") as HTMLDetailsElement).open).toBe(true));
     expect(window.location.search).toBe("");
+  });
+
+  test("?show=math arriving while already on the calculator opens the math", async () => {
+    const view = render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await screen.findByTestId("result-B");
+    history.pushState(null, "", "/calculator?show=math");
+    view.rerender(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await waitFor(() => expect((document.getElementById("math") as HTMLDetailsElement).open).toBe(true));
+    expect(window.location.search).toBe("");
+  });
+
+  test("/why with a share link loads the numbers and forwards without them in the address", async () => {
+    const st = defaultState();
+    st.single.p = "2,000";
+    history.replaceState(null, "", "/why#" + encodeState(st));
+    render(<CalcProvider><WhyPage /></CalcProvider>);
+    await waitFor(() => expect(replace).toHaveBeenCalled());
+    expect(replace).toHaveBeenCalledWith("/calculator?show=math", { scroll: false });
+    expect(JSON.parse(localStorage.getItem("debtcalc.v1")!).single.p).toBe("2,000");
   });
 
   test("?show=nonsense opens nothing and removes the query", async () => {

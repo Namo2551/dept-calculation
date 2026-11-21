@@ -8,7 +8,7 @@ import { CalcProvider } from "@/components/CalcProvider";
 import CalculatorPage from "@/app/calculator/page";
 
 const scrolled: string[] = [];
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => "/" }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => "/", useSearchParams: () => new URLSearchParams(window.location.search) }));
 
 beforeEach(() => {
   localStorage.clear();

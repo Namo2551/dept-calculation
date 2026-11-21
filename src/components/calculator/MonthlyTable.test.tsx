@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { CalcProvider } from "@/components/CalcProvider";
 import CalculatorPage from "@/app/calculator/page";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => "/" }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => "/", useSearchParams: () => new URLSearchParams(window.location.search) }));
 
 beforeEach(() => {
   localStorage.clear();
@@ -15,15 +15,24 @@ afterEach(() => vi.restoreAllMocks());
 async function openTable() {
   const user = userEvent.setup();
   render(<CalcProvider><CalculatorPage /></CalcProvider>);
-  const box = (await screen.findByText("Month-by-month table")).closest("details")!;
+  const summary = await screen.findByText("Month-by-month table");
+  const box = summary.closest("details")!;
+  await user.click(summary);
   return { user, box };
 }
 
 describe("MonthlyTable", () => {
-  test("rows render while open (the default); method B has 24 rows", async () => {
+  test("the table starts closed with no rows rendered", async () => {
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    const box = (await screen.findByText("Month-by-month table")).closest("details")!;
+    expect(box).not.toHaveAttribute("open");
+    expect(box.querySelectorAll("tbody tr").length).toBe(0);
+  });
+
+  test("rows render once opened; method B has 24 rows", async () => {
     const { user, box } = await openTable();
     expect(box).toHaveAttribute("id", "tableBox");
-    expect(box).toHaveAttribute("open"); // open by default on the charts page
+    expect(box).toHaveAttribute("open");
     expect(box.querySelectorAll("tbody tr").length).toBe(418);
     await user.click(within(box).getByRole("radio", { name: "Method B: fixed payment" }));
     const rows = box.querySelectorAll("tbody tr");

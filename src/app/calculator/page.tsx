@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { BalanceChart } from "@/components/calculator/BalanceChart";
 import { CompareBars } from "@/components/calculator/CompareBars";
 import { ExtraPayment } from "@/components/calculator/ExtraPayment";
@@ -49,7 +50,9 @@ export default function CalculatorPage() {
             <FullMath />
           </div>
         </div>
-        <ShowTarget />
+        <Suspense fallback={null}>
+          <ShowTarget />
+        </Suspense>
       </Ready>
     </>
   );

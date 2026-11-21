@@ -7,7 +7,7 @@ import { useCalc } from "./CalcContext";
 
 export function MonthlyTable() {
   const { t, single } = useCalc();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [method, setMethod] = useState<"A" | "B">("A");
   const rows = single[method].rows;
 

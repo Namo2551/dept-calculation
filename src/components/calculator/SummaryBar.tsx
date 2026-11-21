@@ -25,8 +25,8 @@ export function SummaryBar() {
     document.querySelector<HTMLInputElement>("#tool input")?.focus({ preventScroll: true });
   };
   return (
-    <div role="region" aria-label={t.summary.label} className="no-print lg:hidden sticky top-0 z-10 -mx-6 px-6 py-2 bg-bg border-b border-hair flex items-center justify-between gap-3">
-      <span className="num text-sm truncate">{t.summary.line(formatBahtShort(v.bal), String(v.apr), String(v.m), v.floor ? formatBahtShort(v.floor) : null, formatBahtShort(v.p))}</span>
+    <div role="region" aria-label={t.summary.label} className="no-print lg:hidden sticky top-0 z-10 -mx-6 px-6 py-2 bg-bg border-b border-hair flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+      <span className="num text-sm min-w-0">{t.summary.line(formatBahtShort(v.bal), String(v.apr), String(v.m), v.floor ? formatBahtShort(v.floor) : null, formatBahtShort(v.p))}</span>
       <button type="button" onClick={edit} className="shrink-0 h-11 px-4 border border-btn font-mono text-sm cursor-pointer">
         {t.summary.edit}
       </button>

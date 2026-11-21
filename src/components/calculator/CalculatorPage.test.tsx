@@ -7,7 +7,7 @@ import CalculatorPage from "@/app/calculator/page";
 const resultCard = (key: "A" | "B") => screen.getByTestId(`result-${key}`);
 
 const push = vi.fn();
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push }), usePathname: () => "/" }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }), usePathname: () => "/", useSearchParams: () => new URLSearchParams(window.location.search) }));
 
 beforeEach(() => {
   localStorage.clear();

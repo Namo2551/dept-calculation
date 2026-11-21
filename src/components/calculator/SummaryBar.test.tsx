@@ -42,6 +42,15 @@ describe("SummaryBar", () => {
     expect(screen.getByText(LINE)).toBeInTheDocument();
   });
 
+  test("the line wraps instead of cutting off the method B amount", async () => {
+    page();
+    await screen.findByTestId("tool-panel");
+    act(() => report?.([{ isIntersecting: false }]));
+    const line = screen.getByText(LINE);
+    expect(line.className).not.toContain("truncate");
+    expect(line.parentElement!.className).toContain("flex-wrap");
+  });
+
   test("Edit puts the focus on the balance field", async () => {
     const user = userEvent.setup();
     Element.prototype.scrollIntoView = vi.fn();
