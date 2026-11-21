@@ -30,7 +30,7 @@ export function ShowTarget() {
       if (math) {
         // A smooth scroll started before the math renders gets cut short by the layout change,
         // so jump once the opened content is on the page.
-        math.addEventListener("toggle", () => setTimeout(() => math.scrollIntoView({ block: "start" }), 50), { once: true });
+        math.addEventListener("toggle", () => setTimeout(() => math.scrollIntoView?.({ block: "start" }), 50), { once: true });
         math.open = true;
       }
     }
