@@ -1,0 +1,8 @@
+# Netlify builds this as a full Next.js app; its Next.js adapter is applied automatically.
+# Environment variables (Supabase URL and keys) are set in the Netlify UI, never in this file.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"

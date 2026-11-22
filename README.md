@@ -50,7 +50,8 @@ Three claims, proved by induction on the page:
 
 ## Tech stack
 
-- [Next.js 16](https://nextjs.org) (App Router) exported as a static site, React 19, TypeScript (strict)
+- [Next.js 16](https://nextjs.org) (App Router, server mode; public pages prerendered), React 19, TypeScript (strict)
+- Hosting: Netlify (`netlify.toml`); accounts and data: Supabase (see `docs/superpowers/specs/2026-11-22-debt-management-system-design.md`)
 - Tailwind CSS 4 with a hand-built neumorphism theme (light "Cloud" and dark "Night" palettes)
 - Vitest + Testing Library: about 300 tests, including a **parity test** that runs the original JavaScript core side by side with the TypeScript port on 200+ input combinations and requires identical results
 - IBM Plex Sans Thai and IBM Plex Mono via `next/font`
@@ -63,7 +64,7 @@ Requires Node.js 22 or newer.
 npm install
 npm run dev        # http://localhost:3000 (Thai) and /en (English)
 npm test           # run the test suite once
-npm run build      # static export to out/
+npm run build      # production build (.next/); npx next start to run it
 npm run lint
 npm run typecheck
 ```
