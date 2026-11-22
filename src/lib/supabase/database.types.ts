@@ -121,6 +121,7 @@ export type Database = {
     Views: { [_ in never]: never };
     Functions: {
       delete_my_account: { Args: never; Returns: undefined };
+      get_shared_view: { Args: { p_token: string }; Returns: Json };
     };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };
