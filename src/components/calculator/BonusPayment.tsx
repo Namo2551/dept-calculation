@@ -17,29 +17,46 @@ export function BonusPayment() {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [month, setMonth] = useState("6");
-  const refocus = useRef(false); // after Remove, put focus back on the "I have a bonus" button
+  // the last amount and month that were both valid: a half-typed field keeps the answer on screen
+  const [ok, setOk] = useState<{ a: number; m: number } | null>(null);
+  // where focus goes after the box opens (the amount field) or closes (the "I have a bonus" button)
+  const focusTo = useRef<"input" | "button" | null>(null);
   const wrap = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!refocus.current) return;
-    refocus.current = false;
-    wrap.current?.querySelector("button")?.focus();
+    if (focusTo.current === null) return;
+    wrap.current?.querySelector<HTMLElement>(focusTo.current)?.focus();
+    focusTo.current = null;
   });
 
+  const goodMonth = (x: number) => Number.isInteger(x) && x >= 1 && x <= 1200;
+  const update = (nextAmount: string, nextMonth: string) => {
+    setAmount(nextAmount);
+    setMonth(nextMonth);
+    const na = parseNumber(nextAmount);
+    const nm = parseNumber(nextMonth);
+    if (nextAmount.trim() === "") setOk(null);
+    else if (na > 0 && goodMonth(nm)) setOk({ a: na, m: nm });
+  };
+
   const a = parseNumber(amount);
-  const m = parseNumber(month);
   const amountBad = amount.trim() !== "" && !(a > 0);
-  const monthBad = !(Number.isInteger(m) && m >= 1 && m <= 1200);
+  const monthBad = !goodMonth(parseNumber(month));
   const { v, B } = single;
   const res = useMemo(
-    () => (a > 0 && !monthBad ? simulateWithBonus({ balance: v.bal, apr: v.apr, p: v.p, amount: a, month: m }) : null),
-    [a, m, monthBad, v.bal, v.apr, v.p],
+    () => (ok === null ? null : simulateWithBonus({ balance: v.bal, apr: v.apr, p: v.p, amount: ok.a, month: ok.m })),
+    [ok, v.bal, v.apr, v.p],
   );
 
   if (!open) {
     return (
       <div ref={wrap} className="no-print">
-        <Button onClick={() => setOpen(true)}>{T.open}</Button>
+        <Button
+          onClick={() => {
+            focusTo.current = "input";
+            setOpen(true);
+          }}
+        >{T.open}</Button>
       </div>
     );
   }
@@ -47,7 +64,8 @@ export function BonusPayment() {
   const remove = () => {
     setOpen(false);
     setAmount("");
-    refocus.current = true;
+    setOk(null);
+    focusTo.current = "button";
   };
 
   return (
@@ -58,8 +76,8 @@ export function BonusPayment() {
           <Button size="sm" variant="quiet" onClick={remove}>{T.remove}</Button>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 max-w-[640px]">
-          <NumberField label={T.amount} value={amount} onChange={setAmount} error={amountBad ? T.amountError : null} errorPrefix={t.errors.prefix} />
-          <NumberField label={T.month} inputMode="numeric" value={month} onChange={setMonth} error={monthBad ? T.monthError : null} errorPrefix={t.errors.prefix} />
+          <NumberField label={T.amount} value={amount} onChange={(x) => update(x, month)} error={amountBad ? T.amountError : null} errorPrefix={t.errors.prefix} />
+          <NumberField label={T.month} inputMode="numeric" value={month} onChange={(x) => update(amount, x)} error={monthBad ? T.monthError : null} errorPrefix={t.errors.prefix} />
         </div>
         <div className="mt-3">
           {res === null ? (

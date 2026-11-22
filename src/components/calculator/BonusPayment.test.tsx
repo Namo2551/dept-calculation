@@ -64,6 +64,21 @@ describe("One-time bonus", () => {
     expect(plan.getByText("Enter a bonus above 0")).toBeInTheDocument();
   });
 
+  test("a half-typed month keeps the last answer on screen", async () => {
+    const { user, plan, fill } = await setup();
+    await user.click(plan.getByRole("button", { name: "I have a bonus" }));
+    await fill("Bonus amount (baht)", "10,000");
+    await user.clear(plan.getByLabelText("In month (1 = next month)"));
+    expect(plan.getByText("The month must be a whole number from 1 to 1200")).toBeInTheDocument();
+    expect(plan.getByText("Paid off in, with the bonus")).toBeInTheDocument();
+  });
+
+  test("opening the box moves focus to the bonus amount", async () => {
+    const { user, plan } = await setup();
+    await user.click(plan.getByRole("button", { name: "I have a bonus" }));
+    expect(plan.getByLabelText("Bonus amount (baht)")).toHaveFocus();
+  });
+
   test("Remove hides the box and puts focus back on the button", async () => {
     const { user, plan } = await setup();
     await user.click(plan.getByRole("button", { name: "I have a bonus" }));
