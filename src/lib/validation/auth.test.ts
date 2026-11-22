@@ -47,4 +47,11 @@ describe("routes", () => {
     expect(safeNext("/\\evil.example")).toBe("/dashboard"); // browsers read "/\" like "//"
     expect(safeNext(null)).toBe("/dashboard");
   });
+  test("safeNext rejects control characters browsers strip (/\\t/evil.com becomes //evil.com)", () => {
+    expect(safeNext("/\t/evil.example")).toBe("/dashboard");
+    expect(safeNext("/\n/evil.example")).toBe("/dashboard");
+    expect(safeNext("/\r//evil.example")).toBe("/dashboard");
+    expect(safeNext("/ /evil.example")).toBe("/dashboard");
+    expect(safeNext("/debts/abc?tab=pay#x")).toBe("/debts/abc?tab=pay#x");
+  });
 });

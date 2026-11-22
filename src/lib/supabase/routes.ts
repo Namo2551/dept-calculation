@@ -7,7 +7,16 @@ export function isPrivatePath(pathname: string): boolean {
 }
 
 // Only same-site relative paths are allowed as "come back here after login" targets (no open redirects).
+// Control characters, spaces and backslashes are refused outright (browsers strip tabs/newlines, so "/\t/x" would
+// become "//x"); then the path must resolve to this same origin.
 export function safeNext(next: string | null | undefined, fallback = "/dashboard"): string {
-  if (!next || !next.startsWith("/") || next.startsWith("//") || next.startsWith("/\\")) return fallback;
-  return next;
+  if (!next || !next.startsWith("/") || /[\u0000- \u007f\\]/.test(next)) return fallback;
+  try {
+    const base = "http://same.invalid";
+    const u = new URL(next, base);
+    if (u.origin !== base) return fallback;
+    return u.pathname + u.search + u.hash;
+  } catch {
+    return fallback;
+  }
 }
