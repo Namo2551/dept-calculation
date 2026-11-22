@@ -14,6 +14,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Frozen copy of the original core.js, used only by the parity test.
     "tests/fixtures/**",
+    // Local tool folders: agent worktrees (full copies of the repo) and scratch files.
+    ".claude/**",
+    ".superpowers/**",
   ]),
 ]);
 

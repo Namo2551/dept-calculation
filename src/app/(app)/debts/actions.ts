@@ -233,9 +233,15 @@ export async function startSchedule(_: DebtFormState | undefined, fd: FormData):
     };
   }
 
-  const off = await supabase.from("repayment_schedules").update({ is_active: false }).eq("debt_id", debtId.data).eq("is_active", true);
-  if (off.error) return generic();
-  const { error } = await supabase.from("repayment_schedules").insert({ ...row, is_active: true });
+  // One transaction in the database: the old plan is switched off and the new one added together.
+  const { error } = await supabase.rpc("start_repayment_schedule", {
+    p_debt_id: debtId.data,
+    p_source_plan_id: row.source_plan_id ?? null,
+    p_balance: row.balance,
+    p_apr: row.apr,
+    p_monthly_payment: row.monthly_payment,
+    p_start_date: row.start_date,
+  });
   if (error) return generic();
   refresh(debtId.data);
   return ok(debtsCopy.plan.started);

@@ -122,6 +122,10 @@ export type Database = {
     Functions: {
       delete_my_account: { Args: never; Returns: undefined };
       get_shared_view: { Args: { p_token: string }; Returns: Json };
+      start_repayment_schedule: {
+        Args: { p_debt_id: string; p_source_plan_id: string | null; p_balance: number; p_apr: number; p_monthly_payment: number; p_start_date: string };
+        Returns: string;
+      };
     };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };
