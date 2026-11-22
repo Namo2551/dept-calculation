@@ -96,3 +96,4 @@ scripts/og/       Template and script that render the share images with headless
 This is an educational estimate. Real credit cards may calculate interest differently (for example, daily accrual, fees or changing rates), so check with your card issuer before making financial decisions.
 
 Fonts: IBM Plex, licensed under the SIL Open Font License 1.1 (`assets/fonts/OFL.txt`).
+# Debt-Calculator
