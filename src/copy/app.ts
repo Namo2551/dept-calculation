@@ -34,6 +34,7 @@ export const appCopy = {
     noAccount: "No account yet?",
     haveAccount: "Already have an account?",
     checkEmail: "Almost done: we sent a confirmation link to your email. Open it to activate your account, then sign in.",
+    emailTaken: "An account with this email address is already registered. Please sign in, or reset your password if you have forgotten it.",
     badLogin: "That email and password don't match an account, or the email isn't confirmed yet.",
     genericError: "Something went wrong. Please try again in a moment.",
     tooMany: "Too many attempts. Please wait a few minutes and try again.",

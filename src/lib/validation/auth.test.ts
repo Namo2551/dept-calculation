@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { isPrivatePath, safeNext } from "@/lib/supabase/routes";
-import { fieldErrors, newPasswordSchema, signInSchema, signUpSchema } from "./auth";
+import { fieldErrors, isExistingAccount, newPasswordSchema, signInSchema, signUpSchema } from "./auth";
 
 describe("sign-up rules", () => {
   test("needs a real email, an 8+ character password and the privacy consent", () => {
@@ -53,5 +53,16 @@ describe("routes", () => {
     expect(safeNext("/\r//evil.example")).toBe("/dashboard");
     expect(safeNext("/ /evil.example")).toBe("/dashboard");
     expect(safeNext("/debts/abc?tab=pay#x")).toBe("/debts/abc?tab=pay#x");
+  });
+});
+
+describe("isExistingAccount", () => {
+  test("a sign-up answer with no identities means the email already has an account", () => {
+    expect(isExistingAccount({ identities: [] })).toBe(true);
+  });
+  test("a new account has an identity; no user at all is not 'existing'", () => {
+    expect(isExistingAccount({ identities: [{ id: "x" }] })).toBe(false);
+    expect(isExistingAccount(null)).toBe(false);
+    expect(isExistingAccount({})).toBe(false);
   });
 });

@@ -4,13 +4,14 @@ import { appCopy } from "@/copy/app";
 import { createClient } from "@/lib/supabase/server";
 import { safeNext } from "@/lib/supabase/routes";
 import { siteOrigin } from "@/lib/site-origin";
-import { fieldErrors, newPasswordSchema, resetRequestSchema, signInSchema, signUpSchema } from "@/lib/validation/auth";
+import { fieldErrors, isExistingAccount, newPasswordSchema, resetRequestSchema, signInSchema, signUpSchema } from "@/lib/validation/auth";
 
 export type AuthState = {
   errors?: Record<string, string>;
   message?: string;
   tone?: "good" | "bad";
   values?: { email?: string; displayName?: string };
+  emailTaken?: boolean;
 };
 
 const A = appCopy.auth;
@@ -40,8 +41,10 @@ export async function signUp(_: AuthState | undefined, fd: FormData): Promise<Au
     },
   });
   if (error) return { message: authErrorMessage(error.status), tone: "bad", values };
+  // The owner chose to tell people when an email is already registered (it makes "does X have an account?"
+  // answerable, a trade-off accepted for a clearer sign-up).
+  if (isExistingAccount(data.user)) return { errors: { email: A.emailTaken }, values, emailTaken: true };
   if (data.session) redirect("/dashboard"); // email confirmation switched off in Supabase
-  // Same answer whether or not the email already has an account, so this can't be used to probe emails.
   return { message: A.checkEmail, tone: "good" };
 }
 

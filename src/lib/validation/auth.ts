@@ -42,3 +42,9 @@ export function fieldErrors(result: { success: boolean; error?: z.ZodError }): R
   }
   return out;
 }
+
+// Supabase answers a sign-up for an email that already has a confirmed account with a user that has no
+// identities (and sends no email). That is how the form can say the address is already registered.
+export function isExistingAccount(user: { identities?: unknown[] | null } | null | undefined): boolean {
+  return Array.isArray(user?.identities) && user.identities.length === 0;
+}

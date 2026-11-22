@@ -95,3 +95,5 @@ Deferred minors (not fixed yet):
 - Calculator stays public; signed-in users get Save/Open plan.
 - Sharing never exposes tables to recipients; only `get_shared_view` with owner-chosen fields.
 - Google sign-in deferred until after email/password works.
+- Owner asked (2026-11-22) that sign-up says when an email is already registered. Detected by Supabase's
+  "no identities" sign-up answer (`isExistingAccount`); accepted trade-off: it reveals whether an email has an account.

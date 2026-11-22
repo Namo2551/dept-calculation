@@ -56,6 +56,16 @@ export function SignUpForm() {
       <Message state={state} />
       <TextField label={A.displayName} name="displayName" autoComplete="name" maxLength={80} defaultValue={state?.values?.displayName} error={state?.errors?.displayName} />
       <TextField label={A.email} name="email" type="email" autoComplete="email" required defaultValue={state?.values?.email} error={state?.errors?.email} />
+      {state?.emailTaken && (
+        <p className="-mt-2 flex flex-wrap gap-x-5 text-sm">
+          <Link href="/login" className="underline underline-offset-4 inline-flex min-h-11 items-center">
+            {appCopy.nav.signIn}
+          </Link>
+          <Link href="/forgot-password" className="underline underline-offset-4 inline-flex min-h-11 items-center">
+            {A.forgot}
+          </Link>
+        </p>
+      )}
       <TextField label={A.password} name="password" type="password" autoComplete="new-password" hint={A.passwordHint} required error={state?.errors?.password} />
       <div>
         <label className="flex items-start gap-3 text-sm leading-relaxed min-h-11 cursor-pointer">
