@@ -1,6 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { payoffDate } from "@/lib/format";
 import { CalcProvider } from "@/components/CalcProvider";
 import CalculatorPage from "@/app/calculator/page";
 
@@ -138,5 +139,27 @@ describe("Calculator page", () => {
     expect(whys.length).toBe(3);
     for (const b of whys) expect(b.closest("section > header")).not.toBeNull();
     expect(screen.getByRole("button", { name: "Why? the balance chart" }).closest("section")).toHaveAttribute("id", "sec-chart");
+  });
+});
+
+describe("payoff date", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 10, 22));
+  });
+  afterEach(() => vi.useRealTimers());
+
+  test("each result card says the month and year it is paid off", async () => {
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await screen.findByTestId("result-B");
+    expect(within(resultCard("B")).getByText("Debt-free in November 2028")).toBeInTheDocument();
+    expect(within(resultCard("A")).getByText(`Debt-free in ${payoffDate(418, new Date(2026, 10, 22))}`)).toBeInTheDocument();
+  });
+
+  test("a plan that never ends shows no date", async () => {
+    const user = userEvent.setup();
+    render(<CalcProvider><CalculatorPage /></CalcProvider>);
+    await user.click(await screen.findByRole("button", { name: "Example: fixed payment below the interest (400)" }));
+    expect(within(resultCard("B")).queryByText(/Debt-free in/)).toBeNull();
   });
 });

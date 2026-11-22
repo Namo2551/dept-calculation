@@ -2,7 +2,7 @@
 import { CountUp } from "@/components/ui/CountUp";
 import { Panel } from "@/components/ui/Panel";
 import type { SimResult } from "@/lib/debt";
-import { durationText, formatBaht, formatBahtShort, monthsToText } from "@/lib/format";
+import { durationText, formatBaht, formatBahtShort, monthsToText, payoffDate } from "@/lib/format";
 import { useCalc } from "./CalcContext";
 import { Note, Stat } from "./Stat";
 
@@ -20,6 +20,7 @@ function ResultCard({ id, title, sim, children }: { id: "A" | "B"; title: string
       <Stat label={t.results.paidIn} big>
         {sim.months !== null ? <CountUp value={sim.months} format={(v) => monthsToText(Math.round(v))} /> : durationText(sim)}
       </Stat>
+      {sim.months !== null && <p className="text-sm text-muted -mt-1 mb-2">{t.results.onDate(payoffDate(sim.months, new Date()))}</p>}
       <div className="grid grid-cols-2 gap-x-4">
         <Stat label={t.results.totalInterest}>{sim.totalInterest === null ? t.unit.none : <CountUp value={sim.totalInterest} format={baht} />}</Stat>
         <Stat label={t.results.firstPay}>{baht(sim.firstPayment)}</Stat>

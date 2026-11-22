@@ -99,6 +99,7 @@ export const copy = {
     titleA: (m: string, floor: string | null) => `Method A: pay the ${m}% minimum` + (floor ? ` (at least ${floor} baht)` : ""),
     titleB: (p: string) => `Method B: pay a fixed ${p} baht`,
     paidIn: "Paid off in",
+    onDate: (date: string) => `Debt-free in ${date}`,
     totalInterest: "Total interest",
     firstPay: "First payment",
     lastPay: "Last payment",

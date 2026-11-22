@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Panel, PanelTitle } from "@/components/ui/Panel";
 import { RangeField } from "@/components/ui/RangeField";
 import { simulate } from "@/lib/debt";
-import { durationText, formatBaht, formatBahtShort, monthsToText } from "@/lib/format";
+import { durationText, formatBaht, formatBahtShort, monthsToText, payoffDate } from "@/lib/format";
 import { useCalc } from "./CalcContext";
 import { Stat } from "./Stat";
 
@@ -25,6 +25,7 @@ export function ExtraPayment() {
           <Stat label={t.extra.payIn(formatBahtShort(v.p + extra))} big>
             {durationText(P)}
           </Stat>
+          {P.months !== null && <p className="text-sm text-muted -mt-1 mb-2">{t.results.onDate(payoffDate(P.months, new Date()))}</p>}
           {B.months !== null && P.months !== null ? (
             <div className="grid grid-cols-2 gap-x-4">
               <Stat label={t.extra.faster}>{monthsToText(B.months - P.months)}</Stat>
