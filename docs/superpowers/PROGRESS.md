@@ -84,7 +84,7 @@ Deferred minors (not fixed yet):
 1. Supabase dashboard: Auth > URL Configuration (Site URL + redirect URLs, later the Netlify URL); Auth > Passwords:
    enable leaked password protection; before real users, set a custom SMTP sender (built-in email is rate-limited).
 2. Decide: delete the two test accounts (and test account B's "Test card B" debt) before launch.
-3. Push `feat/paydown-multipage` to GitHub (and merge to main or open a PR) - ask first.
+3. (done 2026-11-22) Pushed `feat/paydown-multipage` to GitHub. Still open: merge to main or open a PR - ask first.
 4. Netlify: import the repo, branch, env vars `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
    `NEXT_PUBLIC_SITE_URL` (= the Netlify URL); deploy; add the Netlify URL to Supabase redirect URLs; then test
    sign-up email, login, reset password, and one write per feature on the live site.
