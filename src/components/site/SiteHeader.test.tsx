@@ -92,9 +92,10 @@ describe("SiteHeader", () => {
     const user = userEvent.setup();
     render(<SiteHeader />);
     await user.click(screen.getByRole("button", { name: "Menu" }));
+    await screen.findAllByRole("link", { name: "Sign in" }); // signed-out state resolved
     const header = screen.getByRole("banner");
     const targets = [...within(header).getAllByRole("link"), ...within(header).getAllByRole("button")];
-    expect(targets.length).toBe(10); // wordmark, 3 links x2, 2 calls to action, menu button
+    expect(targets.length).toBe(12); // wordmark, 3 links x2, sign in x2, 2 calls to action, menu button
     for (const el of targets) expect(el.className).toMatch(/(^|\s)(min-h-11|h-11|h-12)(\s|$)/);
   });
 });

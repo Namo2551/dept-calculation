@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { copy as t } from "@/copy";
+import { appCopy } from "@/copy/app";
+import { useSignedIn } from "@/hooks/useSignedIn";
 import { Wordmark } from "./Wordmark";
 
 const MENU_ID = "site-menu";
@@ -33,6 +35,7 @@ function NavLinks({ pathname, onClick, className = "" }: { pathname: string; onC
 export function SiteHeader() {
   const pathname = usePathname();
   const onCalculator = pathname === "/calculator";
+  const signedIn = useSignedIn(); // null until known; only used to choose which buttons to show
   const [open, setOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
 
@@ -59,12 +62,25 @@ export function SiteHeader() {
         <nav aria-label={t.nav.label} className="hidden min-[900px]:flex items-center gap-9">
           <NavLinks pathname={pathname} />
         </nav>
-        {/* no "Open the calculator" on the calculator itself; an empty box keeps the nav centred */}
-        <div className="hidden min-[900px]:block min-w-[180px] text-right">
-          {!onCalculator && (
-            <Button href="/calculator" variant="primary" size="sm">
-              {t.nav.cta}
+        {/* signed in: Dashboard; signed out: Sign in + "Open the calculator" (not on the calculator itself) */}
+        <div className="hidden min-[900px]:flex items-center justify-end gap-5 min-w-[180px]">
+          {signedIn ? (
+            <Button href="/dashboard" variant="primary" size="sm">
+              {appCopy.dashboard.title}
             </Button>
+          ) : (
+            <>
+              {signedIn === false && (
+                <Link href="/login" className="inline-flex items-center min-h-11 font-mono font-medium text-sm text-ink underline-offset-4 hover:underline">
+                  {appCopy.nav.signIn}
+                </Link>
+              )}
+              {!onCalculator && (
+                <Button href="/calculator" variant="primary" size="sm">
+                  {t.nav.cta}
+                </Button>
+              )}
+            </>
           )}
         </div>
         <button
@@ -89,10 +105,23 @@ export function SiteHeader() {
         <nav id={MENU_ID} aria-label={t.nav.menu} className="min-[900px]:hidden absolute inset-x-0 top-full z-20 bg-bg border-y border-hair">
           <div className="container-page flex flex-col py-4">
             <NavLinks pathname={pathname} onClick={close} className="w-full text-base" />
-            {!onCalculator && (
-              <Button href="/calculator" variant="primary" size="sm" className="mt-4 w-full" onClick={close}>
-                {t.nav.cta}
+            {signedIn ? (
+              <Button href="/dashboard" variant="primary" size="sm" className="mt-4 w-full" onClick={close}>
+                {appCopy.dashboard.title}
               </Button>
+            ) : (
+              <>
+                {signedIn === false && (
+                  <Button href="/login" size="sm" className="mt-4 w-full" onClick={close}>
+                    {appCopy.nav.signIn}
+                  </Button>
+                )}
+                {!onCalculator && (
+                  <Button href="/calculator" variant="primary" size="sm" className="mt-4 w-full" onClick={close}>
+                    {t.nav.cta}
+                  </Button>
+                )}
+              </>
             )}
           </div>
         </nav>
