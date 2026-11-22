@@ -56,13 +56,38 @@ Known minor issues to look at: "Mark as paid off" button is offered on an active
 `LineChart` x-axis shows "6 mo"/"1 yr" instead of month names on dashboard charts; "today" uses server time (UTC on
 Netlify) rather than Asia/Bangkok.
 
-## Remaining steps (in order)
-1. (done) Merge agent branches. 2. (done) Browser-check main flows as A and isolation as B.
-3. Hook sharing into other pages if useful (e.g. "Share this plan" on `/plans/[id]` linking to `/sharing?plan=<id>`); regenerate DB types if any migration changes.
-4. Responsive pass at 390 / 768 / 1280 px on all app pages; no page-level horizontal scroll.
-5. Security pass: re-run `supabase/tests/rls_test.sql` and `share_test.sql`, `get_advisors` (security + performance), check every Server Action calls requireUser/requireConsent and validates with zod, no secrets in code (`git grep -i "service_role\|secret"`).
-6. Final whole-branch review by a fresh reviewer agent; fix Critical/Important with a failing test first.
-7. `npm run build` + `npx next start` smoke test. Then ask the owner before: deleting the two test accounts, pushing to GitHub, and the Netlify steps (connect repo, set env vars, add Netlify URL to Supabase redirect URLs, set `NEXT_PUBLIC_SITE_URL`; recommend a custom SMTP for auth emails before real users).
+## Final review (fresh reviewer agent): no critical findings; all important ones fixed
+- Post-login open redirect via control characters (`/login?next=/%09/evil.com`): `safeNext` now refuses control
+  chars/backslashes and requires the same origin (test added).
+- "Paid off" ignored the current month's interest: `ledger.paidOff` now needs `start*(1+r) - paid <= 0.005`;
+  `ledger.payoffAmount` shown on the debt page ("To clear it this month, pay").
+- "Today" used server UTC: `todayISO()` now uses Asia/Bangkok.
+- Plan baseline change was two writes: now `start_repayment_schedule()` (security invoker, one transaction;
+  `supabase/tests/schedule_test.sql` passes; browser-verified).
+- `npm run lint` ignores `.claude/**` and `.superpowers/**` (agent worktrees), so it passes.
+Status: **563 tests pass**, typecheck, lint, build green. DB tests: rls_test, share_test, schedule_test pass.
+Supabase security advisor: only intended warnings (get_shared_view callable by anon = the share reader;
+delete_my_account callable by signed-in users = deletes only self) + "leaked password protection" (owner setting).
+
+Deferred minors (not fixed yet):
+- Payments are loaded without paging; PostgREST's 1,000-row default would truncate very heavy users (`src/lib/data/load.ts`).
+- `compareToPlan` reads actual balance at the debt's month boundary, plan months at the plan's boundary (up to a month apart when start days differ).
+- `/goals` page writes `achieved_at` during render (move into actions).
+- Shared view with amounts hidden: overall progress is an unweighted average across debts.
+- Goal titles are shared as typed even when amounts are hidden (warn in the share form).
+- A payment dated tomorrow doesn't trigger the paid-off status sync when its day arrives.
+- Dashboard projection cut at 120 months without saying so.
+- "Mark as paid off" button shown on an active debt that still has a balance.
+- LineChart x-axis says "6 mo"/"1 yr" instead of month names on dashboard charts.
+
+## Remaining steps (need the owner)
+1. Supabase dashboard: Auth > URL Configuration (Site URL + redirect URLs, later the Netlify URL); Auth > Passwords:
+   enable leaked password protection; before real users, set a custom SMTP sender (built-in email is rate-limited).
+2. Decide: delete the two test accounts (and test account B's "Test card B" debt) before launch.
+3. Push `feat/paydown-multipage` to GitHub (and merge to main or open a PR) - ask first.
+4. Netlify: import the repo, branch, env vars `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
+   `NEXT_PUBLIC_SITE_URL` (= the Netlify URL); deploy; add the Netlify URL to Supabase redirect URLs; then test
+   sign-up email, login, reset password, and one write per feature on the live site.
 
 ## Decisions made (owner approved the plan; these are the builder's calls)
 - Payments belong to real **debts**; a saved **plan** is a scenario that can become a debt's frozen baseline (`repayment_schedules`).
