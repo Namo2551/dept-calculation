@@ -2,7 +2,7 @@
 // Pure (no database, no React). Months are 'YYYY-MM' strings; dates are 'YYYY-MM-DD'.
 import { simulate } from "./debt";
 import { plannedRows } from "./ledger";
-import { minimumDue, type DebtOverview } from "./overview";
+import { minimumDue, totalsOf, type DebtOverview, type Totals } from "./overview";
 
 const EPS = 0.005;
 
@@ -14,6 +14,14 @@ export function addYM(ym: string, n: number): string {
   const [y, m] = ym.split("-").map(Number);
   const total = y * 12 + (m - 1) + n;
   return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, "0")}`;
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// "2026-03" -> "Mar 2026"
+export function ymLabel(ym: string): string {
+  const [y, m] = ym.split("-").map(Number);
+  return `${MONTHS[m - 1]} ${y}`;
 }
 
 // b - a in months.
@@ -179,4 +187,32 @@ export function headline(items: DebtOverview[]): Headline {
   if (never.length > 0) return { kind: "never", names: never.map((i) => i.debt.name) };
   const last = unpaid.reduce((a, b) => (b.projection!.months > a.projection!.months ? b : a));
   return { kind: "date", months: last.projection!.months, iso: last.projection!.debtFreeISO };
+}
+
+export type DashboardDebt = { id: string; name: string; balance: number; startBalance: number; currency: string; status: DebtStatus };
+
+export type Dashboard = {
+  totals: Totals;
+  headline: Headline;
+  total: DebtSeries;
+  plan: PlanSeries | null;
+  payments: MonthPayments[];
+  thisMonth: { paid: number; planned: number };
+  debts: DashboardDebt[];
+};
+
+// Everything the dashboard view shows, from the user's overviews. Archived debts are left out.
+export function buildDashboard(items: DebtOverview[], asOfISO: string): Dashboard {
+  const list = active(items);
+  const payments = monthlyPayments(list, asOfISO);
+  const last = payments[payments.length - 1];
+  return {
+    totals: totalsOf(list),
+    headline: headline(list),
+    total: totalDebtSeries(list, asOfISO),
+    plan: plannedVsActualSeries(list, asOfISO),
+    payments,
+    thisMonth: { paid: last.paid, planned: last.planned },
+    debts: list.map((o) => ({ id: o.debt.id, name: o.debt.name, balance: o.ledger.balance, startBalance: o.debt.start_balance, currency: o.debt.currency, status: debtStatus(o) })),
+  };
 }

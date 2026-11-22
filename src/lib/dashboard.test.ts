@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   actualMonthEnds,
   addYM,
+  buildDashboard,
   debtStatus,
   denseSeries,
   headline,
@@ -9,6 +10,7 @@ import {
   plannedVsActualSeries,
   totalDebtSeries,
   ymOf,
+  ymLabel,
   ymRange,
 } from "./dashboard";
 import { overviewOf } from "./overview";
@@ -31,6 +33,11 @@ describe("calendar months", () => {
     expect(addYM("2026-01", -1)).toBe("2025-12");
     expect(ymRange("2026-11", "2027-02")).toEqual(["2026-11", "2026-12", "2027-01", "2027-02"]);
     expect(ymRange("2027-01", "2026-12")).toEqual([]);
+  });
+
+  test("ymLabel gives a short month and year", () => {
+    expect(ymLabel("2026-03")).toBe("Mar 2026");
+    expect(ymLabel("2027-12")).toBe("Dec 2027");
   });
 
   test("denseSeries carries the last known value forward and uses a fill value before the first point", () => {
@@ -154,5 +161,21 @@ describe("debtStatus and headline", () => {
     const a = overviewOf(debt(), [], plan(), "2026-01-20");
     const h = headline([a]);
     expect(h).toEqual({ kind: "date", months: a.projection!.months, iso: a.projection!.debtFreeISO });
+  });
+});
+
+describe("buildDashboard", () => {
+  test("bundles totals, headline, series, this month and the debt list", () => {
+    const a = overviewOf(debt(), [pay("2026-01-20", 1500), pay("2026-02-20", 1500), pay("2026-03-02", 300)], plan(), "2026-03-15");
+    const archived = overviewOf(debt({ id: "x", name: "Old", status: "archived" }), [], null, "2026-03-15");
+    const d = buildDashboard([a, archived], "2026-03-15");
+    expect(d.totals.startTotal).toBe(30000);
+    expect(d.headline.kind).toBe("date");
+    expect(d.thisMonth).toEqual({ paid: 300, planned: 1500 });
+    expect(d.payments).toHaveLength(12);
+    expect(d.debts.map((x) => x.id)).toEqual(["d1"]);
+    expect(d.debts[0]).toMatchObject({ name: "Card A", status: "ahead" });
+    expect(d.plan).not.toBeNull();
+    expect(d.total.todayIndex).toBe(2);
   });
 });
