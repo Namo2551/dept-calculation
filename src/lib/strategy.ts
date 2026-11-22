@@ -158,11 +158,10 @@ export function compareStrategies(debts: StrategyDebt[], budget: number, todayIS
 
   const summary = (s: MultiStrategy): PlanSummary => {
     const r = results[s];
-    const order = debts
+    // Array.prototype.sort is stable, so debts that clear in the same month keep their input order.
+    const order: PayoffStep[] = debts
       .map((d, i) => ({ id: d.id, name: d.name, month: r.paidOffMonth[i], dateISO: r.paidOffMonth[i] === null ? null : monthDate(todayISO, r.paidOffMonth[i]!) }))
-      .map((x, i) => ({ ...x, i }))
-      .sort((a, b) => (a.month ?? Infinity) - (b.month ?? Infinity) || a.i - b.i)
-      .map(({ i: _i, ...x }) => x);
+      .sort((a, b) => (a.month ?? Infinity) - (b.month ?? Infinity));
     const cleared = r.paidOffMonth.filter((m): m is number => m !== null);
     return {
       strategy: s,
