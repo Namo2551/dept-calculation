@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { simulate } from "./debt";
-import { addMonths, buildLedger, compareToPlan, monthIndex, parseDate, projectFrom, toISODate } from "./ledger";
+import { addMonths, buildLedger, compareToPlan, monthIndex, parseDate, projectFrom, toISODate, todayISO } from "./ledger";
 
 const debt = { start_balance: 30000, apr: 16, start_date: "2026-01-15" };
 
@@ -112,5 +112,14 @@ describe("projectFrom", () => {
   });
   test("an empty balance is already debt-free", () => {
     expect(projectFrom(0, 16, 1500, "2026-01-15")).toEqual({ months: 0, remainingInterest: 0, debtFreeISO: "2026-01-15" });
+  });
+});
+
+describe("todayISO", () => {
+  test("uses the date in Thailand, not the server's UTC date", () => {
+    expect(todayISO(new Date("2026-11-21T20:00:00Z"))).toBe("2026-11-22"); // 03:00 in Bangkok
+    expect(todayISO(new Date("2026-12-31T17:30:00Z"))).toBe("2027-01-01");
+    expect(todayISO(new Date("2026-11-22T10:00:00Z"))).toBe("2026-11-22");
+    expect(todayISO(new Date("2026-11-21T20:00:00Z"), "UTC")).toBe("2026-11-21");
   });
 });

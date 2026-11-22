@@ -165,6 +165,12 @@ export function plannedRows(plan: PlanTerms): LedgerRow[] {
   }));
 }
 
-export function todayISO(now = new Date()): string {
-  return toISODate({ y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() });
+// Today's date where the user lives (Thailand by default), not the server's clock: Netlify runs in UTC, which
+// is 7 hours behind Bangkok, so a payment made in the morning would otherwise land on "tomorrow".
+export const APP_TIME_ZONE = "Asia/Bangkok";
+
+export function todayISO(now = new Date(), timeZone = APP_TIME_ZONE): string {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(now);
+  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value);
+  return toISODate({ y: get("year"), m: get("month"), d: get("day") });
 }
