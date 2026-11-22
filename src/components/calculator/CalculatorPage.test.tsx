@@ -113,11 +113,11 @@ describe("Calculator page", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
-  test("the page is nine numbered sections in report order", async () => {
+  test("the page is seven numbered sections in report order", async () => {
     render(<CalcProvider><CalculatorPage /></CalcProvider>);
     await screen.findByTestId("result-B");
     expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
-      "Your numbers", "Results", "Balance by month", "Year by year", "Your plan", "Missed payments", "Account status", "Month by month", "The math",
+      "Your numbers", "Results", "Balance by month", "Year by year", "Your plan", "Month by month", "The math",
     ]);
     expect(document.getElementById("sec-results")).toContainElement(resultCard("A"));
   });

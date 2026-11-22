@@ -3,9 +3,9 @@ import { mathEn } from "./math";
 const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
 
 // CPE111 chapters used on the site, keyed by chapter number ("1-5" is the joint Ch 1 & 5 lecture).
-export type ChapterKey = "1-5" | "2" | "3" | "6" | "7" | "8" | "13";
+export type ChapterKey = "1-5" | "2" | "3" | "8";
 // Numbered sections of the calculator report, in page order.
-export type SectionKey = "inputs" | "results" | "chart" | "yearly" | "plan" | "risk" | "status" | "table" | "math";
+export type SectionKey = "inputs" | "results" | "chart" | "yearly" | "plan" | "table" | "math";
 
 
 export const copy = {
@@ -25,10 +25,7 @@ export const copy = {
     "1-5": { label: "Ch 1 & 5", name: "Mathematical reasoning" },
     "2": { label: "Ch 2", name: "Sums" },
     "3": { label: "Ch 3", name: "Algorithms" },
-    "6": { label: "Ch 6", name: "Counting" },
-    "7": { label: "Ch 7", name: "Discrete probability" },
     "8": { label: "Ch 8", name: "Recurrence relations" },
-    "13": { label: "Ch 13", name: "Finite-state machines" },
   } as Record<ChapterKey, { label: string; name: string }>,
   sections: [
     { key: "inputs", title: "Your numbers", chapters: [] },
@@ -36,8 +33,6 @@ export const copy = {
     { key: "chart", title: "Balance by month", chapters: ["8"] },
     { key: "yearly", title: "Year by year", chapters: ["2"] },
     { key: "plan", title: "Your plan", chapters: ["8", "2"] },
-    { key: "risk", title: "Missed payments", chapters: ["7", "6"] },
-    { key: "status", title: "Account status", chapters: ["13"] },
     { key: "table", title: "Month by month", chapters: ["8"] },
     { key: "math", title: "The math", chapters: ["1-5"] },
   ] as { key: SectionKey; title: string; chapters: ChapterKey[] }[],
@@ -47,31 +42,8 @@ export const copy = {
     line: (bal: string, apr: string, m: string, floor: string | null, p: string) =>
       `${bal} ฿ · ${apr}% · A ${m}%${floor ? ` min ${floor} ฿` : ""} · B ${p} ฿`,
   },
-  menu: { title: "On this page", narrow: "Sections", used: "Chapters used: 1·2·3·5·6·7·8·13" },
+  menu: { title: "On this page", narrow: "Sections", used: "Chapters used: 1·2·3·5·8" },
   calcPage: { title: "Calculator", intro: "One card, two ways to pay. Each section shows the CPE111 chapter it uses." },
-  status: {
-    intro: "A finite-state machine reads one input per month: P (paid) or M (missed). Click the buttons or type a string of months to see where the account ends up.",
-    names: { current: "Current", late: "Late", delinquent: "Delinquent", default: "Default" },
-    pay: "Pay (P)",
-    miss: "Miss (M)",
-    reset: "Reset",
-    input: "Months as P and M",
-    apply: "Apply",
-    error: "Use only P and M, up to 60 months",
-    pathLabel: "Path through the machine",
-    month: (k: number, name: string) => `Month ${k}: ${name}`,
-    diagramAria: (name: string) => `State diagram with Current, Late, Delinquent and Default. The account is now ${name}.`,
-    tableLabel: "Transition table",
-    stateCol: "State",
-    onP: "on P",
-    onM: "on M",
-    language: "The machine ends in Default exactly when the input contains MMM: the regular language (P|M)*MMM(P|M)*.",
-    yes: "✓ contains MMM",
-    no: "✗ no MMM",
-    paidOff: (n: number) => `Method B needs ${n} paid months to reach Paid off; a real account also leaves this machine when the balance reaches zero.`,
-    neverPaid: "Method B never reaches Paid off: its payment does not cover the interest.",
-    disclaimer: "Simplified model for the course; real banks use their own rules.",
-  },
   home: {
     title: "When does your card debt end?",
     lede: "A calculator for one card or several, with the CPE111 discrete math behind every number.",
@@ -80,38 +52,11 @@ export const copy = {
     tableTitle: "Chapters in this project",
     cols: ["Chapter", "What it does here", "Where"],
     rows: [
-      { ch: "1-5", what: "Proves the closed form and two warnings by induction", href: "/calculator?show=math", where: "9 The math" },
+      { ch: "1-5", what: "Proves the closed form and two warnings by induction", href: "/calculator?show=math", where: "7 The math" },
       { ch: "2", what: "Adds up each year's interest and principal", href: "/calculator?show=yearly", where: "4 Year by year" },
       { ch: "3", what: "Avalanche and snowball pick the next card greedily", href: "/multi", where: "Several cards" },
-      { ch: "6", what: "Counts the ways to miss k of 12 months, C(12,k)", href: "/calculator?show=risk", where: "6 Missed payments" },
-      { ch: "7", what: "Odds of missing payments, and 1,000 simulated runs", href: "/calculator?show=risk", where: "6 Missed payments" },
       { ch: "8", what: "Each month's balance comes from last month's: the recurrence behind every number", href: "/calculator?show=results", where: "2 Results" },
-      { ch: "13", what: "Account status as a finite-state machine on Pay and Miss", href: "/calculator?show=status", where: "7 Account status" },
     ] as { ch: ChapterKey; what: string; href: string; where: string }[],
-  },
-  risk: {
-    intro: "Real months are not all perfect. Give a chance of missing a payment and see the odds (exact) and what it costs (simulated).",
-    q: "Chance of missing a month (%)",
-    fee: "Late fee (baht)",
-    exactTitle: "The exact odds",
-    atLeastOnce: "Chance of missing at least once in a year",
-    expected: "Expected missed months in a year",
-    formula: "Complement rule",
-    formulaText: (q: string, v: string) => `1 − (1 − ${q})¹² = ${v}`,
-    barsTitle: "Missed months in a year (binomial, n = 12)",
-    barsAria: (vals: string[]) => `Chance of 0, 1, 2, 3, 4 or more missed months in a year: ${vals.join(", ")}`,
-    barLabels: ["0", "1", "2", "3", "4+"],
-    worked: (q: string, nq: string, pow: string, v: string) => `P(1 miss) = C(12,1)·${q}¹·${nq}¹¹ = 12 × ${q} × ${pow} = ${v}`,
-    simTitle: "1,000 simulated runs of method B, each until it is paid off (same every time)",
-    median: "Usually debt-free after",
-    later: (n: number) => (n <= 0 ? "as planned" : `${n} ${n === 1 ? "month" : "months"} later than planned`),
-    p90: "1 in 10 take longer than",
-    extra: "Average extra cost (runs that pay off)",
-    unpaid: "Never pay off within 100 years",
-    defaultShare: "Reach Default at least once",
-    never: "Not within 100 years",
-    noSim: "Method B never pays off, so there is nothing to simulate. Raise the fixed payment above the monthly interest.",
-    model: "Model: in a missed month nothing is paid, interest still grows and the late fee is added to the balance. Default comes from the account status machine in section 7.",
   },
   form: {
     heading: "Enter your numbers",
@@ -149,8 +94,6 @@ export const copy = {
     p: "The payment must be 0 or more",
     budget: "The budget must be 0 or more",
     n: "N must be a whole number from 1 to 1200",
-    q: "The chance must be between 0 and 50 (%)",
-    fee: "The late fee must be between 0 and 2,000 baht",
   },
   results: {
     titleA: (m: string, floor: string | null) => `Method A: pay the ${m}% minimum` + (floor ? ` (at least ${floor} baht)` : ""),

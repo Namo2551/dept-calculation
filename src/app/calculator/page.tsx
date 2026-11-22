@@ -15,13 +15,11 @@ import { PageIntro } from "@/components/PageIntro";
 import { Ready } from "@/components/Ready";
 import { ReportMenu } from "@/components/report/ReportMenu";
 import { ReportSection } from "@/components/report/ReportSection";
-import { RiskSection } from "@/components/report/RiskSection";
-import { StatusMachine } from "@/components/report/StatusMachine";
 import { copy } from "@/copy";
 
 export const metadata: Metadata = { title: "Calculator" };
 
-// The calculator as a numbered report: a sticky chapter menu beside nine sections, each tagged with the
+// The calculator as a numbered report: a sticky chapter menu beside seven sections, each tagged with the
 // CPE111 chapter it uses. The math behind a section opens from the "Why?" button in its header.
 export default function CalculatorPage() {
   const W = copy.why;
@@ -54,12 +52,6 @@ export default function CalculatorPage() {
                 <RequiredPayment />
                 <ExtraPayment />
               </div>
-            </ReportSection>
-            <ReportSection k="risk">
-              <RiskSection />
-            </ReportSection>
-            <ReportSection k="status">
-              <StatusMachine />
             </ReportSection>
             <ReportSection k="table" print={false}>
               <MonthlyTable />

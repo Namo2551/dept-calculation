@@ -94,10 +94,10 @@ describe("pages share one provider", () => {
     render(<CalcProvider><HomePage /></CalcProvider>);
     const table = screen.getByRole("table", { name: "Chapters in this project" });
     const rows = within(table).getAllByRole("row").slice(1);
-    expect(rows).toHaveLength(7);
-    expect(within(rows[4]).getByRole("link")).toHaveAttribute("href", "/calculator?show=risk");
-    expect(within(rows[6]).getByRole("link")).toHaveAttribute("href", "/calculator?show=status");
+    expect(rows).toHaveLength(4);
+    expect(within(rows[0]).getByRole("link")).toHaveAttribute("href", "/calculator?show=math");
     expect(within(rows[2]).getByRole("link")).toHaveAttribute("href", "/multi");
+    expect(within(rows[3]).getByRole("link")).toHaveAttribute("href", "/calculator?show=results");
     expect(screen.getByRole("link", { name: "Open the calculator" })).toHaveAttribute("href", "/calculator");
   });
 

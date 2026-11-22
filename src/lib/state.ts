@@ -2,8 +2,7 @@
 // The stored shape and the URL hash format match the original single-file site, so old links keep working.
 import { decodeState, encodeState } from "./debt";
 
-// q = chance of missing a month (percent), fee = late fee (baht): inputs of the missed-payments section (Ch 7).
-export type SingleRaw = { bal: string; apr: string; m: string; floor: string; p: string; n: string; q: string; fee: string };
+export type SingleRaw = { bal: string; apr: string; m: string; floor: string; p: string; n: string };
 export type CardRaw = { name: string; balance: string; apr: string; m: string; floor: string };
 export type AppState = { single: SingleRaw; multi: { budget: string; cards: CardRaw[] } };
 
@@ -13,7 +12,7 @@ const cardName = (letter: string) => "Card " + letter;
 
 export function defaultState(): AppState {
   return {
-    single: { bal: "30,000", apr: "16", m: "5", floor: "0", p: "1,500", n: "24", q: "5", fee: "300" },
+    single: { bal: "30,000", apr: "16", m: "5", floor: "0", p: "1,500", n: "24" },
     multi: {
       budget: "3,000",
       cards: [
@@ -25,7 +24,7 @@ export function defaultState(): AppState {
   };
 }
 
-export const EXAMPLES: Record<"ex1" | "ex2" | "ex400", Omit<SingleRaw, "n" | "q" | "fee">> = {
+export const EXAMPLES: Record<"ex1" | "ex2" | "ex400", Omit<SingleRaw, "n">> = {
   ex1: { bal: "30,000", apr: "16", m: "5", floor: "0", p: "1,500" },
   ex2: { bal: "30,000", apr: "16", m: "5", floor: "500", p: "1,500" },
   ex400: { bal: "30,000", apr: "16", m: "5", floor: "0", p: "400" },
@@ -40,7 +39,7 @@ export function parseNumber(s: string): number {
   return t === "" || isNaN(Number(t)) ? NaN : Number(t);
 }
 
-export type RuleKey = "bal" | "balance" | "apr" | "m" | "floor" | "p" | "budget" | "n" | "q" | "fee";
+export type RuleKey = "bal" | "balance" | "apr" | "m" | "floor" | "p" | "budget" | "n";
 
 const RULES: Record<RuleKey, (v: number) => boolean> = {
   bal: (v) => v > 0,
@@ -51,8 +50,6 @@ const RULES: Record<RuleKey, (v: number) => boolean> = {
   p: (v) => v >= 0,
   budget: (v) => v >= 0,
   n: (v) => v >= 1 && v <= 1200 && Math.floor(v) === v,
-  q: (v) => v >= 0 && v <= 50,
-  fee: (v) => v >= 0 && v <= 2000,
 };
 
 // The parsed number when valid, otherwise null (NaN fails every rule).
@@ -61,7 +58,7 @@ export function validate(key: RuleKey, raw: string): number | null {
   return RULES[key](v) ? v : null;
 }
 
-const SINGLE_KEYS: (keyof SingleRaw)[] = ["bal", "apr", "m", "floor", "p", "n", "q", "fee"];
+const SINGLE_KEYS: (keyof SingleRaw)[] = ["bal", "apr", "m", "floor", "p", "n"];
 const CARD_KEYS: (keyof CardRaw)[] = ["name", "balance", "apr", "m", "floor"];
 
 type Loose = { single?: Record<string, unknown>; multi?: { budget?: unknown; cards?: unknown } };

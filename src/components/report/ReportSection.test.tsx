@@ -34,9 +34,9 @@ describe("ReportSection", () => {
   });
 
   test("a section can carry two chapter tags", () => {
-    render(<ReportSection k="risk"><p>risk</p></ReportSection>);
-    expect(screen.getByLabelText("CPE111 Chapter 7, Discrete probability")).toBeInTheDocument();
-    expect(screen.getByLabelText("CPE111 Chapter 6, Counting")).toBeInTheDocument();
+    render(<ReportSection k="plan"><p>plan</p></ReportSection>);
+    expect(screen.getByLabelText("CPE111 Chapter 8, Recurrence relations")).toBeInTheDocument();
+    expect(screen.getByLabelText("CPE111 Chapter 2, Sums")).toBeInTheDocument();
   });
 });
 

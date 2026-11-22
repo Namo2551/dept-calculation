@@ -3,7 +3,7 @@ import { simulate, simulateMulti, type Card, type MultiResult, type MultiStrateg
 import { validate, type AppState, type RuleKey, type SingleRaw } from "./state";
 
 export type SingleCalc = {
-  v: { bal: number; apr: number; m: number; floor: number; p: number; n: number; q: number; fee: number }; // m and q in percent
+  v: { bal: number; apr: number; m: number; floor: number; p: number; n: number }; // m in percent
   pA: SingleOptions; // m as a fraction
   pB: SingleOptions;
   A: SimResult;
@@ -20,8 +20,6 @@ export type MultiCalc = {
 
 export const STRATEGIES: MultiStrategy[] = ["minonly", "avalanche", "snowball"];
 const CORE_KEYS: (keyof SingleRaw)[] = ["bal", "apr", "m", "floor", "p", "n"];
-// The missed-payment inputs (section 6) are checked on their own, so a half-typed chance never freezes the card results.
-const RISK_KEYS: ("q" | "fee")[] = ["q", "fee"];
 const CARD_RULES: ("balance" | "apr" | "m" | "floor")[] = ["balance", "apr", "m", "floor"];
 
 const num = (key: RuleKey, raw: string) => validate(key, raw) as number;
@@ -30,14 +28,9 @@ export function singleIsValid(s: SingleRaw): boolean {
   return CORE_KEYS.every((k) => validate(k, s[k]) !== null);
 }
 
-// The card fields from `raw` when they are all valid (else from `prev`), and each missed-payment field
-// from `raw` when it is valid on its own (else from `prev`).
+// The new inputs when they are all valid, otherwise the last valid ones.
 export function keepValid(prev: SingleRaw, raw: SingleRaw): SingleRaw {
-  const out: SingleRaw = singleIsValid(raw) ? { ...raw } : { ...prev };
-  RISK_KEYS.forEach((k) => {
-    out[k] = validate(k, raw[k]) !== null ? raw[k] : prev[k];
-  });
-  return out;
+  return singleIsValid(raw) ? raw : prev;
 }
 
 export function multiIsValid(m: AppState["multi"]): boolean {
@@ -45,7 +38,7 @@ export function multiIsValid(m: AppState["multi"]): boolean {
 }
 
 export function computeSingle(s: SingleRaw): SingleCalc {
-  const v = { bal: num("bal", s.bal), apr: num("apr", s.apr), m: num("m", s.m), floor: num("floor", s.floor), p: num("p", s.p), n: num("n", s.n), q: num("q", s.q), fee: num("fee", s.fee) };
+  const v = { bal: num("bal", s.bal), apr: num("apr", s.apr), m: num("m", s.m), floor: num("floor", s.floor), p: num("p", s.p), n: num("n", s.n) };
   const pA: SingleOptions = { balance: v.bal, apr: v.apr, strategy: "pct", m: v.m / 100, floor: v.floor };
   const pB: SingleOptions = { balance: v.bal, apr: v.apr, strategy: "fixed", p: v.p };
   return { v, pA, pB, A: simulate(pA), B: simulate(pB) };

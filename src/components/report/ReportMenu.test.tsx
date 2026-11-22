@@ -37,18 +37,18 @@ const page = () =>
 const wide = () => screen.getByRole("navigation", { name: "On this page" });
 
 describe("ReportMenu", () => {
-  test("lists the nine sections in order with their chapter numbers", async () => {
+  test("lists the seven sections in order with their chapter numbers", async () => {
     page();
     await screen.findByTestId("tool-panel");
     const links = within(wide()).getAllByRole("link");
-    expect(links).toHaveLength(9);
+    expect(links).toHaveLength(7);
     expect(links[0]).toHaveTextContent("Your numbers");
     expect(links[1]).toHaveAttribute("href", "#sec-results");
-    const risk = links[5];
-    expect(risk).toHaveTextContent("Missed payments");
-    expect(within(risk).getByLabelText("CPE111 Chapter 7, Discrete probability")).toHaveTextContent("7");
-    expect(within(risk).getByLabelText("CPE111 Chapter 6, Counting")).toHaveTextContent("6");
-    expect(within(wide()).getByText("Chapters used: 1·2·3·5·6·7·8·13")).toBeInTheDocument();
+    const plan = links[4];
+    expect(plan).toHaveTextContent("Your plan");
+    expect(within(plan).getByLabelText("CPE111 Chapter 8, Recurrence relations")).toHaveTextContent("8");
+    expect(within(plan).getByLabelText("CPE111 Chapter 2, Sums")).toHaveTextContent("2");
+    expect(within(wide()).getByText("Chapters used: 1·2·3·5·8")).toBeInTheDocument();
   });
 
   test("shows the input summary without scrolling", async () => {
@@ -88,6 +88,6 @@ describe("ReportMenu", () => {
     page();
     await screen.findByTestId("tool-panel");
     const narrow = screen.getByRole("navigation", { name: "Sections" });
-    expect(within(narrow).getAllByRole("link")).toHaveLength(9);
+    expect(within(narrow).getAllByRole("link")).toHaveLength(7);
   });
 });

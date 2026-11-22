@@ -55,7 +55,7 @@ export function scrollToId(id: string) {
   requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView?.({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" }));
 }
 
-const SINGLE_RULES: Record<keyof SingleRaw, RuleKey> = { bal: "bal", apr: "apr", m: "m", floor: "floor", p: "p", n: "n", q: "q", fee: "fee" };
+const SINGLE_RULES: Record<keyof SingleRaw, RuleKey> = { bal: "bal", apr: "apr", m: "m", floor: "floor", p: "p", n: "n" };
 
 export function useCalculator() {
   const t = copy;

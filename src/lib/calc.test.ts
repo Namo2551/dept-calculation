@@ -22,7 +22,7 @@ describe("singleIsValid / multiIsValid", () => {
 describe("computeSingle", () => {
   test("defaults", () => {
     const c = computeSingle(defaultState().single);
-    expect(c.v).toEqual({ bal: 30000, apr: 16, m: 5, floor: 0, p: 1500, n: 24, q: 5, fee: 300 });
+    expect(c.v).toEqual({ bal: 30000, apr: 16, m: 5, floor: 0, p: 1500, n: 24 });
     expect(c.pA).toEqual({ balance: 30000, apr: 16, strategy: "pct", m: 0.05, floor: 0 });
     expect(c.pB).toEqual({ balance: 30000, apr: 16, strategy: "fixed", p: 1500 });
     expect(c.A.months).toBe(418);
@@ -30,25 +30,11 @@ describe("computeSingle", () => {
   });
 });
 
-describe("computeSingle missed-payment inputs", () => {
-  test("q (percent) and the late fee are parsed", () => {
-    const c = computeSingle(defaultState().single);
-    expect(c.v.q).toBe(5);
-    expect(c.v.fee).toBe(300);
-  });
-  test("the missed-payment fields do not decide whether the card inputs are valid", () => {
-    expect(singleIsValid({ ...defaultState().single, q: "60" })).toBe(true);
-    expect(singleIsValid({ ...defaultState().single, fee: "" })).toBe(true);
-  });
-  test("keepValid takes each valid part of the new inputs and keeps the last valid rest", () => {
+describe("keepValid", () => {
+  test("takes the new inputs when valid, otherwise keeps the last valid ones", () => {
     const def = defaultState().single;
-    const a = keepValid(def, { ...def, bal: "50,000", q: "" });
-    expect(a.bal).toBe("50,000");
-    expect(a.q).toBe("5");
-    const b = keepValid(def, { ...def, bal: "abc", q: "10", fee: "-1" });
-    expect(b.bal).toBe("30,000");
-    expect(b.q).toBe("10");
-    expect(b.fee).toBe("300");
+    expect(keepValid(def, { ...def, bal: "50,000" }).bal).toBe("50,000");
+    expect(keepValid(def, { ...def, bal: "abc" }).bal).toBe("30,000");
   });
 });
 
