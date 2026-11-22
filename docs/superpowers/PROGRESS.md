@@ -41,20 +41,23 @@ Key documents:
 
 Full suite after last merge: **436 tests pass**, typecheck clean.
 
-## In progress: helper agents (each in its own git worktree / branch, based on commit 9047cb8)
-| Feature | Branch | Worktree | State at last check |
-|---|---|---|---|
-| 1 Saved plans (`/plans`, `/plans/[id]`, `/plans/compare`, calculator Save/Open via `?plan=`) | `worktree-agent-a341fb4689b801664` | `.claude/worktrees/agent-a341fb4689b801664` | 3 commits + uncommitted files; was still working |
-| 2 Debts + payments (`/debts`, `/debts/[id]`, `/debts/[id]/payments`, baselines) | `worktree-agent-add95533499afab2c` | `.claude/worktrees/agent-add95533499afab2c` | 1 commit (schemas, helpers, copy); pages not done yet |
-| 3+6 Dashboard + goals (`/dashboard`, `/goals`) | `worktree-agent-a1ab157af195b56b1` | `.claude/worktrees/agent-a1ab157af195b56b1` | dashboard page committed; goals math committed; goals page in progress |
-| 5 Strategy | `worktree-agent-a08afc2575c8e1f6c` | (done, merged) | merged |
+## Helper agents: all finished and merged
+Plans (F1), debts + payments (F2), dashboard + goals (F3, F6), strategy (F5) are merged into `feat/paydown-multipage`.
+After the merges: **560 tests pass** (41 files), typecheck clean. Fixed after merge: `/debts` 500 (a server page called a
+function from a "use client" module; defaults moved to `src/lib/debts-form.ts`).
 
-If an agent stopped (e.g. usage limit), resume it with SendMessage to its agent id, or finish the feature directly
-in its worktree following the brief. Each agent must leave `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` green.
+Browser-verified as test account A: dashboard totals match strategy; debt page start tracking (status "Ahead of plan"),
+add payment (balance drops by the amount, history correct); save plan from calculator + duplicate-name error; goal
+"debt-free by Dec 2027" shows "Falling behind" + required monthly payment; sharing link with amounts hidden shows
+percentages only, signed out, noindex; revoke makes it invalid. As test account B: A's debt pages are 404, no A data on
+any page, B's export has 0 debts/plans/payments.
+
+Known minor issues to look at: "Mark as paid off" button is offered on an active debt that still has a balance;
+`LineChart` x-axis shows "6 mo"/"1 yr" instead of month names on dashboard charts; "today" uses server time (UTC on
+Netlify) rather than Asia/Bangkok.
 
 ## Remaining steps (in order)
-1. When each agent finishes: read its report, `git merge --no-edit <branch>` into `feat/paydown-multipage`, run the full suite + typecheck, fix conflicts (likely only in `src/app/(app)/dashboard/page.tsx` placeholder and the calculator files).
-2. Browser-check every page as test account A (and B for isolation): `/dashboard`, `/plans` (+ save from calculator, compare), `/debts` (+ add/edit/delete payment, start baseline, ahead/behind), `/strategy`, `/goals`, `/sharing` (create a link, open `/s/<token>` signed out, revoke, confirm it stops working), `/account`.
+1. (done) Merge agent branches. 2. (done) Browser-check main flows as A and isolation as B.
 3. Hook sharing into other pages if useful (e.g. "Share this plan" on `/plans/[id]` linking to `/sharing?plan=<id>`); regenerate DB types if any migration changes.
 4. Responsive pass at 390 / 768 / 1280 px on all app pages; no page-level horizontal scroll.
 5. Security pass: re-run `supabase/tests/rls_test.sql` and `share_test.sql`, `get_advisors` (security + performance), check every Server Action calls requireUser/requireConsent and validates with zod, no secrets in code (`git grep -i "service_role\|secret"`).
