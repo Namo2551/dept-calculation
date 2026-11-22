@@ -83,6 +83,7 @@ export const debtsCopy = {
     interestSoFar: "Interest charged so far",
     projectedPayoff: "Projected payoff",
     remainingInterest: "Interest still to pay",
+    payoffNow: "To clear it this month, pay",
     payoffIn: (months: string, when: string) => `${months}, ${when}`,
     never: "Not paid off at this payment",
     basis: {

@@ -61,6 +61,18 @@ describe("buildLedger (actual balances)", () => {
     expect(l.rows.every((r) => r.end >= 0)).toBe(true);
   });
 
+  test("paying only the balance mid-month is not paid off: this month's interest is still due", () => {
+    const d = { start_balance: 10000, apr: 18, start_date: "2026-11-01" };
+    const short = buildLedger(d, [{ paid_on: "2026-11-10", amount: 10000 }], "2026-11-15");
+    expect(short.paidOff).toBe(false);
+    expect(short.payoffAmount).toBeCloseTo(150, 6); // 10,000 x 18% / 12 still owed for November
+    const full = buildLedger(d, [{ paid_on: "2026-11-10", amount: 10150 }], "2026-11-15");
+    expect(full.paidOff).toBe(true);
+    expect(full.payoffAmount).toBe(0);
+    // a month later the short payment really leaves the interest outstanding
+    expect(buildLedger(d, [{ paid_on: "2026-11-10", amount: 10000 }], "2026-12-05").balance).toBeCloseTo(150, 6);
+  });
+
   test("no payments: interest keeps adding month after month", () => {
     const l = buildLedger(debt, [], "2026-03-15");
     expect(l.rows).toHaveLength(2);

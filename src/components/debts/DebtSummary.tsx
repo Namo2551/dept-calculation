@@ -25,6 +25,7 @@ export function DebtSummary({ o }: { o: DebtOverview }) {
         <Fact label={D.interestSoFar}>{formatMoney(ledger.interestCharged, cur)}</Fact>
         <Fact label={debtsCopy.fields.minimumDue}>{formatMoney(minimumDue(debt, ledger.balance), cur)}</Fact>
         <Fact label={D.projectedPayoff}>{payoff}</Fact>
+        {!ledger.paidOff && <Fact label={D.payoffNow}>{formatMoney(ledger.payoffAmount, cur)}</Fact>}
         <Fact label={D.remainingInterest}>{projection ? formatMoney(projection.remainingInterest, cur) : D.never}</Fact>
       </dl>
       {!ledger.paidOff && <p className="text-sm text-muted">{D.basisAmount(D.basis[o.basisSource], formatMoney(o.monthlyBasis, cur))}</p>}

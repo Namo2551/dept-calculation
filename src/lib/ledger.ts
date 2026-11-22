@@ -55,7 +55,8 @@ export type Ledger = {
   currentMonthPaid: number;
   totalPaid: number;
   interestCharged: number;
-  paidOff: boolean;
+  payoffAmount: number; // what still clears the debt this month: balance plus this month's interest
+  paidOff: boolean; // true only when this month's interest is covered too
 };
 
 export function buildLedger(debt: DebtTerms, payments: Payment[], asOfISO: string): Ledger {
@@ -74,6 +75,7 @@ export function buildLedger(debt: DebtTerms, payments: Payment[], asOfISO: strin
   let bal = debt.start_balance;
   let idx = 0;
   let interestCharged = 0;
+  let currentStart = debt.start_balance;
 
   for (let k = 1; k <= currentMonth; k++) {
     const monthStart = bal;
@@ -90,12 +92,17 @@ export function buildLedger(debt: DebtTerms, payments: Payment[], asOfISO: strin
       interestCharged += interest;
       bal = end;
     } else {
+      currentStart = monthStart;
       bal = Math.max(0, monthStart - paidSoFar);
     }
   }
 
   const totalPaid = sorted.reduce((a, p) => a + p.amount, 0);
   const currentMonthPaid = sorted.filter((p) => p.month === currentMonth).reduce((a, p) => a + p.amount, 0);
+  // Interest for the current month is charged at its end on the month's starting balance, so paying only the
+  // visible balance mid-month still leaves that interest owed.
+  const owed = currentStart * (1 + r) - currentMonthPaid;
+  const payoff = owed <= EPS ? 0 : owed;
   return {
     asOf: asOfISO,
     startDate: debt.start_date,
@@ -106,7 +113,8 @@ export function buildLedger(debt: DebtTerms, payments: Payment[], asOfISO: strin
     currentMonthPaid,
     totalPaid,
     interestCharged,
-    paidOff: bal <= EPS,
+    payoffAmount: payoff,
+    paidOff: payoff <= EPS,
   };
 }
 
