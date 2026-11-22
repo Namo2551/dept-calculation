@@ -2,10 +2,12 @@ import Link from "next/link";
 import { ChapterTag } from "@/components/report/ChapterTag";
 import { Button } from "@/components/ui/Button";
 import { copy } from "@/copy";
+import { appCopy } from "@/copy/app";
 
 // Home: what the site does, a way in, and where each CPE111 chapter is used.
 export default function HomePage() {
   const H = copy.home;
+  const L = appCopy.landing;
   return (
     <div className="pt-12 min-[900px]:pt-20">
       <h1 className="font-display font-medium text-[50px] leading-[1.04] min-[900px]:text-[67px] min-[900px]:leading-[1.02] tracking-[-0.025em] text-balance max-w-[16ch]">
@@ -16,6 +18,27 @@ export default function HomePage() {
         <Button href="/calculator" variant="primary">{H.cta}</Button>
         <Button href="/multi">{H.multi}</Button>
       </div>
+
+      <section aria-labelledby="app-h" className="mt-16 min-[900px]:mt-24">
+        <h2 id="app-h" className="font-display font-medium text-[28px] sm:text-[32px] leading-tight tracking-[-0.015em]">{L.title}</h2>
+        <p className="mt-3 max-w-[60ch] text-muted">{L.intro}</p>
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {L.features.map((f) => (
+            <li key={f.title} className="inset-card p-5 sm:p-6">
+              <h3 className="text-lg font-semibold">{f.title}</h3>
+              <p className="mt-2 text-[15px] text-muted">{f.text}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <Button href="/signup" variant="primary">{appCopy.nav.signUp}</Button>
+          <Button href="/login">{appCopy.nav.signIn}</Button>
+        </div>
+        <p className="mt-4 text-sm text-muted max-w-[60ch]">
+          {L.privacy}{" "}
+          <Link href="/privacy" className="underline underline-offset-4">{appCopy.auth.privacyLink}</Link>
+        </p>
+      </section>
 
       <section aria-labelledby="chapters-h" className="mt-16 min-[900px]:mt-24">
         <h2 id="chapters-h" className="font-display font-medium text-[28px] sm:text-[32px] leading-tight tracking-[-0.015em] mb-6">{H.tableTitle}</h2>

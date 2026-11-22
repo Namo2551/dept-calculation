@@ -81,5 +81,19 @@ export const appCopy = {
   privacy: {
     title: "Privacy notice",
   },
+  landing: {
+    title: "Your debt, managed",
+    intro: "Create a free account to save plans, record real payments and see exactly where you stand, on any device.",
+    features: [
+      { title: "Saved plans", text: "Keep several repayment plans, edit them later and compare two side by side.", href: "/plans" },
+      { title: "Real payments", text: "Record what you actually paid and see if you're ahead of or behind your plan.", href: "/debts" },
+      { title: "Dashboard", text: "Total debt, interest paid, progress and your debt-free date at a glance.", href: "/dashboard" },
+      { title: "All your debts", text: "Cards and loans in one place, with avalanche vs snowball compared on your numbers.", href: "/strategy" },
+      { title: "Goals", text: "Set a debt-free date and see the monthly payment it takes to get there.", href: "/goals" },
+      { title: "Private sharing", text: "Show a partner or adviser a read-only view. Revoke it any time.", href: "/sharing" },
+    ],
+    privacy: "Your data is private: protected per account in the database, never sold, and deletable at any time.",
+    signedInCta: "Go to your dashboard",
+  },
   needConsent: "Please agree to the privacy notice on your Account page before saving data.",
 } as const;
