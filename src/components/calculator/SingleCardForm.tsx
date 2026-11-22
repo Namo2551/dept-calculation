@@ -1,5 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { CalcPlanBar } from "@/components/plans/CalcPlanBar";
 import { Button } from "@/components/ui/Button";
 import { NumberField } from "@/components/ui/NumberField";
 import type { SingleRaw } from "@/lib/state";
@@ -62,6 +64,11 @@ export function SingleCardForm() {
         <span role="status" className="text-good font-semibold ml-1">
           {message}
         </span>
+        <div className="w-full">
+          <Suspense fallback={null}>
+            <CalcPlanBar />
+          </Suspense>
+        </div>
       </div>
       {shareFallback && (
         <div className="mt-4 no-print">

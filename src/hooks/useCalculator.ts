@@ -120,6 +120,14 @@ export function useCalculator() {
   }, [state]);
 
   const setSingle = useCallback((field: keyof SingleRaw, value: string) => update((s) => ({ ...s, single: { ...s.single, [field]: value } })), [update]);
+  // Replace every single-card input at once (e.g. a saved plan opened in the calculator).
+  const replaceSingle = useCallback(
+    (single: SingleRaw) => {
+      update((s) => ({ ...s, single: { ...single } }));
+      setExtra(0);
+    },
+    [update],
+  );
   const setBudget = useCallback((value: string) => update((s) => ({ ...s, multi: { ...s.multi, budget: value } })), [update]);
   const setCard = useCallback(
     (i: number, field: keyof CardRaw, value: string) =>
@@ -211,6 +219,7 @@ export function useCalculator() {
     setExtra,
     shareFallback,
     setSingle,
+    replaceSingle,
     setBudget,
     setCard,
     addCard,
