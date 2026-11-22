@@ -66,3 +66,11 @@ export function toCsv(rows: Row[]): string {
 export function formatBahtShort(x: number): string {
   return formatBaht(x).replace(/\.00$/, "");
 }
+
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+// The calendar month a plan ends in: month 1 is the month after `now`. 24 from Nov 2026 -> "November 2028"
+export function payoffDate(months: number, now: Date): string {
+  const d = new Date(now.getFullYear(), now.getMonth() + months, 1);
+  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}

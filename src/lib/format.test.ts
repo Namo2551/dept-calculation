@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { simulate, type SingleOptions } from "./debt";
-import { compareSentence, durationText, explainFirstMonths, formatBaht, keepFigures, monthsToText, toCsv } from "./format";
+import { compareSentence, durationText, explainFirstMonths, formatBaht, keepFigures, monthsToText, payoffDate, toCsv } from "./format";
 
 const A = (m: number, floor: number): SingleOptions => ({ balance: 30000, apr: 16, strategy: "pct", m, floor });
 const B = (p: number): SingleOptions => ({ balance: 30000, apr: 16, strategy: "fixed", p });
@@ -73,5 +73,12 @@ describe("keepFigures", () => {
   test("leaves text with no number and unit unchanged", () => {
     expect(keepFigures("Never")).toBe("Never");
     expect(keepFigures("Over 100 years")).toBe("Over 100\u00a0years");
+  });
+});
+
+describe("payoffDate", () => {
+  test("month 1 is the month after today", () => {
+    expect(payoffDate(24, new Date(2026, 10, 22))).toBe("November 2028");
+    expect(payoffDate(1, new Date(2026, 11, 5))).toBe("January 2027");
   });
 });
