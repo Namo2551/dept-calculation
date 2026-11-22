@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { BalanceChart } from "@/components/calculator/BalanceChart";
 import { CompareBars } from "@/components/calculator/CompareBars";
 import { ExtraPayment } from "@/components/calculator/ExtraPayment";
+import { InterestLimit } from "@/components/calculator/InterestLimit";
 import { MonthlyTable } from "@/components/calculator/MonthlyTable";
 import { RequiredPayment } from "@/components/calculator/RequiredPayment";
 import { ResultCards } from "@/components/calculator/ResultCards";
@@ -48,8 +49,11 @@ export default function CalculatorPage() {
               <YearlyChart />
             </ReportSection>
             <ReportSection k="plan" print={false} why={<PlanWhy />} whyTopic={W.plan}>
-              <div className="grid gap-6 xl:grid-cols-2">
-                <RequiredPayment />
+              <div className="grid gap-6">
+                <div className="grid gap-6 xl:grid-cols-2 xl:items-start">
+                  <RequiredPayment />
+                  <InterestLimit />
+                </div>
                 <ExtraPayment />
               </div>
             </ReportSection>

@@ -4,6 +4,7 @@ import { copy } from "@/copy";
 import { computeMulti, computeSingle, keepValid, multiIsValid, type MultiCalc, type SingleCalc } from "@/lib/calc";
 import { requiredPayment } from "@/lib/debt";
 import { formatBahtShort } from "@/lib/format";
+import { paymentForInterestLimit } from "@/lib/plans";
 import {
   EXAMPLES,
   STORAGE_KEY,
@@ -55,7 +56,7 @@ export function scrollToId(id: string) {
   requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView?.({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" }));
 }
 
-const SINGLE_RULES: Record<keyof SingleRaw, RuleKey> = { bal: "bal", apr: "apr", m: "m", floor: "floor", p: "p", n: "n" };
+const SINGLE_RULES: Record<keyof SingleRaw, RuleKey> = { bal: "bal", apr: "apr", m: "m", floor: "floor", p: "p", n: "n", lim: "lim" };
 
 export function useCalculator() {
   const t = copy;
@@ -154,6 +155,13 @@ export function useCalculator() {
     setExtra(0);
   }, [single.v, setSingle]);
 
+  // "Use as method B" for the interest limit: the payment the binary search found.
+  const applyLimitPayment = useCallback(() => {
+    const { bal, apr, lim } = single.v;
+    setSingle("p", formatBahtShort(paymentForInterestLimit(bal, apr, lim).payment));
+    setExtra(0);
+  }, [single.v, setSingle]);
+
   const reset = useCallback(() => {
     try {
       storage()?.removeItem(STORAGE_KEY);
@@ -209,6 +217,7 @@ export function useCalculator() {
     removeCard,
     runExample,
     applyRequiredPayment,
+    applyLimitPayment,
     reset,
     share,
   };

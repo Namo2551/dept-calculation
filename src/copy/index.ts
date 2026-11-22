@@ -32,7 +32,7 @@ export const copy = {
     { key: "results", title: "Results", chapters: ["8"] },
     { key: "chart", title: "Balance by month", chapters: ["8"] },
     { key: "yearly", title: "Year by year", chapters: ["2"] },
-    { key: "plan", title: "Your plan", chapters: ["8", "2"] },
+    { key: "plan", title: "Your plan", chapters: ["8", "2", "3"] },
     { key: "table", title: "Month by month", chapters: ["8"] },
     { key: "math", title: "The math", chapters: ["1-5"] },
   ] as { key: SectionKey; title: string; chapters: ChapterKey[] }[],
@@ -94,6 +94,7 @@ export const copy = {
     p: "The payment must be 0 or more",
     budget: "The budget must be 0 or more",
     n: "N must be a whole number from 1 to 1200",
+    lim: "The limit must be 0 or more",
   },
   results: {
     titleA: (m: string, floor: string | null) => `Method A: pay the ${m}% minimum` + (floor ? ` (at least ${floor} baht)` : ""),
@@ -209,6 +210,17 @@ export const copy = {
     n: "N (months)",
     pay: "Pay each month (rounded up to whole baht)",
     use: "Use as the fixed payment (method B)",
+  },
+  limit: {
+    heading: "Keep total interest under a limit",
+    label: "Most interest I want to pay (baht)",
+    pay: "Pay each month (whole baht)",
+    unreachable: (x: string) => `Even paying everything next month costs ${x} baht of interest, so this limit can't be met.`,
+    stepsLabel: "Search steps",
+    step: (guess: string, interest: string, ok: boolean, low: string, high: string) =>
+      `Try ${guess} baht: interest ${interest} baht, ${ok ? "OK" : "too high"} (range ${low} to ${high})`,
+    note: "Binary search: each guess halves the range of payments still possible.",
+    use: "Use this payment as method B",
   },
   multi: {
     unnamed: "Unnamed",

@@ -22,7 +22,7 @@ describe("singleIsValid / multiIsValid", () => {
 describe("computeSingle", () => {
   test("defaults", () => {
     const c = computeSingle(defaultState().single);
-    expect(c.v).toEqual({ bal: 30000, apr: 16, m: 5, floor: 0, p: 1500, n: 24 });
+    expect(c.v).toEqual({ bal: 30000, apr: 16, m: 5, floor: 0, p: 1500, n: 24, lim: 3000 });
     expect(c.pA).toEqual({ balance: 30000, apr: 16, strategy: "pct", m: 0.05, floor: 0 });
     expect(c.pB).toEqual({ balance: 30000, apr: 16, strategy: "fixed", p: 1500 });
     expect(c.A.months).toBe(418);
@@ -35,6 +35,15 @@ describe("keepValid", () => {
     const def = defaultState().single;
     expect(keepValid(def, { ...def, bal: "50,000" }).bal).toBe("50,000");
     expect(keepValid(def, { ...def, bal: "abc" }).bal).toBe("30,000");
+  });
+  test("the interest limit is checked on its own", () => {
+    const def = defaultState().single;
+    const a = keepValid(def, { ...def, lim: "abc", bal: "50,000" });
+    expect(a.bal).toBe("50,000");
+    expect(a.lim).toBe("3,000");
+    expect(keepValid(def, { ...def, lim: "0" }).lim).toBe("0");
+    expect(singleIsValid({ ...def, lim: "abc" })).toBe(true);
+    expect(computeSingle(def).v.lim).toBe(3000);
   });
 });
 

@@ -17,7 +17,7 @@ import {
 describe("defaults and examples", () => {
   test("defaults match the current site", () => {
     const d = defaultState();
-    expect(d.single).toEqual({ bal: "30,000", apr: "16", m: "5", floor: "0", p: "1,500", n: "24" });
+    expect(d.single).toEqual({ bal: "30,000", apr: "16", m: "5", floor: "0", p: "1,500", n: "24", lim: "3,000" });
     expect(d.multi.budget).toBe("3,000");
     expect(d.multi.cards.map((c) => c.name)).toEqual(["Card A", "Card B", "Card C"]);
     expect(d.multi.cards[0]).toEqual({ name: "Card A", balance: "20,000", apr: "24", m: "5", floor: "200" });
@@ -69,7 +69,8 @@ describe("loadState", () => {
     };
     const r = loadState({ hash: "#" + encodeURIComponent(JSON.stringify(old)), storage: null });
     expect(r.source).toBe("link");
-    expect(r.state).toEqual(old);
+    // links made before the interest limit existed get its default and keep everything else
+    expect(r.state).toEqual({ ...old, single: { ...old.single, lim: "3,000" } });
   });
   test("anchor hash falls through to saved state", () => {
     const saved = defaultState();

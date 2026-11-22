@@ -3,7 +3,7 @@ import { simulate, simulateMulti, type Card, type MultiResult, type MultiStrateg
 import { validate, type AppState, type RuleKey, type SingleRaw } from "./state";
 
 export type SingleCalc = {
-  v: { bal: number; apr: number; m: number; floor: number; p: number; n: number }; // m in percent
+  v: { bal: number; apr: number; m: number; floor: number; p: number; n: number; lim: number }; // m in percent
   pA: SingleOptions; // m as a fraction
   pB: SingleOptions;
   A: SimResult;
@@ -28,9 +28,12 @@ export function singleIsValid(s: SingleRaw): boolean {
   return CORE_KEYS.every((k) => validate(k, s[k]) !== null);
 }
 
-// The new inputs when they are all valid, otherwise the last valid ones.
+// The card fields from `raw` when they are all valid, otherwise the last valid ones; the interest limit
+// is checked on its own, so a half-typed limit never freezes the card results.
 export function keepValid(prev: SingleRaw, raw: SingleRaw): SingleRaw {
-  return singleIsValid(raw) ? raw : prev;
+  const out = singleIsValid(raw) ? { ...raw } : { ...prev };
+  out.lim = validate("lim", raw.lim) !== null ? raw.lim : prev.lim;
+  return out;
 }
 
 export function multiIsValid(m: AppState["multi"]): boolean {
@@ -38,7 +41,7 @@ export function multiIsValid(m: AppState["multi"]): boolean {
 }
 
 export function computeSingle(s: SingleRaw): SingleCalc {
-  const v = { bal: num("bal", s.bal), apr: num("apr", s.apr), m: num("m", s.m), floor: num("floor", s.floor), p: num("p", s.p), n: num("n", s.n) };
+  const v = { bal: num("bal", s.bal), apr: num("apr", s.apr), m: num("m", s.m), floor: num("floor", s.floor), p: num("p", s.p), n: num("n", s.n), lim: num("lim", s.lim) };
   const pA: SingleOptions = { balance: v.bal, apr: v.apr, strategy: "pct", m: v.m / 100, floor: v.floor };
   const pB: SingleOptions = { balance: v.bal, apr: v.apr, strategy: "fixed", p: v.p };
   return { v, pA, pB, A: simulate(pA), B: simulate(pB) };
