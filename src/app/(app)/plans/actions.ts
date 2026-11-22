@@ -16,6 +16,7 @@ export type PlanFormState = {
   tone?: "good" | "bad";
   planId?: string;
   name?: string;
+  values?: Record<string, string>; // what was posted, so a form with errors keeps the user's typing
 };
 
 const E = plansCopy.errors;
@@ -142,11 +143,12 @@ export async function updatePlan(_: PlanFormState | undefined, fd: FormData): Pr
   const id = str(fd, "id");
   if (!isPlanId(id)) return bad(E.notFound);
   const keys = ["name", "balance", "apr", "min_pct", "min_floor", "fixed_payment", "target_months", "interest_limit", "bonus_amount", "bonus_month", "start_date", "notes"];
-  const parsed = planEditSchema.safeParse(Object.fromEntries(keys.map((k) => [k, str(fd, k)])));
-  if (!parsed.success) return { errors: firstErrors(parsed) };
+  const values = Object.fromEntries(keys.map((k) => [k, str(fd, k)]));
+  const parsed = planEditSchema.safeParse(values);
+  if (!parsed.success) return { errors: firstErrors(parsed), values };
   const { data, error } = await supabase.from("debt_plans").update(parsed.data).eq("id", id).select("id, name").maybeSingle();
-  if (error?.code === UNIQUE_VIOLATION) return { errors: { name: E.nameTaken } };
-  if (error) return bad(appCopy.auth.genericError);
+  if (error?.code === UNIQUE_VIOLATION) return { errors: { name: E.nameTaken }, values };
+  if (error) return { ...bad(appCopy.auth.genericError), values };
   if (!data) return bad(E.notFound);
   refresh(id);
   return { message: plansCopy.detail.saved, tone: "good", planId: data.id, name: data.name };
