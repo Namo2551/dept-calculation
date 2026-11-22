@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { AccountSection } from "@/components/app/AccountSection";
 import { DebtCard } from "@/components/debts/DebtCard";
-import { DebtForm, newDebtDefaults } from "@/components/debts/DebtForm";
+import { DebtForm } from "@/components/debts/DebtForm";
+import { newDebtDefaults } from "@/lib/debts-form";
 import { PageIntro } from "@/components/PageIntro";
 import { debtsCopy } from "@/copy/debts";
 import { requireProfile } from "@/lib/auth";

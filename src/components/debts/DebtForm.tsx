@@ -5,26 +5,11 @@ import { Button } from "@/components/ui/Button";
 import { FormMessage, TextField } from "@/components/ui/TextField";
 import { debtsCopy } from "@/copy/debts";
 import { SelectField } from "./SelectField";
+import { newDebtDefaults, type DebtFormValues } from "@/lib/debts-form";
+
+export { newDebtDefaults, type DebtFormValues };
 
 const F = debtsCopy.form;
-
-export type DebtFormValues = {
-  id?: string;
-  name: string;
-  kind: string;
-  start_balance: string;
-  start_date: string;
-  apr: string;
-  min_pct: string;
-  min_amount: string;
-  due_day: string;
-  currency: string;
-};
-
-// New debts start as a credit card from today with the common Thai minimum (5% or 500 baht).
-export function newDebtDefaults(today: string): DebtFormValues {
-  return { name: "", kind: "credit_card", start_balance: "", start_date: today, apr: "16", min_pct: "5", min_amount: "500", due_day: "", currency: "THB" };
-}
 
 // Remount the fields whenever a submit comes back, so they show the refilled values (after an error) or the
 // fresh defaults (after a success) instead of whatever React's automatic form reset left.
